@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-src 'none'; object-src 'none'; connect-src 'none'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="description" content="Overlay QR Shares divides a QR code into printable visual cryptography sheets for optical recovery.">
+  <title>Overlay QR Shares</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <script src="vendor/qrcode.min.js" defer></script>
+  <script src="vendor/jsQR.js" defer></script>
+  <script src="rng.js" defer></script>
+  <script src="qr.js" defer></script>
+  <script src="layout-core.js" defer></script>
+  <script src="vc-core.js" defer></script>
+  <script src="messages.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main" data-i18n="skipLink"></a>
+  <header class="page-header">
+    <div class="masthead">
+      <h1>Overlay <span>QR</span> Shares</h1>
+      <div class="header-tools">
+        <button id="theme" class="icon-button" type="button" data-label="theme">◐</button>
+        <button id="language" class="icon-button" type="button" data-label="language">EN</button>
+        <button id="help" class="icon-button" type="button" data-label="help" aria-haspopup="dialog">?</button>
+      </div>
+    </div>
+    <p class="privacy" data-i18n="privacy"></p>
+  </header>
+  <main id="main">
+    <div class="tabs" role="tablist" data-label="tablist">
+      <button id="tab-split" type="button" role="tab" aria-controls="panel-split"
+        aria-selected="true" data-i18n="splitTab" data-label="splitTab"></button>
+      <button id="tab-read" type="button" role="tab" aria-controls="panel-read"
+        aria-selected="false" tabindex="-1" data-i18n="readTab" data-label="readTab"></button>
+      <button id="tab-guide" type="button" role="tab" aria-controls="panel-guide"
+        aria-selected="false" tabindex="-1" data-i18n="guideTab" data-label="guideTab"></button>
+    </div>
+    <section id="panel-split" class="panel" role="tabpanel" aria-labelledby="tab-split" tabindex="0">
+      <div class="panel-heading">
+        <p class="eyebrow" data-i18n="splitEyebrow"></p>
+        <h2 data-i18n="splitTitle"></h2>
+        <p class="lead" data-i18n="splitIntro"></p>
+      </div>
+      <ol class="steps" data-label="stepsLabel">
+        <li><span class="step-number" aria-hidden="true">1</span><span data-i18n="stepScheme"></span></li>
+        <li><span class="step-number" aria-hidden="true">2</span><span data-i18n="stepPrint"></span></li>
+        <li><span class="step-number" aria-hidden="true">3</span><span data-i18n="stepRead"></span></li>
+        <li><span class="step-number" aria-hidden="true">4</span><span data-i18n="stepSecret"></span></li>
+      </ol>
+      <div class="preparation-grid">
+        <article class="preparation">
+          <h3 data-i18n="prepareTitle"></h3>
+          <p data-i18n="prepareBody"></p>
+        </article>
+        <article class="preparation">
+          <h3 data-i18n="trialTitle"></h3>
+          <p data-i18n="trialBody"></p>
+        </article>
+      </div>
+      <p class="notice" role="status" data-i18n="stageNotice"></p>
+    </section>
+    <section id="panel-read" class="panel" role="tabpanel" aria-labelledby="tab-read" tabindex="0" hidden>
+      <div class="panel-heading">
+        <p class="eyebrow" data-i18n="readEyebrow"></p>
+        <h2 data-i18n="readTitle"></h2>
+        <p class="lead" data-i18n="readIntro"></p>
+      </div>
+      <ol class="reading-list">
+        <li data-i18n="overlayPlace"></li>
+        <li data-i18n="overlayFlip"></li>
+        <li data-i18n="overlayAlign"></li>
+        <li data-i18n="overlayLight"></li>
+      </ol>
+      <p class="notice" data-i18n="cameraNotice"></p>
+      <p class="note" data-i18n="readStageNotice"></p>
+    </section>
+    <section id="panel-guide" class="panel" role="tabpanel" aria-labelledby="tab-guide" tabindex="0" hidden>
+      <div class="panel-heading">
+        <p class="eyebrow" data-i18n="guideEyebrow"></p>
+        <h2 data-i18n="guideTitle"></h2>
+        <p class="lead" data-i18n="guideIntro"></p>
+      </div>
+      <div class="preparation-grid">
+        <article class="preparation">
+          <h3 data-i18n="opticalTitle"></h3>
+          <p data-i18n="opticalBody"></p>
+        </article>
+        <article class="preparation">
+          <h3 data-i18n="limitsTitle"></h3>
+          <p data-i18n="limitsBody"></p>
+        </article>
+      </div>
+      <p class="notice" data-i18n="printRoute"></p>
+    </section>
+  </main>
+  <footer class="page-footer">
+    <p data-i18n="footerPrivacy"></p>
+    <a href="https://github.com/ipusiron/overlay-qr-shares" target="_blank" rel="noopener noreferrer"
+      data-i18n="sourceLink"></a>
+  </footer>
+  <dialog id="help-dialog" aria-labelledby="help-title">
+    <div class="help-header">
+      <h2 id="help-title" tabindex="-1" data-i18n="helpTitle"></h2>
+      <button id="help-close" type="button" data-i18n="close" data-label="close"></button>
+    </div>
+    <div id="help-content" class="help-content" tabindex="0" data-label="helpContent">
+      <p class="lead" data-i18n="helpIntro"></p>
+      <h3 data-i18n="helpPrepareTitle"></h3>
+      <p data-i18n="helpPrepare"></p>
+      <h3 data-i18n="helpPrivacyTitle"></h3>
+      <p data-i18n="helpPrivacy"></p>
+      <h3 data-i18n="helpKeysTitle"></h3>
+      <p data-i18n="helpKeys"></p>
+      <p class="notice" data-i18n="stageNotice"></p>
+    </div>
+  </dialog>
+</body>
+</html>
