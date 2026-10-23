@@ -388,6 +388,122 @@ button:disabled {
 .print-guidance {
   margin-top: 1.5rem;
 }
+.camera-actions {
+  margin-top: 1.5rem;
+}
+.camera-view {
+  max-width: 48rem;
+  margin: 1rem 0;
+  border: 1px solid var(--line);
+  background: var(--shade);
+}
+video {
+  display: block;
+  width: 100%;
+  max-height: 65dvh;
+  object-fit: contain;
+}
+.magnifier {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.magnifier canvas {
+  flex: 0 0 160px;
+  width: 160px;
+  height: 160px;
+  border: 1px solid var(--line);
+}
+.magnifier p {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+#manual-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  touch-action: manipulation;
+  cursor: crosshair;
+}
+.read-result, .diagnostic {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+}
+.read-mask {
+  font-size: 1.8rem;
+  letter-spacing: .2em;
+}
+pre {
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: inherit;
+  padding: 1rem;
+  border: 1px solid var(--line);
+}
+.diagnostic p {
+  overflow-wrap: anywhere;
+}
+.diagram-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(16rem, 100%), 1fr));
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+.instruction-figure {
+  min-width: 0;
+  margin: 0;
+  border: 1px solid var(--line);
+}
+.instruction-figure svg {
+  display: block;
+  width: 100%;
+  max-width: 24rem;
+  height: auto;
+  margin: 0 auto;
+}
+figcaption {
+  padding: 1rem;
+}
+figcaption strong {
+  display: block;
+  margin-bottom: .6rem;
+}
+figcaption p {
+  margin: 0;
+}
+.six-patterns {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+  max-width: 24rem;
+}
+.six-patterns svg {
+  max-width: 100%;
+  height: auto;
+}
+.table-frame {
+  max-width: 100%;
+  overflow-x: auto;
+}
+table {
+  width: 100%;
+  min-width: 30rem;
+  border-collapse: collapse;
+}
+th, td {
+  padding: .75rem;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+thead {
+  background: var(--wash);
+}
 progress {
   width: 100%;
   accent-color: var(--accent);
@@ -485,6 +601,9 @@ dialog::backdrop {
   }
   .settings-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .diagram-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .page-footer {
     flex-direction: row;

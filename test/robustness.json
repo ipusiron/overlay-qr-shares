@@ -1,0 +1,2905 @@
+{
+  "schemaVersion": 1,
+  "model": "independent-layer-transmission-v1",
+  "sourceHashes": {
+    "rng.js": "76edb3864447685c88ef20a11a03d84a441beab2e04b05e5c5507e4698c0911c",
+    "vc-core.js": "b9e44cc41651d020a7732c7be3ec06e04fe9d165402609bddaae65b892cc4a9b",
+    "qr.js": "765c2cf78d4c954b82954b1b197e68c48b827a314ac3ddc3f004769d0089571c",
+    "layout-core.js": "f929bffc9c8da059a77fdf444b7df05546c5518b5900f213cf832c9f76c40c33",
+    "render-core.js": "ead1c4a5a8513a10081e76bf8246ebac15ed28c91a3882fe83527915ca41eb1a",
+    "reader-core.js": "e2f18f414576b014076b6d47aef3c346c54e910b1fa053a3f451a48789549c5e",
+    "test/helpers.js": "a0762c167bcd3eca6e25bacf407a0a76a56accc2c2e01ac2f21e2cc1e484647c",
+    "test/robustness.js": "219fc170d835df592579c679801c2042ed3f798e5f1476a47278562c1a14bf38"
+  },
+  "generatedAt": "2026-10-23T21:42:44.471Z",
+  "node": "v22.23.3",
+  "secret": "TEST-OQS-1",
+  "qr": {
+    "version": 4,
+    "ecl": "M",
+    "moduleMm": 2.54
+  },
+  "seeds": [
+    125001,
+    125002
+  ],
+  "baseline": {
+    "pxPerMm": 12,
+    "ink": 0.85,
+    "blur": 0,
+    "floor": 0.05,
+    "gain": 0.8,
+    "tilt": 0
+  },
+  "axes": {
+    "shift": {
+      "unit": "mm",
+      "baseline": 0,
+      "values": [
+        0.25,
+        0.75
+      ]
+    },
+    "blur": {
+      "unit": "px",
+      "baseline": 0,
+      "values": [
+        1,
+        3
+      ]
+    },
+    "ink": {
+      "unit": "fraction",
+      "baseline": 0.85,
+      "values": [
+        0.65,
+        0.4
+      ]
+    },
+    "tilt": {
+      "unit": "fraction",
+      "baseline": 0,
+      "values": [
+        0.25,
+        0.55
+      ]
+    }
+  },
+  "sample": "cropped normal sample, including registration marks; automatic image-only reader",
+  "trialsPerCondition": 2,
+  "distinctConditions": 63,
+  "imageTrials": 126,
+  "baselinePass": true,
+  "rows": [
+    {
+      "scheme": "2-2",
+      "axis": "baseline",
+      "value": null,
+      "unit": "baseline",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-2",
+      "axis": "shift",
+      "value": 0.25,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.25
+        ]
+      }
+    },
+    {
+      "scheme": "2-2",
+      "axis": "shift",
+      "value": 0.75,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.75
+        ]
+      }
+    },
+    {
+      "scheme": "2-2",
+      "axis": "blur",
+      "value": 1,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 1,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-2",
+      "axis": "blur",
+      "value": 3,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 3,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-2",
+      "axis": "ink",
+      "value": 0.65,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.482353,
+            "threshold": 0.503922,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.482353,
+            "threshold": 0.503922,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.65,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-2",
+      "axis": "ink",
+      "value": 0.4,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.258065,
+            "threshold": 0.503922,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.258065,
+            "threshold": 0.503922,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.4,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-2",
+      "axis": "tilt",
+      "value": 0.25,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.73812,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.738182,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.25
+      }
+    },
+    {
+      "scheme": "2-2",
+      "axis": "tilt",
+      "value": 0.55,
+      "unit": "fraction",
+      "passed": 0,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.55
+      }
+    },
+    {
+      "scheme": "2-3",
+      "axis": "baseline",
+      "value": null,
+      "unit": "baseline",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-3",
+      "axis": "shift",
+      "value": 0.25,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.25,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "2-3",
+      "axis": "shift",
+      "value": 0.75,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.75,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "2-3",
+      "axis": "blur",
+      "value": 1,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 1,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-3",
+      "axis": "blur",
+      "value": 3,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 3,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-3",
+      "axis": "ink",
+      "value": 0.65,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.482353,
+            "threshold": 0.503922,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.482353,
+            "threshold": 0.503922,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.65,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-3",
+      "axis": "ink",
+      "value": 0.4,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.258065,
+            "threshold": 0.503922,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.258065,
+            "threshold": 0.503922,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.4,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-3",
+      "axis": "tilt",
+      "value": 0.25,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.738122,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.738243,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.25
+      }
+    },
+    {
+      "scheme": "2-3",
+      "axis": "tilt",
+      "value": 0.55,
+      "unit": "fraction",
+      "passed": 0,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.55
+      }
+    },
+    {
+      "scheme": "2-4",
+      "axis": "baseline",
+      "value": null,
+      "unit": "baseline",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-4",
+      "axis": "shift",
+      "value": 0.25,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.25,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "2-4",
+      "axis": "shift",
+      "value": 0.75,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.75,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "2-4",
+      "axis": "blur",
+      "value": 1,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 1,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-4",
+      "axis": "blur",
+      "value": 3,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 3,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-4",
+      "axis": "ink",
+      "value": 0.65,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.482353,
+            "threshold": 0.503922,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.482353,
+            "threshold": 0.503922,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.65,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-4",
+      "axis": "ink",
+      "value": 0.4,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.258065,
+            "threshold": 0.503922,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.258065,
+            "threshold": 0.503922,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.4,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-4",
+      "axis": "tilt",
+      "value": 0.25,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.738122,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.738243,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.25
+      }
+    },
+    {
+      "scheme": "2-4",
+      "axis": "tilt",
+      "value": 0.55,
+      "unit": "fraction",
+      "passed": 0,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.55
+      }
+    },
+    {
+      "scheme": "2-5",
+      "axis": "baseline",
+      "value": null,
+      "unit": "baseline",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-5",
+      "axis": "shift",
+      "value": 0.25,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.25,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "2-5",
+      "axis": "shift",
+      "value": 0.75,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.75,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "2-5",
+      "axis": "blur",
+      "value": 1,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 1,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-5",
+      "axis": "blur",
+      "value": 3,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.746032,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 3,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-5",
+      "axis": "ink",
+      "value": 0.65,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.482353,
+            "threshold": 0.503922,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.482353,
+            "threshold": 0.503922,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.65,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-5",
+      "axis": "ink",
+      "value": 0.4,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.258065,
+            "threshold": 0.503922,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.258065,
+            "threshold": 0.503922,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.4,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "2-5",
+      "axis": "tilt",
+      "value": 0.25,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.738122,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.738243,
+            "threshold": 0.503922,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.25
+      }
+    },
+    {
+      "scheme": "2-5",
+      "axis": "tilt",
+      "value": 0.55,
+      "unit": "fraction",
+      "passed": 0,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.55
+      }
+    },
+    {
+      "scheme": "3-3",
+      "axis": "baseline",
+      "value": null,
+      "unit": "baseline",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.626943,
+            "threshold": 0.735294,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.626943,
+            "threshold": 0.735294,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "3-3",
+      "axis": "shift",
+      "value": 0.25,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.626943,
+            "threshold": 0.735294,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.626943,
+            "threshold": 0.735294,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.25,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "3-3",
+      "axis": "shift",
+      "value": 0.75,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.626943,
+            "threshold": 0.735294,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.626943,
+            "threshold": 0.735294,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.75,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "3-3",
+      "axis": "blur",
+      "value": 1,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.626943,
+            "threshold": 0.735294,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.626943,
+            "threshold": 0.735294,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 1,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "3-3",
+      "axis": "blur",
+      "value": 3,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.626943,
+            "threshold": 0.735294,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.626943,
+            "threshold": 0.735294,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 3,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "3-3",
+      "axis": "ink",
+      "value": 0.65,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.286486,
+            "threshold": 0.692157,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.286486,
+            "threshold": 0.692157,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.65,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "3-3",
+      "axis": "ink",
+      "value": 0.4,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.092105,
+            "threshold": 0.613725,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.092105,
+            "threshold": 0.613725,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.4,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "3-3",
+      "axis": "tilt",
+      "value": 0.25,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.615272,
+            "threshold": 0.739216,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.615122,
+            "threshold": 0.739216,
+            "level": "adequate",
+            "attempts": 1,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.25
+      }
+    },
+    {
+      "scheme": "3-3",
+      "axis": "tilt",
+      "value": 0.55,
+      "unit": "fraction",
+      "passed": 0,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.55
+      }
+    },
+    {
+      "scheme": "4-4",
+      "axis": "baseline",
+      "value": null,
+      "unit": "baseline",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.536082,
+            "threshold": 0.856863,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.536082,
+            "threshold": 0.856863,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "4-4",
+      "axis": "shift",
+      "value": 0.25,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.536082,
+            "threshold": 0.856863,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.536082,
+            "threshold": 0.856863,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.25,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "4-4",
+      "axis": "shift",
+      "value": 0.75,
+      "unit": "mm",
+      "passed": 0,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": false,
+          "reason": "decode",
+          "diag": {
+            "margin": 0.176618,
+            "threshold": 0.860784,
+            "level": "insufficient",
+            "attempts": 5,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": false,
+          "reason": "decode",
+          "diag": {
+            "margin": 0.017953,
+            "threshold": 0.864706,
+            "level": "insufficient",
+            "attempts": 5,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.75,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "4-4",
+      "axis": "blur",
+      "value": 1,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.536082,
+            "threshold": 0.856863,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.536082,
+            "threshold": 0.856863,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 1,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "4-4",
+      "axis": "blur",
+      "value": 3,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.432784,
+            "threshold": 0.876471,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.391189,
+            "threshold": 0.876471,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 3,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "4-4",
+      "axis": "ink",
+      "value": 0.65,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.172775,
+            "threshold": 0.794118,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.172775,
+            "threshold": 0.794118,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.65,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "4-4",
+      "axis": "ink",
+      "value": 0.4,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.04142,
+            "threshold": 0.676471,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.04142,
+            "threshold": 0.676471,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.4,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "4-4",
+      "axis": "tilt",
+      "value": 0.25,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.514669,
+            "threshold": 0.864706,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.514491,
+            "threshold": 0.864706,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.25
+      }
+    },
+    {
+      "scheme": "4-4",
+      "axis": "tilt",
+      "value": 0.55,
+      "unit": "fraction",
+      "passed": 0,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.55
+      }
+    },
+    {
+      "scheme": "5-5",
+      "axis": "baseline",
+      "value": null,
+      "unit": "baseline",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.458763,
+            "threshold": 0.923529,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.458763,
+            "threshold": 0.923529,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "5-5",
+      "axis": "shift",
+      "value": 0.25,
+      "unit": "mm",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.458763,
+            "threshold": 0.923529,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.458763,
+            "threshold": 0.923529,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.25,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "5-5",
+      "axis": "shift",
+      "value": 0.75,
+      "unit": "mm",
+      "passed": 0,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": false,
+          "reason": "decode",
+          "diag": {
+            "margin": 0.078636,
+            "threshold": 0.919608,
+            "level": "insufficient",
+            "attempts": 5,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": false,
+          "reason": "calibration",
+          "diag": {
+            "margin": -0.321774,
+            "threshold": 0.919608,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0,
+        "dx": [
+          0,
+          0.75,
+          0,
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "scheme": "5-5",
+      "axis": "blur",
+      "value": 1,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.458763,
+            "threshold": 0.923529,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.458763,
+            "threshold": 0.923529,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 1,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "5-5",
+      "axis": "blur",
+      "value": 3,
+      "unit": "px",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.263625,
+            "threshold": 0.931373,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.250837,
+            "threshold": 0.931373,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 3,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "5-5",
+      "axis": "ink",
+      "value": 0.65,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.093264,
+            "threshold": 0.860784,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.093264,
+            "threshold": 0.860784,
+            "level": "insufficient",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.65,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "5-5",
+      "axis": "ink",
+      "value": 0.4,
+      "unit": "fraction",
+      "passed": 0,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": false,
+          "reason": "decode",
+          "diag": {
+            "margin": 0.022346,
+            "threshold": 0.5,
+            "level": "insufficient",
+            "attempts": 5,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": false,
+          "reason": "decode",
+          "diag": {
+            "margin": 0.022346,
+            "threshold": 0.5,
+            "level": "insufficient",
+            "attempts": 5,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.4,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0
+      }
+    },
+    {
+      "scheme": "5-5",
+      "axis": "tilt",
+      "value": 0.25,
+      "unit": "fraction",
+      "passed": 2,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.42576,
+            "threshold": 0.927451,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": true,
+          "reason": null,
+          "diag": {
+            "margin": 0.42731,
+            "threshold": 0.927451,
+            "level": "marginal",
+            "attempts": 1,
+            "flags": [
+              "misaligned"
+            ]
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.25
+      }
+    },
+    {
+      "scheme": "5-5",
+      "axis": "tilt",
+      "value": 0.55,
+      "unit": "fraction",
+      "passed": 0,
+      "total": 2,
+      "trials": [
+        {
+          "seed": 125001,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        },
+        {
+          "seed": 125002,
+          "ok": false,
+          "reason": "marks",
+          "diag": {
+            "margin": null,
+            "threshold": null,
+            "level": "insufficient",
+            "attempts": 0,
+            "flags": []
+          }
+        }
+      ],
+      "options": {
+        "pxPerMm": 12,
+        "ink": 0.85,
+        "blur": 0,
+        "floor": 0.05,
+        "gain": 0.8,
+        "tilt": 0.55
+      }
+    }
+  ]
+}

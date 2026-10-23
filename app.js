@@ -28,6 +28,23 @@
   let message = null;
   let testMessage = null;
   let progress = null;
+  let cameraStream = null;
+  let cameraGeneration = 0;
+  let cameraPending = false;
+  let frameHandle = null;
+  let frameCount = 0;
+  let cameraMessage = { key: 'cameraIdle', args: [] };
+  let recovered = '';
+  let revealed = false;
+  let diagnosis = null;
+  let frozen = null;
+  let corners = [];
+  let cursor = { x: 0, y: 0 };
+  let manualMessage = null;
+  let copyMessage = null;
+  const fullCanvas = document.createElement('canvas');
+  const detectCanvas = document.createElement('canvas');
+  const manualBase = document.createElement('canvas');
   const pending = new Set();
   const basisChecks = Object.keys(OQS.vc.SCHEMES).map(id => OQS.vc.checkBasis(id).ok);
   const t = (key, ...args) => {
@@ -330,6 +347,330 @@
     status('printRequested', [symbol], record.type === 'test');
     window.print();
   }
+  function setCameraMessage(key, args) {
+    cameraMessage = { key, args: args || [] };
+    renderReader();
+  }
+  function stopCamera(announce) {
+    cameraGeneration++;
+    cameraPending = false;
+    if (frameHandle !== null) cancelAnimationFrame(frameHandle);
+    frameHandle = null;
+    if (cameraStream) cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+    $('camera-video').srcObject = null;
+    fullCanvas.width = fullCanvas.height = detectCanvas.width = detectCanvas.height = 0;
+    if (announce) cameraMessage = { key: 'cameraStopped', args: [] };
+    renderReader();
+  }
+  function clearFrozen() {
+    if (frozen) frozen.gray.fill(0);
+    frozen = null;
+    corners = [];
+    manualMessage = null;
+    manualBase.width = manualBase.height = 0;
+    $('manual-canvas').width = $('manual-canvas').height = 0;
+    $('manual-zoom').width = $('manual-zoom').height = 0;
+  }
+  function clearRead(announce) {
+    stopCamera(false);
+    clearFrozen();
+    recovered = '';
+    revealed = false;
+    diagnosis = null;
+    copyMessage = null;
+    cameraMessage = { key: announce ? 'readCleared' : 'cameraIdle', args: [] };
+    renderReader();
+  }
+  function frameImage(canvas, source, w, h) {
+    canvas.width = w;
+    canvas.height = h;
+    const context = canvas.getContext('2d', { willReadFrequently: true });
+    context.drawImage(source, 0, 0, w, h);
+    const rgba = context.getImageData(0, 0, w, h);
+    const gray = new Uint8ClampedArray(w * h);
+    for (let i = 0; i < gray.length; i++) {
+      gray[i] = Math.round(.2126 * rgba.data[i * 4] + .7152 * rgba.data[i * 4 + 1] + .0722 * rgba.data[i * 4 + 2]);
+    }
+    rgba.data.fill(0);
+    return { gray, w, h };
+  }
+  function currentFrame() {
+    const video = $('camera-video');
+    if (!video.videoWidth || !video.videoHeight || video.readyState < 2) return null;
+    return frameImage(fullCanvas, video, video.videoWidth, video.videoHeight);
+  }
+  function applyReading(result) {
+    diagnosis = result.diag || null;
+    if (result.ok) {
+      recovered = result.text;
+      result.text = '';
+      revealed = false;
+      stopCamera(false);
+      clearFrozen();
+      cameraMessage = { key: 'readSuccess', args: [] };
+    } else {
+      const reasons = { marks: 'reasonMarks', band: 'reasonBand', metadata: 'reasonBand', geometry: 'reasonGeometry',
+        finder: 'reasonGeometry', manual: 'reasonGeometry', image: 'reasonGeometry', illumination: 'reasonIllumination',
+        calibration: 'reasonCalibration', decode: 'reasonDecode' };
+      cameraMessage = { key: reasons[result.reason] || 'reasonDecode', args: [] };
+    }
+    renderReader();
+  }
+  function nextFrame(ticket) {
+    if (ticket !== cameraGeneration || !cameraStream) return;
+    frameHandle = requestAnimationFrame(() => {
+      if (ticket !== cameraGeneration || !cameraStream) return;
+      frameCount++;
+      if (frameCount % 4 === 0 && $('camera-video').readyState >= 2) {
+        const image = currentFrame();
+        let small = null;
+        if (image) {
+          try {
+            const scale = Math.min(1, 640 / Math.max(image.w, image.h));
+            small = frameImage(detectCanvas, fullCanvas, Math.round(image.w * scale), Math.round(image.h * scale));
+            const result = OQS.reader.readFrame(image, { detectImage: small });
+            if (ticket === cameraGeneration) applyReading(result);
+          } catch (_) { if (ticket === cameraGeneration) setCameraMessage('reasonGeometry'); }
+          finally {
+            image.gray.fill(0);
+            if (small) small.gray.fill(0);
+            fullCanvas.width = fullCanvas.height = detectCanvas.width = detectCanvas.height = 0;
+          }
+        }
+      }
+      nextFrame(ticket);
+    });
+  }
+  async function startCamera() {
+    if (cameraPending || cameraStream) return;
+    clearRead(false);
+    $('camera-fallback').hidden = true;
+    if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
+      $('camera-fallback').hidden = false;
+      setCameraMessage('cameraError');
+      return;
+    }
+    const ticket = ++cameraGeneration;
+    cameraPending = true;
+    setCameraMessage('cameraRequest');
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: {
+        facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 }
+      }, audio: false });
+      if (ticket !== cameraGeneration || active !== 'read' || document.hidden) {
+        stream.getTracks().forEach(track => track.stop());
+        return;
+      }
+      cameraStream = stream;
+      cameraPending = false;
+      $('camera-video').srcObject = stream;
+      renderReader();
+      await $('camera-video').play();
+      if (ticket !== cameraGeneration) return;
+      frameCount = 0;
+      setCameraMessage('cameraScanning', [0]);
+      nextFrame(ticket);
+    } catch (_) {
+      if (ticket !== cameraGeneration) return;
+      stopCamera(false);
+      $('camera-fallback').hidden = location.protocol !== 'https:';
+      setCameraMessage('cameraError');
+    }
+  }
+  function freezeFrame() {
+    const image = currentFrame();
+    if (!image) { setCameraMessage('manualEmpty'); return; }
+    stopCamera(false);
+    clearFrozen();
+    frozen = image;
+    cursor = { x: image.w / 2, y: image.h / 2 };
+    manualBase.width = image.w;
+    manualBase.height = image.h;
+    const context = manualBase.getContext('2d');
+    const rgba = context.createImageData(image.w, image.h);
+    for (let i = 0; i < image.gray.length; i++) {
+      rgba.data[i * 4] = rgba.data[i * 4 + 1] = rgba.data[i * 4 + 2] = image.gray[i];
+      rgba.data[i * 4 + 3] = 255;
+    }
+    context.putImageData(rgba, 0, 0);
+    rgba.data.fill(0);
+    renderReader();
+    drawManual();
+    $('manual-canvas').focus();
+  }
+  function drawManual() {
+    if (!frozen) return;
+    const canvas = $('manual-canvas');
+    canvas.width = frozen.w;
+    canvas.height = frozen.h;
+    const context = canvas.getContext('2d');
+    context.drawImage(manualBase, 0, 0);
+    const radius = Math.max(8, frozen.w / 100);
+    for (const [index, point] of [...corners, cursor].entries()) {
+      context.beginPath();
+      context.arc(point.x, point.y, radius, 0, Math.PI * 2);
+      context.lineWidth = Math.max(3, frozen.w / 320);
+      context.strokeStyle = '#ffffff';
+      context.stroke();
+      context.lineWidth = Math.max(1, frozen.w / 640);
+      context.strokeStyle = '#000000';
+      context.stroke();
+      if (index < corners.length) {
+        context.font = `${Math.max(20, frozen.w / 40)}px sans-serif`;
+        context.fillStyle = '#000000';
+        context.fillText(String(index + 1), point.x + radius, point.y - radius);
+      }
+    }
+    const zoom = $('manual-zoom');
+    zoom.width = zoom.height = 160;
+    const lens = zoom.getContext('2d');
+    lens.imageSmoothingEnabled = false;
+    lens.drawImage(manualBase, cursor.x - 20, cursor.y - 20, 40, 40, 0, 0, 160, 160);
+    lens.strokeStyle = '#ffffff';
+    lens.lineWidth = 3;
+    lens.strokeRect(77, 77, 6, 6);
+    lens.strokeStyle = '#000000';
+    lens.lineWidth = 1;
+    lens.strokeRect(77, 77, 6, 6);
+  }
+  function selectCorner() {
+    if (!frozen || corners.length >= 4) return;
+    const point = OQS.reader.snapPoint(frozen, cursor);
+    if (!point.ok) { manualMessage = 'manualNoSnap'; renderReader(); return; }
+    corners.push({ x: point.x, y: point.y });
+    manualMessage = null;
+    drawManual();
+    if (corners.length === 4) {
+      const result = OQS.reader.readFrame(frozen, { manualCorners: corners });
+      applyReading(result);
+      // The frozen frame is no longer needed once all four points have been processed.
+      clearFrozen();
+    }
+    renderReader();
+  }
+  function renderReader() {
+    $('camera-status').textContent = t(cameraMessage.key, ...cameraMessage.args);
+    if (cameraStream && diagnosis) $('camera-status').textContent += ' ' + t('cameraScanning', Number(diagnosis.marks) || 0);
+    $('camera-button').disabled = cameraPending || !!cameraStream;
+    $('stop-camera').hidden = !cameraPending && !cameraStream;
+    $('camera-view').hidden = !cameraStream;
+    $('manual-button').disabled = !cameraStream || $('camera-video').readyState < 2;
+    $('manual-view').hidden = !frozen;
+    if (frozen) {
+      const names = ['cornerTL', 'cornerTR', 'cornerBR', 'cornerBL'];
+      $('manual-status').textContent = manualMessage ? t(manualMessage) : t('manualPoint', t(names[Math.min(3, corners.length)]));
+    }
+    $('read-result').hidden = !recovered;
+    $('read-mask').hidden = revealed;
+    $('read-value').hidden = !revealed;
+    $('read-value').textContent = revealed ? recovered : '';
+    $('reveal').textContent = t(revealed ? 'hide' : 'reveal');
+    $('copy-result').hidden = !revealed;
+    $('copy-status').textContent = copyMessage ? t(copyMessage) : '';
+    $('diagnostic').hidden = !diagnosis;
+    $('diagnostic-detail').replaceChildren();
+    if (diagnosis) {
+      const levels = { adequate: 'diagAdequate', marginal: 'diagBorderline', borderline: 'diagBorderline', insufficient: 'diagInsufficient' };
+      $('diagnostic-summary').textContent = t(levels[diagnosis.level] || 'diagInsufficient');
+      const number = value => Number.isFinite(value) ? value.toFixed(3) : '—';
+      $('diagnostic-detail').append(element('p', '', t('diagNumbers', number(diagnosis.white), number(diagnosis.black),
+        number(diagnosis.margin), number(diagnosis.threshold), diagnosis.attempts || 0)));
+      const flags = { faintToner: 'flagFaintToner', inkSpread: 'flagInkSpread', misaligned: 'flagMisaligned', glare: 'flagGlare' };
+      for (const flag of diagnosis.flags || []) if (flags[flag]) $('diagnostic-detail').append(element('p', '', t(flags[flag])));
+      for (const [index, region] of (diagnosis.perRegion || []).entries()) {
+        $('diagnostic-detail').append(element('p', 'note', t('diagRegion', index + 1, number(region.margin))));
+      }
+      $('diagnostic-detail').append(element('p', 'note', t('diagTemporary')));
+    }
+  }
+  function renderEducation() {
+    const figure = (name, draw, target) => {
+      const container = element('figure', 'instruction-figure');
+      const svg = svgElement('svg', { viewBox: '0 0 256 170', width: 256, height: 170, role: 'img',
+        'aria-label': t(name), 'font-family': "Meiryo, 'Yu Gothic', sans-serif" });
+      svg.append(svgElement('rect', { x: 0, y: 0, width: 256, height: 170, fill: '#fff' }));
+      draw(svg);
+      const caption = element('figcaption');
+      caption.append(element('strong', '', t(name)), element('p', '', t(name + 'Body')));
+      container.append(svg, caption);
+      $(target).append(container);
+    };
+    const rect = (svg, x, y, w, h, fill, stroke) => svg.append(svgElement('rect', {
+      x, y, width: w, height: h, fill: fill || '#fff', stroke: stroke || '#111', 'stroke-width': 2
+    }));
+    const line = (svg, x1, y1, x2, y2) => svg.append(svgElement('line', { x1, y1, x2, y2, stroke: '#111', 'stroke-width': 3 }));
+    const letter = (svg, x, y, text, fill) => svg.append(svgElement('text', {
+      x, y, fill: fill || '#111', 'font-size': 30, 'font-weight': 700, 'text-anchor': 'middle'
+    }, text));
+    const arrowDown = (svg, x, from, to) => {
+      line(svg, x, from, x, to - 12);
+      svg.append(svgElement('polygon', { points: `${x - 6},${to - 12} ${x + 6},${to - 12} ${x},${to}`, fill: '#111' }));
+    };
+    const finder = (svg, x, y) => { rect(svg, x, y, 30, 30, '#111'); rect(svg, x + 6, y + 6, 18, 18, '#fff');
+      rect(svg, x + 11, y + 11, 8, 8, '#111'); };
+    $('setup-diagrams').replaceChildren();
+    figure('diagramFlip', svg => {
+      rect(svg, 24, 48, 76, 86); line(svg, 24, 50, 100, 50); letter(svg, 62, 103, 'A');
+      rect(svg, 151, 18, 76, 52); line(svg, 151, 20, 227, 20); letter(svg, 189, 55, 'B');
+      arrowDown(svg, 189, 79, 112);
+      rect(svg, 151, 123, 76, 20); line(svg, 151, 141, 227, 141);
+      svg.append(svgElement('path', { d: 'M130 38L130 24Q130 18 136 18L142 18L142 45L151 51',
+        fill: 'none', stroke: '#111', 'stroke-width': 3 }));
+    }, 'setup-diagrams');
+    figure('diagramLight', svg => {
+      rect(svg, 102, 12, 52, 30, '#111'); rect(svg, 122, 19, 14, 14, '#fff');
+      line(svg, 128, 48, 128, 64);
+      rect(svg, 28, 77, 200, 13); rect(svg, 28, 91, 200, 13);
+      line(svg, 28, 90, 228, 90);
+      rect(svg, 28, 143, 200, 15);
+      for (const x of [64, 128, 192]) {
+        line(svg, x, 136, x, 122);
+        svg.append(svgElement('polygon', { points: `${x - 6},122 ${x + 6},122 ${x},110`, fill: '#111' }));
+      }
+    }, 'setup-diagrams');
+    figure('diagramWrongFour', svg => {
+      for (const [x, y] of [[43, 25], [183, 25], [43, 115], [183, 115]]) finder(svg, x, y);
+      line(svg, 111, 72, 145, 106); line(svg, 145, 72, 111, 106);
+    }, 'setup-diagrams');
+    figure('diagramWrongFace', svg => {
+      rect(svg, 32, 26, 192, 118);
+      letter(svg, 88, 101, 'A'); letter(svg, 167, 101, 'B', '#aaa');
+      line(svg, 35, 127, 221, 127); line(svg, 35, 135, 221, 135);
+    }, 'setup-diagrams');
+    const pattern = (svg, bits, x, y, size) => {
+      rect(svg, x, y, size, size);
+      bits.forEach((bit, index) => {
+        if (bit) svg.append(svgElement('rect', { x: x + index % 2 * size / 2,
+          y: y + Math.floor(index / 2) * size / 2, width: size / 2, height: size / 2, fill: '#111' }));
+      });
+    };
+    $('principle-diagrams').replaceChildren();
+    for (const black of [false, true]) figure(black ? 'diagramBlack' : 'diagramWhite', svg => {
+      pattern(svg, [1, 1, 0, 0], 12, 56, 52);
+      pattern(svg, black ? [0, 0, 1, 1] : [1, 1, 0, 0], 102, 56, 52);
+      pattern(svg, black ? [1, 1, 1, 1] : [1, 1, 0, 0], 192, 56, 52);
+      letter(svg, 82, 93, '+'); letter(svg, 172, 93, '=');
+    }, 'principle-diagrams');
+    $('six-patterns').replaceChildren();
+    for (const pair of OQS.vc.PAIRS) {
+      const svg = svgElement('svg', { viewBox: '0 0 60 60', width: 60, height: 60, 'aria-hidden': 'true' });
+      pattern(svg, [0, 1, 2, 3].map(index => Number(pair.includes(index))), 2, 2, 56);
+      $('six-patterns').append(svg);
+    }
+    $('comparison-rows').replaceChildren();
+    for (const key of ['comparePrinciple', 'compareNeeds', 'compareCapacity', 'compareTamper', 'compareCount', 'comparePlain']) {
+      const row = element('tr');
+      const heading = element('th', '', t(key));
+      heading.scope = 'row';
+      row.append(heading, element('td', '', t(key + 'O')), element('td', '', t(key + 'S')));
+      $('comparison-rows').append(row);
+    }
+    for (const [target, keys] of [['limits-list', ['limitMalleable', 'limitFake', 'limitPartial', 'limitRevoke',
+      'limitMaterial', 'limitDevice', 'limitTrust', 'limitScreen']], ['storage-list', ['storeFlat', 'storeSeparate', 'storeCopies', 'storeOffline']]]) {
+      $(target).replaceChildren(...keys.map(key => element('li', '', t(key))));
+    }
+  }
 
   function render() {
     document.documentElement.lang = language;
@@ -350,11 +691,14 @@
     });
     renderSplit();
     renderCards();
+    renderReader();
+    renderEducation();
   }
 
   tabs.forEach((name, index) => {
     const tab = $('tab-' + name);
     tab.addEventListener('click', () => {
+      if (name !== 'read') { stopCamera(false); clearFrozen(); revealed = false; }
       active = name;
       render();
     });
@@ -384,12 +728,16 @@
     $('help-content').scrollTop = 0;
     $('help-title').focus({ preventScroll: true });
   });
-  $('help-close').addEventListener('click', () => $('help-dialog').close());
+  function closeHelp() {
+    $('help-dialog').close();
+    $('help').focus();
+  }
+  $('help-close').addEventListener('click', closeHelp);
   $('help-dialog').addEventListener('close', () => $('help').focus());
   $('help-dialog').addEventListener('keydown', event => {
     if (event.key === 'Escape') {
       event.preventDefault();
-      $('help-dialog').close();
+      closeHelp();
       return;
     }
     if (event.key !== 'Tab') return;
@@ -424,10 +772,50 @@
     $('secret-input').value = '';
     message = { key: 'cleared', args: [] };
     testMessage = null;
+    clearRead(true);
     render();
+  });
+  $('camera-button').addEventListener('click', startCamera);
+  $('stop-camera').addEventListener('click', () => stopCamera(true));
+  $('manual-button').addEventListener('click', freezeFrame);
+  $('manual-retry').addEventListener('click', () => {
+    corners = []; manualMessage = null; renderReader(); drawManual(); $('manual-canvas').focus();
+  });
+  $('manual-cancel').addEventListener('click', () => { clearFrozen(); setCameraMessage('readCleared'); });
+  $('clear-read').addEventListener('click', () => $('clear-all').click());
+  $('reveal').addEventListener('click', () => { revealed = !revealed; renderReader(); });
+  $('copy-result').addEventListener('click', async () => {
+    if (!revealed || !recovered) return;
+    try { await navigator.clipboard.writeText(recovered); copyMessage = 'copied'; }
+    catch (_) { copyMessage = 'copyFailed'; }
+    renderReader();
+  });
+  function positionPointer(event) {
+    if (!frozen) return;
+    const bounds = $('manual-canvas').getBoundingClientRect();
+    cursor = { x: Math.max(0, Math.min(frozen.w - 1, (event.clientX - bounds.left) * frozen.w / bounds.width)),
+      y: Math.max(0, Math.min(frozen.h - 1, (event.clientY - bounds.top) * frozen.h / bounds.height)) };
+    drawManual();
+  }
+  $('manual-canvas').addEventListener('pointermove', positionPointer);
+  $('manual-canvas').addEventListener('pointerdown', event => { positionPointer(event); selectCorner(); });
+  $('manual-canvas').addEventListener('keydown', event => {
+    if (!frozen) return;
+    if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectCorner(); return; }
+    const keys = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] };
+    if (!keys[event.key]) return;
+    event.preventDefault();
+    const step = event.shiftKey ? 1 : Math.max(1, Math.round(frozen.w / 100));
+    cursor.x = Math.max(0, Math.min(frozen.w - 1, cursor.x + keys[event.key][0] * step));
+    cursor.y = Math.max(0, Math.min(frozen.h - 1, cursor.y + keys[event.key][1] * step));
+    drawManual();
+  });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) { stopCamera(false); clearFrozen(); revealed = false; renderReader(); }
   });
   window.addEventListener('afterprint', clearPrintSelection);
   window.addEventListener('pagehide', () => {
+    clearRead(false);
     invalidate(true);
     $('secret-input').value = '';
     $('print-root').replaceChildren();

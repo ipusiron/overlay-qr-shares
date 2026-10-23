@@ -146,8 +146,46 @@
         <li data-i18n="overlayAlign"></li>
         <li data-i18n="overlayLight"></li>
       </ol>
+      <div id="setup-diagrams" class="diagram-grid"></div>
       <p class="notice" data-i18n="cameraNotice"></p>
-      <p class="note" data-i18n="readStageNotice"></p>
+      <div class="actions camera-actions">
+        <button id="camera-button" class="button-primary" type="button" data-i18n="cameraStart"></button>
+        <button id="stop-camera" type="button" data-i18n="cameraStop" hidden></button>
+        <button id="manual-button" type="button" data-i18n="manualStart" disabled></button>
+        <button id="clear-read" type="button" data-i18n="clearAll"></button>
+      </div>
+      <p id="camera-status" role="status" aria-live="polite"></p>
+      <p class="note" data-i18n="cameraPrivacy"></p>
+      <p id="camera-fallback" hidden><span data-i18n="cameraFallback"></span>
+        <a href="https://ipusiron.github.io/overlay-qr-shares/" target="_blank" rel="noopener noreferrer"
+          data-i18n="pagesLink"></a></p>
+      <div id="camera-view" class="camera-view" hidden>
+        <video id="camera-video" autoplay playsinline muted data-label="cameraVideo"></video>
+      </div>
+      <div id="manual-view" hidden>
+        <h3 data-i18n="manualTitle"></h3>
+        <p data-i18n="manualHelp"></p>
+        <p id="manual-status" role="status" aria-live="polite"></p>
+        <canvas id="manual-canvas" width="640" height="480" tabindex="0" data-label="manualCanvas"></canvas>
+        <div class="magnifier"><canvas id="manual-zoom" width="160" height="160" data-label="manualZoom"></canvas>
+          <p class="note" data-i18n="manualKeys"></p></div>
+        <div class="actions"><button id="manual-retry" type="button" data-i18n="manualRetry"></button>
+          <button id="manual-cancel" type="button" data-i18n="manualCancel"></button></div>
+      </div>
+      <section id="read-result" class="read-result" hidden>
+        <h3 data-i18n="readSuccess"></h3>
+        <p data-i18n="revealHelp"></p>
+        <p id="read-mask" class="read-mask" aria-hidden="true">••••••••</p>
+        <pre id="read-value" hidden></pre>
+        <div class="actions"><button id="reveal" type="button" data-i18n="reveal"></button>
+          <button id="copy-result" type="button" data-i18n="copyResult" hidden></button></div>
+        <p class="note" data-i18n="clipboardNote"></p>
+        <p id="copy-status" role="status" aria-live="polite"></p>
+      </section>
+      <section id="diagnostic" class="diagnostic" hidden>
+        <h3 data-i18n="diagnosticTitle"></h3><p id="diagnostic-summary"></p>
+        <details><summary data-i18n="diagnosticDetails"></summary><div id="diagnostic-detail"></div></details>
+      </section>
     </section>
     <section id="panel-guide" class="panel" role="tabpanel" aria-labelledby="tab-guide" tabindex="0" hidden>
       <div class="panel-heading">
@@ -155,6 +193,7 @@
         <h2 data-i18n="guideTitle"></h2>
         <p class="lead" data-i18n="guideIntro"></p>
       </div>
+      <div id="principle-diagrams" class="diagram-grid"></div>
       <div class="preparation-grid">
         <article class="preparation">
           <h3 data-i18n="opticalTitle"></h3>
@@ -165,7 +204,16 @@
           <p data-i18n="limitsBody"></p>
         </article>
       </div>
-      <p class="notice" data-i18n="printRoute"></p>
+      <section class="work-section"><h3 data-i18n="oneSheetTitle"></h3><p data-i18n="oneSheetBody"></p>
+        <div id="six-patterns" class="six-patterns" data-label="sixPatterns"></div>
+        <p class="note" data-i18n="sixPatternsNote"></p></section>
+      <section class="work-section"><h3 data-i18n="comparisonTitle"></h3>
+        <div class="table-frame"><table><thead><tr><th data-i18n="comparisonItem"></th>
+          <th>Overlay QR Shares</th><th>Scatter Seeds</th></tr></thead><tbody id="comparison-rows"></tbody></table></div></section>
+      <section class="work-section"><h3 data-i18n="allLimitsTitle"></h3><ul id="limits-list" class="reading-list"></ul></section>
+      <section class="work-section"><h3 data-i18n="storageTitle"></h3><ul id="storage-list" class="reading-list"></ul></section>
+      <section class="work-section"><h3 data-i18n="printNetworkTitle"></h3><p data-i18n="printRoute"></p>
+        <p data-i18n="printNetworkDetail"></p><p data-i18n="printStorage"></p></section>
     </section>
   </main>
   <footer class="page-footer">
