@@ -15,6 +15,8 @@
   <script src="qr.js" defer></script>
   <script src="layout-core.js" defer></script>
   <script src="vc-core.js" defer></script>
+  <script src="render-core.js" defer></script>
+  <script src="reader-core.js" defer></script>
   <script src="messages.js" defer></script>
   <script src="app.js" defer></script>
 </head>
@@ -52,17 +54,85 @@
         <li><span class="step-number" aria-hidden="true">3</span><span data-i18n="stepRead"></span></li>
         <li><span class="step-number" aria-hidden="true">4</span><span data-i18n="stepSecret"></span></li>
       </ol>
-      <div class="preparation-grid">
-        <article class="preparation">
-          <h3 data-i18n="prepareTitle"></h3>
-          <p data-i18n="prepareBody"></p>
-        </article>
-        <article class="preparation">
-          <h3 data-i18n="trialTitle"></h3>
-          <p data-i18n="trialBody"></p>
-        </article>
-      </div>
-      <p class="notice" role="status" data-i18n="stageNotice"></p>
+      <section class="work-section" aria-labelledby="scheme-title">
+        <h3 id="scheme-title" data-i18n="schemeTitle"></h3>
+        <div class="form-grid">
+          <label for="sheet-count"><span data-i18n="countLabel"></span>
+            <select id="sheet-count"><option value="2">2</option><option value="3">3</option>
+              <option value="4">4</option><option value="5">5</option></select></label>
+          <fieldset class="threshold-choice">
+            <legend data-i18n="thresholdLabel"></legend>
+            <label class="choice"><input id="recover-any" type="radio" name="threshold" value="any" checked>
+              <span data-i18n="anyTwo"></span></label>
+            <details id="film-options">
+              <summary data-i18n="filmTitle"></summary>
+              <label class="choice"><input id="recover-all" type="radio" name="threshold" value="all">
+                <span data-i18n="allSheets"></span></label>
+              <p class="note" data-i18n="filmNote"></p>
+            </details>
+          </fieldset>
+        </div>
+        <p id="scheme-status" class="notice" role="status"></p>
+        <div class="form-grid settings-grid">
+          <label for="module-size"><span data-i18n="sizeLabel"></span>
+            <select id="module-size"><option value="2.54">2.54 mm</option><option value="2.032">2.032 mm</option></select></label>
+          <label for="qr-version"><span data-i18n="versionLabel"></span>
+            <select id="qr-version"><option value="3">3</option><option value="4" selected>4</option>
+              <option value="5">5</option><option value="6">6</option><option value="7">7</option></select></label>
+          <label for="error-correction"><span data-i18n="eclLabel"></span>
+            <select id="error-correction"><option value="M">M</option><option value="Q">Q</option></select></label>
+        </div>
+        <p id="size-hint" class="note"></p>
+      </section>
+      <section class="work-section" aria-labelledby="test-title">
+        <h3 id="test-title" data-i18n="testTitle"></h3>
+        <p data-i18n="testIntro"></p>
+        <p class="note" data-i18n="testSeparatePages"></p>
+        <button id="test-button" type="button" class="button-secondary" data-i18n="makeTest"></button>
+        <p id="test-status" role="status" aria-live="polite"></p>
+        <div id="test-cards" class="sheet-cards"></div>
+      </section>
+      <section class="work-section" aria-labelledby="test-read-title">
+        <h3 id="test-read-title" data-i18n="testReadTitle"></h3>
+        <p data-i18n="testReadIntro"></p>
+        <button id="open-reader" class="button-secondary" type="button" data-i18n="openReader"></button>
+        <label class="choice test-confirm"><input id="test-read-confirm" type="checkbox" disabled>
+          <span data-i18n="testReadConfirm"></span></label>
+      </section>
+      <section class="work-section" aria-labelledby="secret-title">
+        <h3 id="secret-title" data-i18n="secretTitle"></h3>
+        <label class="stack" for="secret-input"><span data-i18n="secretLabel"></span>
+          <textarea id="secret-input" rows="3" autocomplete="off" spellcheck="false" autocapitalize="off"
+            aria-describedby="byte-status input-warnings" aria-invalid="false"></textarea></label>
+        <p id="byte-status" class="note" role="status" aria-live="polite"></p>
+        <p id="input-warnings" class="notice" hidden></p>
+        <div class="actions">
+          <button id="split-button" class="button-primary" type="button" disabled data-i18n="splitAction"></button>
+          <button id="clear-all" type="button" data-i18n="clearAll"></button>
+        </div>
+        <p id="split-status" role="status" aria-live="polite"></p>
+        <div id="split-progress" hidden>
+          <progress id="progress-bar" value="0" max="1" data-label="checkProgress"></progress>
+          <span id="progress-text"></span>
+        </div>
+        <p class="note" data-i18n="functionalCheck"></p>
+        <div id="share-cards" class="sheet-cards"></div>
+        <div id="print-checks" class="print-checks" hidden>
+          <h3 data-i18n="afterPrintTitle"></h3>
+          <label class="choice"><input id="check-all-sheets" type="checkbox"><span data-i18n="checkSheets"></span></label>
+          <label class="choice"><input id="check-ruler" type="checkbox"><span data-i18n="checkRuler"></span></label>
+          <label class="choice"><input id="check-disposal" type="checkbox"><span data-i18n="checkDisposal"></span></label>
+          <p id="clear-reminder" class="note" role="status"></p>
+        </div>
+      </section>
+      <details class="print-guidance">
+        <summary data-i18n="printGuideTitle"></summary>
+        <ul class="reading-list">
+          <li data-i18n="printSettings"></li>
+          <li data-i18n="printRoute"></li>
+          <li data-i18n="printStorage"></li>
+        </ul>
+      </details>
     </section>
     <section id="panel-read" class="panel" role="tabpanel" aria-labelledby="tab-read" tabindex="0" hidden>
       <div class="panel-heading">
@@ -103,6 +173,7 @@
     <a href="https://github.com/ipusiron/overlay-qr-shares" target="_blank" rel="noopener noreferrer"
       data-i18n="sourceLink"></a>
   </footer>
+  <div id="print-root" aria-hidden="true"></div>
   <dialog id="help-dialog" aria-labelledby="help-title">
     <div class="help-header">
       <h2 id="help-title" tabindex="-1" data-i18n="helpTitle"></h2>
@@ -116,7 +187,7 @@
       <p data-i18n="helpPrivacy"></p>
       <h3 data-i18n="helpKeysTitle"></h3>
       <p data-i18n="helpKeys"></p>
-      <p class="notice" data-i18n="stageNotice"></p>
+      <p class="notice" data-i18n="cameraNotice"></p>
     </div>
   </dialog>
 </body>

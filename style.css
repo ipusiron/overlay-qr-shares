@@ -244,6 +244,172 @@ h3 {
   gap: 1rem;
   padding-left: 1.5rem;
 }
+.work-section {
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--line);
+}
+.work-section:last-of-type {
+  padding-bottom: 0;
+}
+.form-grid {
+  display: grid;
+  gap: 1rem;
+}
+.form-grid > *, .stack {
+  min-width: 0;
+}
+.form-grid label:not(.choice), .stack {
+  display: grid;
+  gap: .45rem;
+  font-weight: 600;
+}
+input:not([type="radio"]):not([type="checkbox"]), select, textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: .2rem;
+  padding: .6rem;
+  background: var(--card);
+  color: var(--ink);
+  font-size: 1rem;
+}
+textarea {
+  resize: vertical;
+}
+.threshold-choice {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.threshold-choice legend {
+  margin-bottom: .25rem;
+  padding: 0;
+  font-weight: 600;
+}
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  min-height: 44px;
+  padding: .5rem 0;
+  cursor: pointer;
+}
+.choice input:is([type="radio"], [type="checkbox"]) {
+  flex: 0 0 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin: .2rem 0 0;
+  accent-color: var(--accent);
+}
+.choice span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+summary {
+  min-height: 44px;
+  padding: .6rem 0;
+  color: var(--accent);
+  cursor: pointer;
+}
+details .note {
+  margin-top: .4rem;
+}
+.settings-grid {
+  margin-top: 1.5rem;
+}
+.button-primary {
+  border-color: var(--button);
+  background: var(--button);
+  color: var(--button-ink);
+  font-weight: 700;
+}
+.button-secondary {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+button:disabled {
+  border-style: dashed;
+  cursor: not-allowed;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .65rem;
+}
+.test-confirm {
+  margin-top: .75rem;
+}
+.sheet-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.sheet-card {
+  min-width: 0;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  overflow-wrap: anywhere;
+}
+.sheet-symbol {
+  margin: 0 0 .3rem;
+  color: var(--accent);
+  font-family: ui-monospace, monospace;
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+.sheet-title {
+  margin-bottom: .5rem;
+  font-weight: 700;
+}
+.sheet-card .note {
+  margin: .4rem 0 .8rem;
+}
+.sheet-card button {
+  width: 100%;
+}
+.test-value {
+  font-size: .875rem;
+  font-family: ui-monospace, monospace;
+}
+.input-error {
+  color: var(--ink);
+  font-weight: 700;
+}
+.print-checks {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+}
+.print-guidance {
+  margin-top: 1.5rem;
+}
+progress {
+  width: 100%;
+  accent-color: var(--accent);
+}
+[role="status"]:empty, .sheet-cards:empty {
+  display: none;
+}
+#print-root {
+  display: none;
+}
+.print-sheet {
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+.print-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
 .page-footer {
   display: flex;
   flex-direction: column;
@@ -314,6 +480,12 @@ dialog::backdrop {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 2rem;
   }
+  .form-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .settings-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
   .page-footer {
     flex-direction: row;
     justify-content: space-between;
@@ -344,5 +516,38 @@ dialog::backdrop {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+@page {
+  size: A4;
+  margin: 0;
+}
+@media print {
+  html, body {
+    width: 210mm;
+    max-width: none;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+    color: #000;
+  }
+  body > :not(#print-root) {
+    display: none !important;
+  }
+  #print-root {
+    display: block;
+    width: 210mm;
+    margin: 0;
+    padding: 0;
+  }
+  .print-sheet {
+    display: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  body[data-print-sheet] .print-sheet[data-selected="true"] {
+    display: block;
   }
 }

@@ -22,7 +22,7 @@ def measure(page, label):
     return result
 
 
-def interface(browser, name, width, results):
+def interface(browser, name, width, results, stage):
     context = browser.new_context(viewport={'width': width, 'height': 960}, locale='ja-JP',
                                   color_scheme='light', reduced_motion='reduce',
                                   has_touch=width < 500, **({'is_mobile': width < 500} if name == 'chromium' else {}))
@@ -85,7 +85,7 @@ def interface(browser, name, width, results):
         if page.locator('html').get_attribute('data-theme') != 'light':
             page.click('#theme')
         page.click('#' + tab_ids[0])
-        page.screenshot(path=str(OUT / f'stage1a-{width}.png'))
+        page.screenshot(path=str(OUT / f'stage{stage}-{width}.png'))
     context.close()
 
 
@@ -99,7 +99,7 @@ def main():
         for name in ('chromium', 'firefox', 'webkit'):
             browser = getattr(p, name).launch()
             for width in (320, 390, 1280):
-                interface(browser, name, width, results)
+                interface(browser, name, width, results, args.stage)
                 print(name, width, 'OK', flush=True)
             browser.close()
     (OUT / f'{args.stage}-results.json').write_text(json.dumps(results, indent=2), encoding='utf-8')
