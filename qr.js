@@ -22,7 +22,9 @@
     if (!validVersion(version) || (ecl !== 'M' && ecl !== 'Q')) return { error: 'parameters' };
     if (/[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(^|[^\uD800-\uDBFF])[\uDC00-\uDFFF]/.test(text)) return { error: 'surrogate' };
     if (!text.length) return { error: 'empty' };
-    if (new TextEncoder().encode(text).length > capacity(version, ecl)) return { error: 'capacity' };
+    const inputBytes = new TextEncoder().encode(text);
+    try { if (inputBytes.length > capacity(version, ecl)) return { error: 'capacity' }; }
+    finally { inputBytes.fill(0); }
     const code = qrcode(version, ecl); code.addData(text, 'Byte');
     try { code.make(); } catch (_) { return { error: 'capacity' }; }
     const N = code.getModuleCount(), modules = new Uint8Array(N * N);
@@ -68,7 +70,9 @@
       finally { rgba.fill(0); }
       if (!result) continue;
       if (!Array.isArray(result.binaryData) && !(result.binaryData instanceof Uint8Array)) return { ok: false, reason: 'utf8' };
-      if (Array.from(result.binaryData).some(v => !Number.isInteger(v) || v < 0 || v > 255)) return { ok: false, reason: 'utf8' };
+      if (result.binaryData.some(v => !Number.isInteger(v) || v < 0 || v > 255)) {
+        result.binaryData.fill(0); return { ok: false, reason: 'utf8' };
+      }
       const bytes = Uint8Array.from(result.binaryData);
       result.binaryData.fill(0);
       try {

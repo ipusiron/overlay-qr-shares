@@ -69,3 +69,24 @@ for (const [versionString, expected] of Object.entries(vectors.plainMask)) {
     assert.equal(mask[8 * N], 0); assert.equal(mask[8], 0); // Format data is secret, including the chosen mask.
   });
 }
+
+test('UTF-8 capacity buffers are cleared on successful encoding and capacity rejection', () => {
+  const buffers = [];
+  class TrackedEncoder {
+    encode(text) { const bytes = new TextEncoder().encode(text); buffers.push(bytes); return bytes; }
+  }
+  const context = { module: { exports: {} }, TextEncoder: TrackedEncoder, require: name => require('../' + name.slice(2)) };
+  vm.runInNewContext(fs.readFileSync(require.resolve('../qr.js'), 'utf8'), context);
+  const isolated = context.module.exports;
+  assert.equal(isolated.encode(vectors.sets[0].text, 4, 'M').N, 33);
+  assert.equal(isolated.encode('A'.repeat(63), 4, 'M').error, 'capacity');
+  assert.equal(buffers.length, 2);
+  for (const buffer of buffers) assert.ok(buffer.every(value => value === 0));
+});
+test('decoder byte validation clears rejected buffers', () => {
+  const encoded = qr.encode(vectors.sets[0].text, 4, 'M'), bytes = [65, 256];
+  try {
+    assert.equal(qr.decodeModules(encoded.modules, encoded.N, () => ({ binaryData: bytes })).reason, 'utf8');
+    assert.deepEqual(bytes, [0, 0]);
+  } finally { encoded.modules.fill(0); }
+});

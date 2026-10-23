@@ -388,12 +388,13 @@
     const context = canvas.getContext('2d', { willReadFrequently: true });
     context.drawImage(source, 0, 0, w, h);
     const rgba = context.getImageData(0, 0, w, h);
-    const gray = new Uint8ClampedArray(w * h);
-    for (let i = 0; i < gray.length; i++) {
-      gray[i] = Math.round(.2126 * rgba.data[i * 4] + .7152 * rgba.data[i * 4 + 1] + .0722 * rgba.data[i * 4 + 2]);
-    }
-    rgba.data.fill(0);
-    return { gray, w, h };
+    try {
+      const gray = new Uint8ClampedArray(w * h);
+      for (let i = 0; i < gray.length; i++) {
+        gray[i] = Math.round(.2126 * rgba.data[i * 4] + .7152 * rgba.data[i * 4 + 1] + .0722 * rgba.data[i * 4 + 2]);
+      }
+      return { gray, w, h };
+    } finally { rgba.data.fill(0); }
   }
   function currentFrame() {
     const video = $('camera-video');
@@ -423,20 +424,21 @@
       if (ticket !== cameraGeneration || !cameraStream) return;
       frameCount++;
       if (frameCount % 4 === 0 && $('camera-video').readyState >= 2) {
-        const image = currentFrame();
-        let small = null;
-        if (image) {
-          try {
+        let image = null, small = null;
+        try {
+          image = currentFrame();
+          if (image) {
             const scale = Math.min(1, 640 / Math.max(image.w, image.h));
             small = frameImage(detectCanvas, fullCanvas, Math.round(image.w * scale), Math.round(image.h * scale));
             const result = OQS.reader.readFrame(image, { detectImage: small });
             if (ticket === cameraGeneration) applyReading(result);
-          } catch (_) { if (ticket === cameraGeneration) setCameraMessage('reasonGeometry'); }
-          finally {
-            image.gray.fill(0);
-            if (small) small.gray.fill(0);
-            fullCanvas.width = fullCanvas.height = detectCanvas.width = detectCanvas.height = 0;
           }
+        } catch (_) {
+          if (ticket === cameraGeneration) { stopCamera(false); setCameraMessage('reasonGeometry'); }
+        } finally {
+          if (image) image.gray.fill(0);
+          if (small) small.gray.fill(0);
+          fullCanvas.width = fullCanvas.height = detectCanvas.width = detectCanvas.height = 0;
         }
       }
       nextFrame(ticket);
@@ -474,30 +476,39 @@
     } catch (_) {
       if (ticket !== cameraGeneration) return;
       stopCamera(false);
-      $('camera-fallback').hidden = location.protocol !== 'https:';
+      $('camera-fallback').hidden = location.protocol === 'https:';
       setCameraMessage('cameraError');
     }
   }
   function freezeFrame() {
-    const image = currentFrame();
-    if (!image) { setCameraMessage('manualEmpty'); return; }
-    stopCamera(false);
-    clearFrozen();
-    frozen = image;
-    cursor = { x: image.w / 2, y: image.h / 2 };
-    manualBase.width = image.w;
-    manualBase.height = image.h;
-    const context = manualBase.getContext('2d');
-    const rgba = context.createImageData(image.w, image.h);
-    for (let i = 0; i < image.gray.length; i++) {
-      rgba.data[i * 4] = rgba.data[i * 4 + 1] = rgba.data[i * 4 + 2] = image.gray[i];
-      rgba.data[i * 4 + 3] = 255;
+    let image = null;
+    try {
+      image = currentFrame();
+      if (!image) { setCameraMessage('manualEmpty'); return; }
+      stopCamera(false);
+      clearFrozen();
+      frozen = image;
+      cursor = { x: image.w / 2, y: image.h / 2 };
+      manualBase.width = image.w;
+      manualBase.height = image.h;
+      const context = manualBase.getContext('2d');
+      const rgba = context.createImageData(image.w, image.h);
+      try {
+        for (let i = 0; i < image.gray.length; i++) {
+          rgba.data[i * 4] = rgba.data[i * 4 + 1] = rgba.data[i * 4 + 2] = image.gray[i];
+          rgba.data[i * 4 + 3] = 255;
+        }
+        context.putImageData(rgba, 0, 0);
+      } finally { rgba.data.fill(0); }
+      renderReader();
+      drawManual();
+      $('manual-canvas').focus();
+    } catch (_) {
+      if (image) image.gray.fill(0);
+      stopCamera(false);
+      clearFrozen();
+      setCameraMessage('reasonGeometry');
     }
-    context.putImageData(rgba, 0, 0);
-    rgba.data.fill(0);
-    renderReader();
-    drawManual();
-    $('manual-canvas').focus();
   }
   function drawManual() {
     if (!frozen) return;

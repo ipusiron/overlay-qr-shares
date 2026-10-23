@@ -4,14 +4,14 @@
   "sourceHashes": {
     "rng.js": "76edb3864447685c88ef20a11a03d84a441beab2e04b05e5c5507e4698c0911c",
     "vc-core.js": "b9e44cc41651d020a7732c7be3ec06e04fe9d165402609bddaae65b892cc4a9b",
-    "qr.js": "765c2cf78d4c954b82954b1b197e68c48b827a314ac3ddc3f004769d0089571c",
+    "qr.js": "209b4b62410c076ebeaec72efe88ac7e388c4477e016b6cf030cf192d7808fa3",
     "layout-core.js": "f929bffc9c8da059a77fdf444b7df05546c5518b5900f213cf832c9f76c40c33",
     "render-core.js": "ead1c4a5a8513a10081e76bf8246ebac15ed28c91a3882fe83527915ca41eb1a",
     "reader-core.js": "e2f18f414576b014076b6d47aef3c346c54e910b1fa053a3f451a48789549c5e",
     "test/helpers.js": "a0762c167bcd3eca6e25bacf407a0a76a56accc2c2e01ac2f21e2cc1e484647c",
     "test/robustness.js": "219fc170d835df592579c679801c2042ed3f798e5f1476a47278562c1a14bf38"
   },
-  "generatedAt": "2026-10-23T21:42:44.471Z",
+  "generatedAt": "2026-10-23T21:51:24.871Z",
   "node": "v22.23.3",
   "secret": "TEST-OQS-1",
   "qr": {

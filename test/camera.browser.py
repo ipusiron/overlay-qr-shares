@@ -145,6 +145,43 @@ def manual_and_lifecycle(page, marks):
     return {'manualFourPoints':True, 'manualSnapOffsetPx':2, 'frameWiped':True, 'cancelWiped':True,
             'tabStopsCamera':True, 'pagehideStopsCamera':True, 'hiddenStopsCamera':True, 'pendingStopRace':True}
 
+def capture_failures(browser):
+    for method, manual in [('getImageData', False), ('drawImage', False), ('getImageData', True)]:
+        page = browser.new_page()
+        instrumentation(page)
+        page.add_init_script('''(() => {
+          window.__canvases = [];
+          const create = Document.prototype.createElement;
+          Document.prototype.createElement = function(name, options) {
+            const node = create.call(this, name, options);
+            if (name === 'canvas') window.__canvases.push(node);
+            return node;
+          };
+        })();''')
+        if manual:
+            page.add_init_script('window.requestAnimationFrame = () => 1; window.cancelAnimationFrame = () => {};')
+        page.add_init_script(f'''CanvasRenderingContext2D.prototype.{method} = function() {{
+          throw new DOMException('Synthetic capture failure', 'SecurityError');
+        }};''')
+        errors = []
+        page.on('pageerror', lambda error: errors.append(str(error)))
+        page.goto((ROOT / 'index.html').as_uri() + '?lang=en')
+        page.click('#tab-read')
+        page.click('#camera-button')
+        if manual:
+            # The application's animation loop is deliberately held; poll independently.
+            page.wait_for_function('() => document.getElementById("camera-video").readyState >= 2', polling=50)
+            page.locator('#manual-button').evaluate('(button) => button.click()')
+        page.wait_for_function('''() => window.__streams.length > 0
+          && window.__streams.every(s => s.getTracks().every(t => t.readyState === 'ended'))''', timeout=10000)
+        assert page.locator('#camera-video').evaluate('(e) => e.srcObject === null')
+        assert page.locator('#manual-canvas').evaluate('(e) => e.width === 0 && e.height === 0')
+        assert page.evaluate('() => window.__canvases.every(c => c.width === 0 && c.height === 0)')
+        assert page.locator('#camera-status').inner_text()
+        assert not errors, (method, manual, errors)
+        page.close()
+    return 3
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     video, marks = fixture()
@@ -184,6 +221,19 @@ def main():
         assert not errors, errors
         results.append({'browser':'chromium', 'protocol':'file:', 'camera':True, 'decoded':True,
                         'seconds':seconds, 'stopped':True, 'overflow':0, 'consoleErrors':0, **lifecycle})
+        denied = browser.new_page()
+        denied.add_init_script('''navigator.mediaDevices.getUserMedia = async () => {
+          throw new DOMException('Synthetic permission denial', 'NotAllowedError');
+        };''')
+        denied.goto((ROOT / 'index.html').as_uri() + '?lang=ja')
+        denied.click('#tab-read')
+        denied.click('#camera-button')
+        denied.wait_for_function('() => !document.getElementById("camera-fallback").hidden')
+        assert denied.locator('#camera-fallback a').get_attribute('href') == 'https://ipusiron.github.io/overlay-qr-shares/'
+        assert denied.locator('#read-result').is_hidden()
+        denied.close()
+        results[0]['filePermissionFallback'] = True
+        results[0]['captureFailureCases'] = capture_failures(browser)
         browser.close()
         firefox = p.firefox.launch(firefox_user_prefs={'media.navigator.streams.fake':True,
                                                       'media.navigator.permission.disabled':True})

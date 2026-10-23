@@ -22,7 +22,7 @@ def measure(page, label):
     return result
 
 
-def interface(browser, name, width, results, stage):
+def interface(browser, name, width, results, stage, base_url=None):
     context = browser.new_context(viewport={'width': width, 'height': 960}, locale='ja-JP',
                                   color_scheme='light', reduced_motion='reduce',
                                   has_touch=width < 500, **({'is_mobile': width < 500} if name == 'chromium' else {}))
@@ -31,7 +31,7 @@ def interface(browser, name, width, results, stage):
     errors = []
     page.on('pageerror', lambda error: errors.append(str(error)))
     page.on('console', lambda msg: errors.append(msg.text) if msg.type == 'error' else None)
-    page.goto((ROOT / 'index.html').as_uri() + '?lang=ja')
+    page.goto((base_url or (ROOT / 'index.html').as_uri()) + '?lang=ja')
     assert page.locator('html').get_attribute('data-theme') == 'light'
     assert page.locator('html').get_attribute('lang') == 'ja'
     tab_ids = page.locator('[role=tab]').evaluate_all('(els) => els.map(e => e.id)')
@@ -92,6 +92,7 @@ def interface(browser, name, width, results, stage):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--stage', default='1a')
+    parser.add_argument('--url', help='Optional local HTTP or published HTTPS entry URL')
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     results = []
@@ -99,7 +100,7 @@ def main():
         for name in ('chromium', 'firefox', 'webkit'):
             browser = getattr(p, name).launch()
             for width in (320, 390, 1280):
-                interface(browser, name, width, results, args.stage)
+                interface(browser, name, width, results, args.stage, args.url)
                 print(name, width, 'OK', flush=True)
             browser.close()
     (OUT / f'{args.stage}-results.json').write_text(json.dumps(results, indent=2), encoding='utf-8')
