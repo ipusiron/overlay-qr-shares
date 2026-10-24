@@ -66,6 +66,19 @@ a {
 p {
   margin: 0 0 1rem;
 }
+.related-tool-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  max-width: 100%;
+  margin: .2rem 0 1rem;
+  border: 1px solid var(--accent);
+  border-radius: .25rem;
+  padding: .55rem .85rem;
+  background: var(--card);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
 h1, h2, h3 {
   line-height: 1.35;
   overflow-wrap: anywhere;
@@ -573,6 +586,12 @@ progress {
 .page-footer p {
   margin: 0;
 }
+.footer-copy {
+  min-width: 0;
+}
+.footer-copy p + p {
+  margin-top: .4rem;
+}
 .page-footer a {
   display: inline-flex;
   align-items: center;
@@ -611,6 +630,9 @@ dialog::backdrop {
   max-height: calc(100dvh - 9rem);
   overflow-y: auto;
   padding: 1rem;
+}
+.help-content .help-intro-term {
+  white-space: nowrap;
 }
 .help-content h3 {
   margin-top: 1.5rem;

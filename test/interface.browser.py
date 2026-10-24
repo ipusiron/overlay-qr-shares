@@ -23,6 +23,65 @@ def measure(page, label):
     return result
 
 
+def help_intro(page, language):
+    """Keep the original sentence and prevent a line break inside the short protected word."""
+    expected = {
+        'ja': 'Overlay QR Sharesは、QRコードを視覚暗号で複数のシートに分け、重ねて読むためのツールです。',
+        'en': 'Overlay QR Shares divides a QR code into visual cryptography sheets for recovery by overlay.'
+    }
+    term = page.locator('#help-content .help-intro-term')
+    assert term.count() == 1 and term.is_visible(), (language, 'protected help term is visible')
+    paragraph = term.locator('..')
+    assert paragraph.text_content() == expected[language], (language, 'complete help sentence preserved')
+    assert term.inner_text() == ('ツール' if language == 'ja' else 'overlay'), (language, 'only the short term is protected')
+    layout = term.evaluate("""el => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const fragments = [...range.getClientRects()].filter(r => r.width > 0 && r.height > 0)
+        .map(r => ({x:r.x, y:r.y, width:r.width, height:r.height}));
+      const content = document.getElementById('help-content');
+      return {fragments, overflow:content.scrollWidth-content.clientWidth};
+    }""")
+    assert len(layout['fragments']) == 1, (language, 'protected word stays on one rendered line', layout)
+    assert layout['overflow'] == 0, (language, 'help remains within dialog width', layout)
+    return {'sentencePreserved': True, 'wordLines': len(layout['fragments']), 'overflow': layout['overflow']}
+
+
+def footer_copy(page, language):
+    """The privacy note and tool description remain two readable, vertically ordered paragraphs."""
+    paragraphs = page.locator('.page-footer .footer-copy > p')
+    assert paragraphs.count() == 2, (language, 'footer contains privacy and description paragraphs')
+    dictionary = page.evaluate("""language => Object.fromEntries(Object.entries(OQS.messages[language])
+      .filter(([, value]) => typeof value === 'string'))""", language)
+    keys = ('footerPrivacy', 'footerDescription')
+    boxes = []
+    for index, key in enumerate(keys):
+        paragraph = paragraphs.nth(index)
+        assert paragraph.is_visible() and paragraph.text_content() == dictionary[key], (language, key)
+        box = paragraph.bounding_box()
+        assert box and box['width'] > 0 and box['height'] > 0, (language, key, box)
+        boxes.append(box)
+    assert boxes[0]['y'] + boxes[0]['height'] <= boxes[1]['y'] + .1, (language, 'footer paragraphs stack without overlap', boxes)
+    return {'paragraphs': 2, 'privacyBeforeDescription': True}
+
+
+def comparison_content(page, language):
+    """The disclosure row and related-tool link are available from the visible guide tab."""
+    dictionary = page.evaluate("""language => Object.fromEntries(Object.entries(OQS.messages[language])
+      .filter(([, value]) => typeof value === 'string'))""", language)
+    rows = page.locator('#comparison-rows tr').evaluate_all(
+        '(rows) => rows.map(row => [...row.querySelectorAll("th, td")].map(cell => cell.textContent))')
+    expected = [dictionary['compareLeak' + suffix] for suffix in ('', 'O', 'S')]
+    assert rows.count(expected) == 1, (language, 'one translated information-disclosure row', rows)
+    link = page.locator('#panel-guide a.related-tool-link')
+    assert link.count() == 1 and link.is_visible(), (language, 'related tool is linked inside guide tab')
+    assert link.get_attribute('href') == 'https://ipusiron.github.io/scatter-seeds/'
+    assert link.get_attribute('target') == '_blank'
+    assert {'noopener', 'noreferrer'} <= set((link.get_attribute('rel') or '').split())
+    assert 'Scatter Seeds' in link.inner_text(), (language, 'link names its destination')
+    return {'disclosureRows': 1, 'relatedToolHref': link.get_attribute('href'), 'safeNewTab': True}
+
+
 def read_instructions(page, language):
     """The reader tab must contain the whole preparation flow and translated diagrams."""
     panel = page.locator('#panel-read')
@@ -148,15 +207,19 @@ def interface(browser, name, width, results, stage, base_url=None):
                         panel_id = page.locator('#' + other).get_attribute('aria-controls')
                         assert not page.locator('#' + panel_id).is_visible()
                 data = measure(page, (name, width, language, theme, tab))
+                data['footerCopy'] = footer_copy(page, language)
                 if tab == 'tab-read':
                     data['readInstructions'] = read_instructions(page, language)
                     data['readAccordions'] = accordions
+                elif tab == 'tab-guide':
+                    data['comparisonContent'] = comparison_content(page, language)
                 results.append({'browser':name, 'width':width, 'language':language,
                                 'theme':theme, 'tab':tab, **data})
             page.click('#help')
             assert page.locator('#help-dialog').is_visible()
             assert page.locator('#help-title').evaluate('(e) => document.activeElement === e')
             measure(page, (name, width, language, theme, 'help'))
+            results[-1]['helpIntro'] = help_intro(page, language)
             for _ in range(5):
                 page.keyboard.press('Tab')
                 assert page.locator('#help-dialog').evaluate('(e) => e.contains(document.activeElement)')
@@ -186,13 +249,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--stage', default='1a')
     parser.add_argument('--url', help='Optional local HTTP or published HTTPS entry URL')
+    parser.add_argument('--widths', type=int, nargs='+', default=[320, 390, 1280],
+                        help='Viewport widths; defaults preserve the usual 108-state matrix')
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     results = []
     with sync_playwright() as p:
         for name in ('chromium', 'firefox', 'webkit'):
             browser = getattr(p, name).launch()
-            for width in (320, 390, 1280):
+            for width in args.widths:
                 interface(browser, name, width, results, args.stage, args.url)
                 print(name, width, 'OK', flush=True)
             browser.close()

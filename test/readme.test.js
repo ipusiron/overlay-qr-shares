@@ -143,7 +143,7 @@ test('README headings retain complete corresponding sections and the series orde
     [2, '🔬 重ねると戻る仕組み', '🔬 How overlay recovery works'],
     [3, '平文の部分と分ける部分', 'Public and shared modules'],
     [3, '乱数と作成直後の確認', 'Randomness and creation checks'],
-    [2, '⚖️ Day124との交換条件', '⚖️ Tradeoffs with Day124'],
+    [2, '⚖️ Scatter Seedsとの比較', '⚖️ Comparison with Scatter Seeds'],
     [2, '⚠️ 限界と改ざん', '⚠️ Limits and tampering'],
     [2, '🖨️ 印刷の経路とネットワーク盗聴', '🖨️ Printing route and network interception'],
     [2, '🔒 保管の指針', '🔒 Storage guidance'],
@@ -411,6 +411,8 @@ test('README records frozen OQS dimensions, band ordering and standalone Python 
     for (const term of ['read_photo.py', '--corners', '--output', 'PNG', 'PBM']) assert.ok(python.includes(term), language + ': ' + term);
     assert.match(python, language === 'ja' ? /標準ライブラリー/ : /standard library/i);
     assert.match(python, language === 'ja' ? /未検証|検証しません/ : /not verif|unverified/i);
+    assert.match(python, language === 'ja' ? /スクリプト自身はQRを文字列へ復号せず/ : /script itself does not decode the QR into a string/i,
+      'Python reconstructs an image; it does not decode text');
   }
 });
 
@@ -426,12 +428,18 @@ test('README names, privacy boundaries, print route, related tools and inclusive
     }
     const usage = sections(text)[3].body;
     if (language === 'ja') {
-      assert.ok(/作者の紙による予備試験.*標準のカメラ.*読み取れませんでした/.test(usage), 'record the failed paper-camera observation');
-      assert.ok(usage.includes('標準のカメラで読める保証はありません'), 'no standard-camera guarantee');
+      assert.match(usage, /作者の紙による予備試験.*iPhone標準のQRリーダー.*読み取り結果が出ませんでした/, 'record the observed lack of a result');
+      assert.match(usage, /観察だけでは.*位置検出.*復号.*表示.*区別できません/, 'do not infer an internal failure stage');
+      assert.match(usage, /このアプリだけでしか復元できないという意味ではありません/, 'dedicated feature is not exclusive in principle');
+      assert.match(usage, /同じ前処理.*別のリーダーでも復元できます/, 'compatible readers can recover');
+      assert.ok(usage.includes('標準のQRリーダーで読める保証はありません'), 'no standard-camera guarantee');
       assert.match(usage, /公開版OQS v1.*\(2,2\).*版4.*M.*2\.54mm.*実物の復元/, 'scope the later physical observation');
     } else {
-      assert.ok(/preliminary paper trial.*standard camera.*could not read/i.test(usage), 'record the failed paper-camera observation');
-      assert.ok(/standard camera apps is not guaranteed/i.test(usage), 'no standard-camera guarantee');
+      assert.match(usage, /preliminary paper trial.*iPhone.*standard QR reader displayed no reading result/i, 'record the observed lack of a result');
+      assert.match(usage, /observation alone does not identify.*location detection.*decoding.*result display/i, 'do not infer an internal failure stage');
+      assert.match(usage, /does not mean that only this app can recover/i, 'dedicated feature is not exclusive in principle');
+      assert.match(usage, /Another reader implementing the same preprocessing can also recover/i, 'compatible readers can recover');
+      assert.ok(/standard QR readers is not guaranteed/i.test(usage), 'no standard-camera guarantee');
       assert.match(usage, /OQS v1.*\(2,2\).*version 4.*M.*2\.54mm/i, 'scope the later physical observation');
     }
     const print = sections(text)[8].body;
