@@ -19,8 +19,8 @@
     readTab: '重ねて読む',
     guideTab: '仕組みと限界',
     splitEyebrow: '紙に分ける視覚暗号',
-    splitTitle: '重ねるだけで戻る。',
-    splitIntro: '鍵も秘密の計算も要らない。1枚では何もわからない。短い秘密をQRコードに載せ、複数のシートに分けます。',
+    splitTitle: "シートを重ねて秘密を戻す。",
+    splitIntro: "短い秘密をQRコードに載せ、複数のシートに分けます。1枚だけでは秘密を復元できません。必要な枚数を重ね、このページのカメラで濃淡を読み取ります。方式やセットIDは公開情報です。",
     stepsLabel: '本番までの4段階',
     stepScheme: '方式',
     stepPrint: 'テスト印刷',
@@ -56,23 +56,33 @@
     guideEyebrow: '使う前に知っておくこと',
     guideTitle: '柄を重ねる、視覚暗号。',
     guideIntro: '白と黒を細かな柄に分け、必要なシートを重ねたときの濃さの差で元に戻します。',
-    opticalTitle: '秘密の計算をせずに戻す',
-    opticalBody: 'シートを重ねることが復元の操作です。シャミアの秘密分散とは原理が違います。QRコードを読むための端末と光は必要です。',
+    opticalTitle: "重ね合わせで濃淡を戻す",
+    opticalBody: "シートを重ねると濃淡の差が現れます。このページはその差から白黒のQRを再構成し、文字列を復号します。シャミア方式とは復元の原理が異なります。",
     limitsTitle: '読めたことは本物の証明ではない',
     limitsBody: '方式によっては、1枚の持ち主が秘密を知らなくても中身を書き換えられます。改ざんを検出する仕組みはありません。',
     printRoute: '紙に印刷する場合、シートのデータはOSの印刷処理を経てプリンターへ送られます。Wi-FiやLANの印刷が暗号化されないことがあります。本物の秘密はUSBで直接つないで刷ります。',
     footerPrivacy: 'このページに保存するのは、言語と明暗の設定だけです。',
-    footerDescription: 'QRコードを複数のシートに分け、重ねて復元するツール。',
+    toolDescription: 'QRコードを複数のシートに分け、重ねて復元するツール。',
     sourceLink: 'ソースコード · GitHub',
     helpTitle: '使い方',
     close: '閉じる',
     helpContent: '使い方の説明',
     helpIntro: 'Overlay QR Sharesは、QRコードを視覚暗号で複数のシートに分け、重ねて読むための',
     helpIntroTerm: 'ツール', helpIntroEnd: 'です。',
-    helpPrepareTitle: '印刷の前に',
-    helpPrepare: 'テスト用のシートで、印刷・位置合わせ・読み取りを確かめてから本番へ進みます。復元できた2つの寸法も、別の環境での復元は保証しません。',
+    helpStatusTitle: "確認できた範囲",
+    helpStatus: "実験用の公開版です。実物で復元を確認したのは、(2,2)・版4・M・2.54 mmと2.032 mmの紙2枚を、トレース台で重ねてiPhone上の本ツールで読んだ条件です。他の方式や条件は未試験です。",
+    helpLimits: "唯一のバックアップにせず、別の復旧手段を残してください。読み取り成功は、改ざんされていない証明にはなりません。",
+    helpOverlay: "カメラ付き端末で「重ねて読む」の①を開きます。TAを印刷面が上、TBを左右ではなく上下に裏返して重ねます。印刷面同士を直接合わせ、3つの大きな四角をぴったり重ね、裏から光を通します。",
+    helpRead: "②の「カメラで読む」で読み取り、復元値を表示してテストカードの値と比べます。自動で読めない場合は「止めて四隅を指定」を使い、周囲の小さい四角4つの中心を指定します。",
+    helpProduction: "テストが読めたら、テスト用シートを作成したPCの「分ける」に戻り、同じ方式・寸法で復元できた確認欄にチェックします。秘密を入力し、「分けて確かめる」で作成後、1枚ずつ印刷します。"
+      + "印刷結果を確認したら「すべて消す」を押します。",
+    helpReaderTitle: "このページの読み取り機能",
+    helpReader: "撮影した濃淡から白黒のQR画像を再構成して復号します。同じ前処理を備えた別のリーダーでも復元できます。標準リーダーで結果が出ないという観察だけでは、失敗した内部の段階は特定できません。",
+    helpClear: "コピーした文字列はクリップボードの履歴や同期先に残る場合があります。「すべて消す」は印刷物、PDF、印刷履歴、クリップボードを消去しません。メモリーからの完全な消去も保証しません。",
+    helpPrepareTitle: "初回の手順",
+    helpPrepare: "PCの「分ける」で、2枚・どれか2枚・版4・M・2.54 mmを選び、「テスト用のシートを作る」を押します。2.54 mmでセットIDが同じTAとTBを各1枚、A4・片面・100%で印刷します。",
     helpPrivacyTitle: '秘密の扱い',
-    helpPrivacy: '秘密を外部に送らず、保存しません。印刷の経路、プリンターの記憶、PDFのクラウド同期には別の注意が必要です。',
+    helpPrivacy: "分割と復元はブラウザー内で行い、入力や復元値をサーバーへ送りません。保存する設定は言語と明暗だけです。印刷データはOSからプリンターへ送られ、PDFや印刷履歴として残る場合があります。",
     helpKeysTitle: 'キーボード',
     helpKeys: 'タブ上では左右の矢印キーで切り替え、Homeで先頭、Endで最後へ移動します。Escでこの説明を閉じます。',
     schemeTitle: '1　方式を選ぶ',
@@ -158,8 +168,10 @@
     readTab: 'Overlay & read',
     guideTab: 'How it works & limits',
     splitEyebrow: 'Visual cryptography on paper',
-    splitTitle: 'Overlay to recover.',
-    splitIntro: 'No key or secret calculation. One sheet reveals nothing. Put a short secret in a QR code and divide it into sheets.',
+    splitTitle: "Recover a secret by overlaying sheets.",
+    splitIntro: "Put a short secret in a QR code and divide it into sheets. One sheet alone is insufficient to recover the "
+      + "secret. Overlay enough sheets and read their contrast with the camera on this page. Scheme and set ID remain "
+      + "public.",
     stepsLabel: 'Four steps before using a secret',
     stepScheme: 'Scheme',
     stepPrint: 'Test print',
@@ -201,26 +213,49 @@
     guideEyebrow: 'Before you use it',
     guideTitle: 'Patterns that recover by overlay.',
     guideIntro: 'Black and white modules become small patterns. The density difference when enough sheets overlap recovers the original.',
-    opticalTitle: 'Recover without a secret calculation',
-    opticalBody: 'Overlapping the sheets performs the recovery. This differs from Shamir secret sharing. '
-      + 'A device and light are still needed to read the QR code.',
+    opticalTitle: "Recover contrast by overlay",
+    opticalBody: "Overlapping sheets reveals a contrast difference. This page reconstructs a black-and-white QR from that "
+      + "difference and decodes the text. This recovery principle differs from Shamir sharing.",
     limitsTitle: 'Readable does not prove authentic',
     limitsBody: 'For some schemes, a holder of one sheet can alter the content without knowing the secret. This tool does not detect tampering.',
     printRoute: 'Printing on paper sends sheet data through the OS print system to the printer. '
       + 'Wi-Fi and LAN printing may be unencrypted. Connect the printer directly by USB for real secrets.',
     footerPrivacy: 'Only language and theme preferences are saved by this page.',
-    footerDescription: 'Split a QR code into sheets and recover it by overlay.',
+    toolDescription: 'Split a QR code into sheets and recover it by overlay.',
     sourceLink: 'Source code · GitHub',
     helpTitle: 'How to use',
     close: 'Close',
     helpContent: 'Help instructions',
     helpIntro: 'Overlay QR Shares divides a QR code into visual cryptography sheets for recovery by ',
     helpIntroTerm: 'overlay', helpIntroEnd: '.',
-    helpPrepareTitle: 'Before printing',
-    helpPrepare: 'Check printing, alignment, and reading with test sheets before using a real secret. '
-      + 'Recovery at the two confirmed sizes does not guarantee recovery in another setup.',
+    helpStatusTitle: "What has been tested",
+    helpStatus: "This is an experimental release. Physical recovery has been confirmed only with two paper sheets using "
+      + "(2,2), version 4, M, and 2.54 mm or 2.032 mm, on a light box, read by this tool on an iPhone. Other schemes "
+      + "and conditions remain untested.",
+    helpLimits: "Keep another recovery method; do not use this as your only backup. A successful read does not prove that the "
+      + "sheets are authentic or unmodified.",
+    helpOverlay: "On a camera device, open section ① of “Overlay & read.” Place TA print-side up. Flip TB top to bottom, not "
+      + "left to right, and put the printed faces together. Match the three large squares exactly and pass light "
+      + "through the back.",
+    helpRead: "In section ②, select “Read with camera,” reveal the recovered value, and compare it with the test card. If "
+      + "automatic reading fails, use “Freeze and select corners” and select the centers of the four small outer "
+      + "squares.",
+    helpProduction: "After recovering the test, return to “Split” on the PC where you created the test sheets and check the "
+      + "confirmation for the same scheme and size. Enter the secret, select “Split and check,” and print each sheet "
+      + "separately. Check the printed sheets, then select “Clear everything.”",
+    helpReaderTitle: "How this reader works",
+    helpReader: "This reader reconstructs a black-and-white QR from the photographed contrast and decodes it. Another reader "
+      + "with the same preprocessing can recover it too. No result from a standard reader alone does not identify the "
+      + "internal stage that failed.",
+    helpClear: "Copied text may remain in clipboard history or sync to another device. “Clear everything” does not erase "
+      + "printed sheets, PDFs, print histories, or the clipboard. Complete erasure from memory is not guaranteed.",
+    helpPrepareTitle: "First use",
+    helpPrepare: "On a PC, open “Split” and select 2 sheets, “Any two,” version 4, M, and 2.54 mm. Select “Create test sheets” "
+      + "and print one 2.54 mm TA and one 2.54 mm TB with the same set ID, on A4, single-sided at 100%.",
     helpPrivacyTitle: 'Handling secrets',
-    helpPrivacy: 'Secrets are neither sent externally nor saved. The print route, printer memory, and cloud sync of saved PDFs need separate care.',
+    helpPrivacy: "Splitting and recovery run in the browser without sending secret input or recovered text to a server. Only "
+      + "language and theme settings are saved. Printing sends sheet data through the OS to the printer; PDFs and "
+      + "print histories may retain it.",
     helpKeysTitle: 'Keyboard',
     helpKeys: 'On a tab, use Left and Right arrows to switch, Home for the first tab, and End for the last. Press Esc to close this help.',
     schemeTitle: '1  Choose a scheme',
@@ -334,7 +369,7 @@
     reasonGeometry: '配置を読み取れません。平らにして、真上から写してください。',
     reasonDecode: '文字列を戻せません。印刷面、位置合わせ、照明を確かめてください。',
     reasonCalibration: '白と黒の濃さが正しくありません。同じセットの必要枚数がそろっているか確認してください。',
-    reasonIllumination: '明るさを補正できません。トレース台を使い、手前の照明を消してください。',
+    reasonIllumination: "明るさを補正できません。十分な背面光を確保し、表面に反射がある場合は手前の照明を調整してください。",
     diagramFlip: 'Bの上端と下端を入れ替える',
     diagramFlipBody: '1はBの元の上端（太線）、2は元の下端です。上下に裏返すと1が下へ、2が上へ移り、印刷面が下になります。紙面内の180度回転ではありません。',
     diagramFaceUp: '印刷面が上', diagramFaceDown: '印刷面が下',
@@ -356,6 +391,7 @@
     sixPatterns: '(2,2)で1枚に現れる6通りの柄', sixPatternsNote: '図は(2,2)の6通りの例です。試行回数の多さではなく、白と黒で柄の分布が等しいことが根拠です。',
     comparisonTitle: 'Scatter Seedsとの比較', comparisonItem: '項目',
     scatterSeedsLink: 'Scatter Seedsを開く',
+    scatterSeedsLinkLabel: 'Scatter Seedsを開く（新しいタブ）',
     compareLeak: '漏れる情報',
     compareLeakO: '形式版・方式・QR版・誤り訂正・寸法・セットID・固定模様は公開。容量上限はわかるが、実際の入力バイト長は直接公開しない',
     compareLeakS: '形式版・セットID・必要枚数・総数・共有番号・共有データ長は公開。共有データ長から元データのバイト数がわかる',
@@ -370,7 +406,7 @@
     allLimitsTitle: '限界',
     limitMalleable: '(2,2)・(3,3)・(4,4)・(5,5)では、1枚の持ち主が秘密を知らなくても中身を書き換えられます。QRの誤り訂正も通るため、読めたことは本物の証拠になりません。',
     limitFake: '秘密を知る人は、不正なシートを作れる場合があります。(2,n)でも読み取りを妨害できます。セットIDは複写でき、本物の証明にはなりません。',
-    limitPartial: '1枚を持つ人に別のシートの一部を見られると、その部分が漏れます。シートの写真・コピー・スキャンも同じシートとして扱います。重ねた束の写真は平文と同じです。',
+    limitPartial: "必要枚数が重なった一部分を見られると、その部分の模様が漏れます。シートの写真・コピー・スキャンも同じシートとして扱います。必要枚数を重ねた束の写真は復元可能な秘密として扱います。",
     limitRevoke: 'なくしたシートやコピーを無効にはできません。作り直す際は古い組を回収して壊します。新旧のセットを混ぜて復元することはできません。',
     limitMaterial: '印刷、紙、フィルム、光で結果が変わります。熱や湿度による局所的な伸び縮みは、射影変換では直せません。',
     limitDevice: '復元にはカメラ付きの端末、光、平らな場所が必要です。紙の試験では、iPhone標準のQRリーダーから読み取り結果が出ませんでした。唯一のバックアップにしないでください。',
@@ -419,7 +455,8 @@
     reasonGeometry: 'The layout could not be read. Keep it flat and photograph from directly above.',
     reasonDecode: 'Could not recover the text. Check printed faces, alignment, and lighting.',
     reasonCalibration: 'Unexpected white and black densities. Check that enough sheets from the same set are present.',
-    reasonIllumination: 'Could not correct lighting. Use a light box and turn off lighting in front of the sheets.',
+    reasonIllumination: "Could not correct lighting. Ensure sufficient backlighting; if reflections appear on the sheets, adjust the "
+      + "lighting in front of them.",
     diagramFlip: 'Swap B\'s top and bottom edges',
     diagramFlipBody: '1 marks B\'s original top edge (thick line); 2 marks its bottom edge. Turning B over top to bottom moves 1 down and 2 up, '
       + 'with the printed face down. This is not a 180-degree rotation on the table.',
@@ -447,6 +484,7 @@
     sixPatternsNote: 'These six (2,2) patterns are an example. Security follows from equal pattern distributions, not from a large trial count.',
     comparisonTitle: 'Comparison with Scatter Seeds', comparisonItem: 'Item',
     scatterSeedsLink: 'Open Scatter Seeds',
+    scatterSeedsLinkLabel: 'Open Scatter Seeds in a new tab',
     compareLeak: 'Information exposed',
     compareLeakO: 'Format version, scheme, QR version, error correction, size, set ID, and fixed patterns are public. Capacity is '
       + 'visible; exact input byte length is not directly exposed',
@@ -468,8 +506,8 @@
       + 'QR error correction can still pass. A successful read is not proof of authenticity.',
     limitFake: 'Someone who knows the secret may construct false sheets. Even (2,n) schemes allow disruption. '
       + 'Set IDs can be copied and do not prove authenticity.',
-    limitPartial: 'A holder who sees part of another sheet learns that part. Photos, copies, and scans count as sheets. '
-      + 'A photo of the overlaid stack is equivalent to plaintext.',
+    limitPartial: "Seeing part of an overlay containing enough sheets reveals the pattern in that part. Photos, copies, and "
+      + "scans count as sheets. Treat a photo of an overlay with enough sheets as a recoverable secret.",
     limitRevoke: 'Lost sheets and copies cannot be revoked. Collect and destroy the old set when replacing it. Old and new sets cannot be mixed for recovery.',
     limitMaterial: 'Results depend on printing, paper, film, and light. A projective transform cannot fix local stretching caused by heat or humidity.',
     limitDevice: 'Recovery needs a camera device, light, and a flat surface. The standard iPhone QR reader returned no reading '

@@ -66,9 +66,15 @@ a {
 p {
   margin: 0 0 1rem;
 }
+.external-link-icon {
+  font-size: 1.1em;
+  line-height: 1;
+}
 .related-tool-link {
   display: inline-flex;
   align-items: center;
+  gap: .5rem;
+  text-decoration: none;
   min-height: 44px;
   max-width: 100%;
   margin: .2rem 0 1rem;
@@ -123,6 +129,16 @@ h3 {
   gap: 1rem;
   padding: 0 0 1.25rem;
   border-bottom: 2px solid var(--ink);
+}
+.brand {
+  min-width: 0;
+  max-width: 100%;
+  text-align: center;
+}
+.tagline {
+  margin: .35rem 0 0;
+  color: var(--muted);
+  font-size: .9375rem;
 }
 .header-tools {
   display: flex;
@@ -586,12 +602,6 @@ progress {
 .page-footer p {
   margin: 0;
 }
-.footer-copy {
-  min-width: 0;
-}
-.footer-copy p + p {
-  margin-top: .4rem;
-}
 .page-footer a {
   display: inline-flex;
   align-items: center;
@@ -637,6 +647,9 @@ dialog::backdrop {
 .help-content h3 {
   margin-top: 1.5rem;
 }
+.help-content li + li {
+  margin-top: .75rem;
+}
 @media (min-width: 40rem) {
   body {
     padding: 1.5rem 2rem;
@@ -681,7 +694,7 @@ dialog::backdrop {
     grid-template-columns: 1fr auto 1fr;
     gap: 1rem;
   }
-  .masthead h1 {
+  .masthead .brand {
     grid-column: 2;
   }
   .header-tools {
