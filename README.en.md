@@ -273,7 +273,7 @@ A design that leaves all QR function patterns and format information public also
 The mask number has eight possible values, so exposing it can disclose secret-dependent information with an upper bound of three bits.
 This is a design bound derived from those eight values, not a measured three-bit leak or a claim that fragments of the secret text become directly visible.
 
-This implementation therefore prints only fixed modules that are independent of the secret for the selected QR version.
+This implementation therefore leaves only fixed modules that are independent of the secret for the selected QR version unshared.
 These are the finder patterns, separators, timing patterns, alignment patterns, dark module, and version information; format information is shared along with the data.
 This changes which modules are shared, not the QR standard; after reconstruction, the result is decoded as a standard QR code.
 
