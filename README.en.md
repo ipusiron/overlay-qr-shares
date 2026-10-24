@@ -12,7 +12,8 @@ English · [日本語](README.md)
 
 Overlay QR Shares is a tool that splits a QR code containing a secret string into 2–5 visual cryptography sheets, then reads the required overlay with a camera.
 Choose “any two” or “all” to try keeping short recovery codes, safe combinations, and similar information in separate places.
-Every scheme is untested with physical prints at publication; before entering a real secret, complete a test print and recovery using the intended printer and material.
+In the author's physical trials on 2026-10-24, an iPhone recovered overlays of two paper sheets using (2,2), version 4, M, and a light box at both 2.54mm and 2.032mm module sizes.
+This confirmation applies only to the recorded conditions; before entering a real secret, complete a test print and recovery using the intended printer and material.
 
 The name combines “overlay” for placing sheets on top of one another, “QR” for the code, and “shares” for the distributed pieces.
 While Day124 reconstructs a secret through numerical computation, this tool recovers QR contrast through the optical OR of black areas on paper or film.
@@ -29,7 +30,7 @@ For secrets, use a saved copy of the code on a trusted device, and check offline
 
 ## 📸 Screenshots
 
-All screenshots use light mode and the test-vector string `TEST-OQS-1`.
+The five screenshots below use light mode and the test-vector string `TEST-OQS-1`.
 The round buttons at the top right control the theme, language, and help.
 
 ![Split tab](assets/en/screenshot.png)
@@ -76,13 +77,14 @@ Also check that the reflected “FLIPPED OK” label is readable.
 Do not align the paper edges.
 A printer's positional offset doubles when one sheet is flipped; the author's preliminary trial produced a 3mm offset.
 
-Place the sheets on a light box and turn off the room lights before capturing them.
+Pass enough light through the back of the stacked paper and capture it from the opposite side.
+A light box makes it easier to keep the sheets flat; reduce room lighting if it causes excessive surface reflections.
 If four large squares appear, check how the sheet was flipped; if only one sheet's text looks faded, check that the printed faces touch.
 In the author's preliminary paper trial, a standard camera app could not read the overlaid pattern.
 Reading with standard camera apps is not guaranteed.
 Use the “Read overlay” tab, and verify that the test value is recovered before proceeding to production.
 This is a user's confirmation and does not change the published scheme status to physically tested.
-Separately from those preliminary observations, all schemes in the released OQS v1 format remain untested with physical prints.
+Separately from those preliminary observations, physical recovery with the released OQS v1 format has been confirmed for the (2,2), version 4, M, 2.54mm and 2.032mm conditions documented below.
 
 The “all” schemes with 3–5 sheets are experiments using transparent film.
 It is impossible for all printed faces of three or more sheets to be in mutual contact.
@@ -137,6 +139,24 @@ The artwork uses pure-black SVG and does not require printing CSS backgrounds.
 Each sheet contains a normal sample and a vertical reflection on the same A4 page.
 Both module sizes cannot fit on one A4 page with the specified layout, so test sets also use separate pages for each size.
 
+### Choosing a light source
+
+The required arrangement captures the black/white contrast in light that has passed through both sheets.
+A light box is convenient because it illuminates from behind while supporting the paper flat, but the device itself is not required.
+The general arrangement of illumination behind an object and a camera receiving the transmitted image is described in [KEYENCE's lighting selection guide](https://www.keyence.com/products/vision/resources/vision-resources/basics-of-lighting-selection.jsp).
+
+| Light source | Conditions to prepare | Physical confirmation with this tool |
+|---|---|---|
+| Light box | Illuminate the entire reading area from behind and keep the sheets flat | Recovery confirmed for (2,2), version 4, M, 2.54mm and 2.032mm as documented below |
+| Sunlight | Place a bright window or similar source behind the paper, with the camera on the opposite side. Hold the paper flat and fixed, with uniform transmitted light across the entire reading area | Unconfirmed; a possible substitute in principle |
+| An iPad or another white screen | Display full-screen white at sufficient brightness, covering the entire reading area. Keep the paper flat and capture it using a separate iPhone or another camera | Unconfirmed; a possible substitute in principle |
+
+Ceiling lighting that illuminates paper on a desk only from the front produces substantial surface reflection and little light passing through both sheets.
+Scattering and absorption by the paper, along with uneven lighting, further reduce the black/white contrast.
+Under these lighting conditions, dark-region camera noise and motion blur from longer exposures can be expected to make reading harder.
+Indoor use can still be tried with sufficient backlighting; the presence of room lighting alone does not make reading impossible.
+Only a light box was confirmed in the supplied physical photographs; sunlight and white-screen recovery have not been measured.
+
 ## 🧾 Schemes and physical test status
 
 `(k,n)` means that n sheets are created and k are needed for recovery.
@@ -144,7 +164,7 @@ The white and black figures below are black-area fractions under ideal stacking 
 
 | Scheme | Required sheets | Subpixel layout | White black-area fraction | Black black-area fraction | Role | Physical status |
 |---|---:|---|---:|---|---|---|
-| (2,2) | 2 | 2×2 | 0.5 | 1 | Primary | Untested |
+| (2,2) | 2 | 2×2 | 0.5 | 1 | Primary | Physical recovery confirmed (version 4/M, 2.54mm or 2.032mm, conditions below only) |
 | (2,3) | 2 | 2×2 | 0.5 | 0.75 | Experimental | Untested |
 | (2,4) | 2 | 2×2 | 0.5 | 0.75–1 | Experimental | Untested |
 | (2,5) | 2 | 2×2 | 0.5 | 0.75–1 | Experimental | Untested |
@@ -152,11 +172,46 @@ The white and black figures below are black-area fractions under ideal stacking 
 | (4,4) | 4 | 2×4 | 0.875 | 1 | Transparent-film experiment | Untested |
 | (5,5) | 5 | 4×4 | 0.9375 | 1 | Transparent-film experiment | Untested |
 
+### Conditions with confirmed physical recovery
+
+The author's supplied photographs and reading screens confirm recovery of the respective test values under the following two conditions.
+The author explicitly confirmed the 2.54mm module size; the printed label in the additional photograph identifies the 2.032mm size.
+
+| Item | 2.54mm example | 2.032mm example |
+|---|---|---|
+| Date | 2026-10-24 | 2026-10-24 |
+| Sheets and QR settings | TA and TB, (2,2), version 4, error correction M | TA and TB, (2,2), version 4, error correction M |
+| Reading device | iPhone | iPhone |
+| Light source | Light box | The same light box |
+| Recovered test value | `TEST-B3967BF33EFC` | `TEST-24DE75D71F98` |
+| On-screen diagnosis | ○ Adequate | × Insufficient |
+| Decoding result | Decoded successfully | Decoded successfully |
+
+For both conditions, automatic versus manual reading, device model, printer, paper product and thickness, whether room lights were off, and illuminance remain unconfirmed.
+The diagnosis classifies an estimated contrast margin using provisional thresholds; it is separate from the decoding result.
+In the 2.032mm example, the string was decoded despite the “Insufficient” diagnosis, so that diagnosis must not be read as a decoding failure.
+
+![Physical TA and TB sheets on a light box](assets/physical/tracebox-ta-tb.jpg)
+> *The author's physical trial: paper sheets TA and TB on a light box, using (2,2), version 4, M, and 2.54mm modules.*
+
+![Test value recovered on an iPhone](assets/physical/iphone-recovery.png)
+> *The supplied iPhone screen shows recovered TEST-B3967BF33EFC and an “Adequate” diagnosis in Japanese.*
+
+![Physical 2.032mm TA and TB sheets on a light box](assets/physical/tracebox-ta-tb-2_032.jpg)
+> *The additional trial stacks TA and TB using (2,2), version 4, M, and 2.032mm modules on the same light box.*
+
+![The 2.032mm test value recovered on an iPhone](assets/physical/iphone-recovery-2_032.png)
+> *The screen shows successful decoding of TEST-24DE75D71F98; its “Insufficient” diagnosis is separate from decoding success.*
+
+The number of supplied success screens is not used to infer a success count or rate.
+These records are examples of recovery under those two conditions; they do not establish success with different QR settings, printers or materials, sunlight, or a white screen.
+The other six schemes remain untested.
+
 ### Planned physical trials
 
 | Target | Material and conditions | Result |
 |---|---|---|
-| (2,2) | Print TA and TB at 2.032mm and 2.54mm; printed faces in contact, light box, room lights off | Planned |
+| (2,2) | Additional conditions at both sizes, different QR settings, and substitute sunlight or white-screen illumination | Additional trials planned; only the 2.54mm and 2.032mm examples above are confirmed |
 | (2,3) | Change the required pair and capture under the same conditions | Planned |
 | (2,4) | Change the required pair and capture under the same conditions | Planned |
 | (2,5) | Change the required pair and capture under the same conditions | Planned |
@@ -165,8 +220,8 @@ The white and black figures below are black-area fractions under ideal stacking 
 | (5,5) | Stack five sheets of compatible transparent film and capture | Planned |
 
 The [author's physical trial procedure](PRINT_TRIAL.md) specifies page counts, observations to record, and captures to make.
-Observations from preliminary prototypes are separate from physical trials of the released OQS v1 format.
-A successful synthetic image does not mark a row in this table as physically tested.
+Observations from preliminary prototypes, the physical trial above, and synthetic image results are kept separate.
+Synthetic success alone does not add any physically tested conditions.
 
 ## 🔬 How overlay recovery works
 
@@ -463,69 +518,74 @@ It does not claim a new cryptographic scheme or a world-first mechanism.
 ## 📁 Directory structure
 
 ```text
-overlay-qr-shares/                    # Complete tool distribution
-├── .gitattributes                    # Text line-ending rules
-├── .github/                          # GitHub configuration
-│   └── workflows/                    # Automated checks
-│       └── test.yml                  # Tests using Node 22
-├── index.html                        # Three tabs and help
-├── style.css                         # Screen and A4 print styles
-├── app.js                            # UI, printing, camera, and clearing
-├── messages.js                       # Japanese and English strings
-├── rng.js                            # Cryptographic randomness and shuffling
-├── vc-core.js                        # Bases, splitting, and overlaying
-├── qr.js                             # QR encoding and public modules
-├── layout-core.js                    # OQS v1 layout and metadata band
-├── render-core.js                    # SVG paths and synthetic images
-├── reader-core.js                    # Mark detection and image reading
-├── read_photo.py                     # Standard-library PNG-to-PBM recovery
-├── package.json                      # Node test commands
-├── README.md                         # Japanese documentation
-├── README.en.md                      # English documentation
-├── PRINT_TRIAL.md                    # Author's physical trial procedure
-├── LICENSE                           # Tool's MIT license
-├── assets/                           # Japanese light-mode screenshots
-│   ├── screenshot.png                # Split tab
-│   ├── sheets.png                    # Sheet cards
-│   ├── print-sheet.png               # Single-sheet print preview
-│   ├── overlay-read.png              # Stacking diagrams and reading
-│   ├── limits.png                    # Principles and limits
-│   └── en/                           # English light-mode screenshots
-│       ├── screenshot.png            # Split tab
-│       ├── sheets.png                # Sheet cards
-│       ├── print-sheet.png           # Single-sheet print preview
-│       ├── overlay-read.png          # Stacking diagrams and reading
-│       └── limits.png                # Principles and limits
-├── vendor/                           # Locally loaded libraries
-│   ├── qrcode.min.js                 # qrcode-generator 1.4.4
-│   ├── jsQR.js                       # QR decoding
-│   ├── LICENSE-qrcode-generator.txt  # qrcode-generator license
-│   └── LICENSE-jsQR.txt              # jsQR license
-└── test/                             # Automated checks and measurement data
-    ├── basis.test.js                 # Basis matrices and theoretical values
-    ├── rng.test.js                   # Randomness and rejection sampling
-    ├── split.test.js                 # All subsets and known splits
-    ├── malleable.test.js             # Sheet malleability
-    ├── blind-malleable.test.js       # Modifications without the secret
-    ├── qr.test.js                    # Capacity and public modules
-    ├── layout.test.js                # A4 layout and the 48-bit band
-    ├── render.test.js                # SVG and synthetic images
-    ├── reader-sample.test.js         # Sampling with known geometry
-    ├── reader.test.js                # Automatic detection and manual corners
-    ├── read-photo.test.js            # Python PNG and PBM handling
-    ├── static.test.js                # CSP, storage, and vendor files
-    ├── i18n.test.js                  # Translations and forbidden wording
-    ├── contrast.test.js              # Text contrast in both themes
-    ├── format.test.js                # Line lengths and formatting
-    ├── readme.test.js                # Bilingual docs, numbers, and distribution
-    ├── helpers.js                    # Deterministic test randomness
-    ├── vectors.json                  # Fixed known answers
-    ├── robustness.js                 # Explicit synthetic measurement
-    ├── robustness.json               # Results and eight source hashes
-    ├── interface.browser.py          # Layout and keyboard checks
-    ├── print.browser.py              # PDF page count and dimensions
-    ├── camera.browser.py             # Fake video, stopping, and clearing
-    └── screenshot.browser.py         # Bilingual demo screenshots
+overlay-qr-shares/                     # Complete tool distribution
+├── .gitattributes                     # Text line-ending rules
+├── .github/                           # GitHub configuration
+│   └── workflows/                     # Automated checks
+│       └── test.yml                   # Tests using Node 22
+├── index.html                         # Three tabs and help
+├── style.css                          # Screen and A4 print styles
+├── app.js                             # UI, printing, camera, and clearing
+├── messages.js                        # Japanese and English strings
+├── rng.js                             # Cryptographic randomness and shuffling
+├── vc-core.js                         # Bases, splitting, and overlaying
+├── qr.js                              # QR encoding and public modules
+├── layout-core.js                     # OQS v1 layout and metadata band
+├── render-core.js                     # SVG paths and synthetic images
+├── reader-core.js                     # Mark detection and image reading
+├── read_photo.py                      # Standard-library PNG-to-PBM recovery
+├── package.json                       # Node test commands
+├── README.md                          # Japanese documentation
+├── README.en.md                       # English documentation
+├── PRINT_TRIAL.md                     # Author's physical trial procedure
+├── LICENSE                            # Tool's MIT license
+├── assets/                            # UI captures and supplied physical-trial images
+│   ├── screenshot.png                 # Split tab
+│   ├── sheets.png                     # Sheet cards
+│   ├── print-sheet.png                # Single-sheet print preview
+│   ├── overlay-read.png               # Stacking diagrams and reading
+│   ├── limits.png                     # Principles and limits
+│   ├── physical/                      # Physical-trial images shared by both READMEs
+│   │   ├── tracebox-ta-tb.jpg         # TA and TB on a light box
+│   │   ├── iphone-recovery.png        # iPhone recovery at 2.54mm
+│   │   ├── tracebox-ta-tb-2_032.jpg   # TA and TB at 2.032mm
+│   │   └── iphone-recovery-2_032.png  # iPhone recovery at 2.032mm
+│   └── en/                            # English light-mode screenshots
+│       ├── screenshot.png             # Split tab
+│       ├── sheets.png                 # Sheet cards
+│       ├── print-sheet.png            # Single-sheet print preview
+│       ├── overlay-read.png           # Stacking diagrams and reading
+│       └── limits.png                 # Principles and limits
+├── vendor/                            # Locally loaded libraries
+│   ├── qrcode.min.js                  # qrcode-generator 1.4.4
+│   ├── jsQR.js                        # QR decoding
+│   ├── LICENSE-qrcode-generator.txt   # qrcode-generator license
+│   └── LICENSE-jsQR.txt               # jsQR license
+└── test/                              # Automated checks and measurement data
+    ├── basis.test.js                  # Basis matrices and theoretical values
+    ├── rng.test.js                    # Randomness and rejection sampling
+    ├── split.test.js                  # All subsets and known splits
+    ├── malleable.test.js              # Sheet malleability
+    ├── blind-malleable.test.js        # Modifications without the secret
+    ├── qr.test.js                     # Capacity and public modules
+    ├── layout.test.js                 # A4 layout and the 48-bit band
+    ├── render.test.js                 # SVG and synthetic images
+    ├── reader-sample.test.js          # Sampling with known geometry
+    ├── reader.test.js                 # Automatic detection and manual corners
+    ├── read-photo.test.js             # Python PNG and PBM handling
+    ├── static.test.js                 # CSP, storage, and vendor files
+    ├── i18n.test.js                   # Translations and forbidden wording
+    ├── contrast.test.js               # Text contrast in both themes
+    ├── format.test.js                 # Line lengths and formatting
+    ├── readme.test.js                 # Bilingual docs, numbers, and distribution
+    ├── helpers.js                     # Deterministic test randomness
+    ├── vectors.json                   # Fixed known answers
+    ├── robustness.js                  # Explicit synthetic measurement
+    ├── robustness.json                # Results and eight source hashes
+    ├── interface.browser.py           # Layout and keyboard checks
+    ├── print.browser.py               # PDF page count and dimensions
+    ├── camera.browser.py              # Fake video, stopping, and clearing
+    └── screenshot.browser.py          # Bilingual demo screenshots
 ```
 
 ## 💻 Requirements

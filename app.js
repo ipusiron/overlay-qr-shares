@@ -136,7 +136,8 @@
   }
   function renderSplit() {
     const p = parameters(), basis = OQS.vc.basis(p.id);
-    $('scheme-status').textContent = t(p.k > 2 ? 'schemeFilm' : p.n > 2 ? 'schemeExperimental' : 'schemePrimary', p.n);
+    const primaryKey = OQS.vc.physicalStatus(p) === 'tested' ? 'schemePrimaryTested' : 'schemePrimary';
+    $('scheme-status').textContent = t(p.k > 2 ? 'schemeFilm' : p.n > 2 ? 'schemeExperimental' : primaryKey, p.n);
     $('size-hint').textContent = t('sizeHint', basis.r, basis.c, p.m / basis.r, p.m / basis.c,
       OQS.qr.capacity(p.version, p.ecl)) + ' ' + t('fitNote');
     $('split-status').textContent = message ? t(message.key, ...message.args) : '';
@@ -276,7 +277,8 @@
     text(13 + index * 19, 20, 11, symbol, 700);
     text(112, 12, 4, 'Overlay QR Shares', 700);
     text(112, 16, 2.8, t('printSheetLine', symbol, set.id, set.setId));
-    text(135, 20, 2.6, `${set.m} mm / V${set.version} / ${set.ecl} / ${t('printUntested')}`);
+    const physicalKey = OQS.vc.physicalStatus(set) === 'tested' ? 'printTested' : 'printUntested';
+    text(135, 20, 2.6, `${set.m} mm / V${set.version} / ${set.ecl} / ${t(physicalKey)}`);
     text(13, 24, 2.7, t(mirrored ? 'printMirror' : 'printFlip'), mirrored ? 700 : 400);
     if (record.type === 'test') text(163, 24, 2.5, t('printTest'), 700);
     text(13, 27.5, 2.1, 'https://ipusiron.github.io/overlay-qr-shares/');
