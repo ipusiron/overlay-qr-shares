@@ -21,10 +21,29 @@ for (const [id, vector] of Object.entries(vectors.basis)) {
     }
   });
 }
-test('physical status is untested for every scheme in the shared registry', () => {
-  assert.equal(vc.PHYSICAL_STATUS, 'untested');
+test('physical recovery is conditional on the two observed module sizes', () => {
   assert.equal(Object.keys(vc.SCHEMES).length, Object.keys(vectors.basis).length);
-  for (const scheme of Object.values(vc.SCHEMES)) assert.equal(scheme.status, vc.PHYSICAL_STATUS);
+  assert.equal(vc.PHYSICAL_TRIALS.length, 2);
+  const trial = vc.PHYSICAL_TRIALS[0];
+  assert.deepEqual(vc.PHYSICAL_TRIALS, [
+    { id: '2-2', version: 4, ecl: 'M', m: 2.54, date: '2026-10-24',
+      camera: 'iPhone', light: 'light-box', diagnosis: 'adequate' },
+    { id: '2-2', version: 4, ecl: 'M', m: 2.032, date: '2026-10-24',
+      camera: 'iPhone', light: 'light-box', diagnosis: 'insufficient' }
+  ]);
+  assert.equal(vc.SCHEMES['2-2'].status, 'conditional');
+  for (const id of Object.keys(vc.SCHEMES)) {
+    if (id !== '2-2') assert.equal(vc.SCHEMES[id].status, 'untested');
+    for (const version of [3, 4, 5, 6, 7]) for (const ecl of ['M', 'Q']) for (const m of [2.032, 2.54]) {
+      const expected = id === '2-2' && version === 4 && ecl === 'M' ? 'tested' : 'untested';
+      assert.equal(vc.physicalStatus({ id, version, ecl, m }), expected);
+    }
+  }
+  for (const parameters of [undefined, null, {}, { id: '2-2' }, { ...trial, version: '4' }, { ...trial, m: '2.54' }, { ...trial, m: 2.5 }]) {
+    assert.equal(vc.physicalStatus(parameters), 'untested');
+  }
+  assert.throws(() => { trial.version = 3; });
+  assert.throws(() => { vc.PHYSICAL_TRIALS.push({}); });
 });
 test('invalid schemes and theory counts are rejected; callers cannot mutate registry', () => {
   for (const id of ['3-5', '', '__proto__']) assert.throws(() => vc.basis(id));

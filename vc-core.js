@@ -4,11 +4,25 @@
   else { root.OQS = root.OQS || {}; root.OQS.vc = factory(root.OQS.rng, root.OQS.qr, root.OQS.layout); }
 }(typeof globalThis !== 'undefined' ? globalThis : this, function (random, qr, layoutCore) {
   'use strict';
-  const PHYSICAL_STATUS = 'untested';
+  // User-reported recoveries at two sizes; matching QR settings do not guarantee another setup.
+  // The diagnosis records the displayed result, not a new threshold or a recovery guarantee.
+  const PHYSICAL_TRIALS = Object.freeze([
+    Object.freeze({ id: '2-2', version: 4, ecl: 'M', m: 2.54, date: '2026-10-24',
+      camera: 'iPhone', light: 'light-box', diagnosis: 'adequate' }),
+    Object.freeze({ id: '2-2', version: 4, ecl: 'M', m: 2.032, date: '2026-10-24',
+      camera: 'iPhone', light: 'light-box', diagnosis: 'insufficient' })
+  ]);
+  function physicalStatus(parameters) {
+    if (!parameters || typeof parameters !== 'object') return 'untested';
+    return PHYSICAL_TRIALS.some(trial => ['id', 'version', 'ecl', 'm'].every(key => parameters[key] === trial[key]))
+      ? 'tested' : 'untested';
+  }
   const SCHEMES = Object.freeze(Object.fromEntries([
     ['2-2', 2, 2, 'primary'], ['2-3', 2, 3, 'experimental'], ['2-4', 2, 4, 'experimental'], ['2-5', 2, 5, 'experimental'],
     ['3-3', 3, 3, 'film'], ['4-4', 4, 4, 'film'], ['5-5', 5, 5, 'film']
-  ].map(([id, k, n, group], index) => [id, Object.freeze({ k, n, code: index + 1, group, status: PHYSICAL_STATUS })])));
+  ].map(([id, k, n, group], index) => [id, Object.freeze({
+    k, n, code: index + 1, group, status: PHYSICAL_TRIALS.some(trial => trial.id === id) ? 'conditional' : 'untested'
+  })])));
   const PAIRS = Object.freeze([[0, 1], [0, 2], [0, 3], [1, 2], [1, 3], [2, 3]].map(Object.freeze));
   function basis(id) {
     const scheme = Object.hasOwn(SCHEMES, id) ? SCHEMES[id] : null; if (!scheme) throw new RangeError('scheme');
@@ -148,6 +162,7 @@
       throw error;
     } finally { if (checked) checked.destroy(); }
   }
-  return Object.freeze({ PHYSICAL_STATUS, SCHEMES, PAIRS, basis, subsets, checkBasis, theory, splitBits, splitModules, splitCells, calibBits,
+  return Object.freeze({ PHYSICAL_TRIALS, physicalStatus, SCHEMES, PAIRS, basis, subsets, checkBasis, theory,
+    splitBits, splitModules, splitCells, calibBits,
     sheetWeightsOk, checkSheetWeights, stack, stackModules, makeSet });
 }));

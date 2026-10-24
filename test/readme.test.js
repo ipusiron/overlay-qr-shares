@@ -15,6 +15,8 @@ const report = JSON.parse(read('test/robustness.json'));
 const sourceFiles = ['rng.js', 'vc-core.js', 'qr.js', 'layout-core.js', 'render-core.js', 'reader-core.js',
   'test/helpers.js', 'test/robustness.js'];
 const captures = ['screenshot.png', 'sheets.png', 'print-sheet.png', 'overlay-read.png', 'limits.png'];
+const physicalImages = ['assets/physical/tracebox-ta-tb.jpg', 'assets/physical/iphone-recovery.png',
+  'assets/physical/tracebox-ta-tb-2_032.jpg', 'assets/physical/iphone-recovery-2_032.png'];
 const ignored = new Set(['.git', '.work', 'backups', 'logs', '__pycache__']);
 
 function filesUnder(directory, prefix = '') {
@@ -29,6 +31,11 @@ function sections(text) {
   return matches.map((match, index) => ({
     title: match[1], body: text.slice(match.index + match[0].length, matches[index + 1]?.index ?? text.length)
   }));
+}
+function subsection(text, title) {
+  const matches = [...text.matchAll(/^### (.+)$/gm)], index = matches.findIndex(match => match[1] === title);
+  assert.ok(index >= 0, 'subsection exists: ' + title);
+  return text.slice(matches[index].index + matches[index][0].length, matches[index + 1]?.index ?? text.length);
 }
 function treeFiles(text) {
   const section = sections(text).find(item => item.title.startsWith('📁'));
@@ -129,7 +136,9 @@ test('README headings retain complete corresponding sections and the series orde
     [3, '3. 重ねて読む', '3. Read the overlay'],
     [3, '4. 印刷後の確認と消去', '4. Check and clear after printing'],
     [3, '印刷の設定', 'Print settings'],
+    [3, '光源の選び方', 'Choosing a light source'],
     [2, '🧾 方式と実物の試験状況', '🧾 Schemes and physical test status'],
+    [3, '実物で復元を確認した条件', 'Conditions with confirmed physical recovery'],
     [3, '作者の印刷試験予定', 'Planned physical trials'],
     [2, '🔬 重ねると戻る仕組み', '🔬 How overlay recovery works'],
     [3, '平文の部分と分ける部分', 'Public and shared modules'],
@@ -173,11 +182,11 @@ test('README headings retain complete corresponding sections and the series orde
 });
 
 
-test('README images exist, have captions, are independently displayed in light mode and leave no orphan assets', () => {
+test('README images have full-width captions, light UI captures and no orphan assets', () => {
   const referenced = [];
   for (const [language, text] of Object.entries(docs)) {
     const images = [...text.matchAll(/!\[([^\]]+)\]\(([^)\s]+)\)/g)].filter(match => !/^(?:https?:|data:)/.test(match[2]));
-    const expected = captures.map(name => 'assets/' + (language === 'en' ? 'en/' : '') + name);
+    const expected = captures.map(name => 'assets/' + (language === 'en' ? 'en/' : '') + name).concat(physicalImages);
     assert.deepEqual(images.map(match => match[2]), expected, language);
     for (const match of images) {
       const file = match[2], lineStart = text.lastIndexOf('\n', match.index) + 1;
@@ -186,7 +195,7 @@ test('README images exist, have captions, are independently displayed in light m
       const caption = text.slice(lineEnd).trimStart().split('\n')[0];
       assert.match(caption, /^> \*[^*\n]+\*$/, 'one-line caption: ' + file);
       assert.ok(fs.existsSync(path.join(root, file)), file);
-      assert.ok(pngBrightness(file) > 0.55, 'light image pixels: ' + file);
+      if (!physicalImages.includes(file)) assert.ok(pngBrightness(file) > 0.55, 'light UI image pixels: ' + file);
       referenced.push(file);
     }
     assert.doesNotMatch(text, /<table|<img[^>]*(?:width|height)\s*=|assets\/[^)\s]*dark/i);
@@ -196,6 +205,61 @@ test('README images exist, have captions, are independently displayed in light m
   assert.match(capture, /color_scheme='light'/);
   assert.match(capture, /get_attribute\('data-theme'\) == 'light'/);
   assert.match(capture, /\['sets'\]\[0\]\['text'\]/, 'screenshots use only the reference demo');
+});
+
+test('published physical evidence retains reviewed dimensions and excludes private image metadata', () => {
+  const hashes = [
+    'fac0a8b95610e406fe4e60fb2986caf7142aedfd4af2bf31a0ab2169371d73bb',
+    '194a975b64174340d7caff042b177b5c9072545112fc53d5c9e3dcc49d4c24dc',
+    '1a4f53690e85edd78708968e772a52314fa6abebcb7234388bc75bae39ba1910',
+    '713b87b77c1c381e80c111da54a24ea69a8484bd7a0177a034eccc6bd1d5c17b'
+  ];
+  for (let pair = 0; pair < physicalImages.length; pair += 2) {
+    const photo = fs.readFileSync(path.join(root, physicalImages[pair]));
+    const screen = fs.readFileSync(path.join(root, physicalImages[pair + 1]));
+    assert.equal(crypto.createHash('sha256').update(photo).digest('hex'),
+      hashes[pair], 'reviewed photo pixels and metadata-free file');
+    assert.equal(crypto.createHash('sha256').update(screen).digest('hex'),
+      hashes[pair + 1], 'reviewed recovery screenshot');
+    assert.equal(photo.readUInt16BE(0), 0xffd8, 'JPEG signature');
+    let position = 2, dimensions = null, ended = false;
+    while (position < photo.length) {
+      assert.equal(photo[position++], 0xff, 'JPEG marker');
+      while (photo[position] === 0xff) position++;
+      const marker = photo[position++];
+      if (marker === 0xd9) { ended = true; break; }
+      assert.ok(![0xe1, 0xed, 0xfe].includes(marker), 'no EXIF/XMP, IPTC, or comments');
+      assert.ok(position + 2 <= photo.length, 'JPEG segment length');
+      const length = photo.readUInt16BE(position);
+      assert.ok(length >= 2 && position + length <= photo.length, 'JPEG segment bounds');
+      if (marker >= 0xc0 && marker <= 0xcf && ![0xc4, 0xc8, 0xcc].includes(marker)) {
+        dimensions = [photo.readUInt16BE(position + 5), photo.readUInt16BE(position + 3)];
+      }
+      position += length;
+      if (marker === 0xda) {
+        while (position < photo.length) {
+          if (photo[position++] !== 0xff) continue;
+          while (photo[position] === 0xff) position++;
+          const next = photo[position];
+          if (next === 0 || (next >= 0xd0 && next <= 0xd7)) position++;
+          else { position--; break; }
+        }
+      }
+    }
+    assert.ok(ended, 'JPEG end marker'); assert.equal(position, photo.length, 'no trailing photo data');
+    assert.deepEqual(dimensions, [4032, 3024], 'unscaled original photo');
+    assert.equal(screen.subarray(0, 8).toString('hex'), '89504e470d0a1a0a', 'PNG signature');
+    assert.deepEqual([screen.readUInt32BE(16), screen.readUInt32BE(20)], [1320, 2868], 'unscaled recovery screenshot');
+    position = 8; ended = false;
+    while (position + 12 <= screen.length) {
+      const length = screen.readUInt32BE(position), type = screen.subarray(position + 4, position + 8).toString('ascii');
+      assert.ok(position + length + 12 <= screen.length, 'PNG chunk bounds');
+      assert.ok(!['eXIf', 'tEXt', 'zTXt', 'iTXt'].includes(type), 'no EXIF or text metadata: ' + type);
+      position += length + 12;
+      if (type === 'IEND') { ended = true; break; }
+    }
+    assert.ok(ended, 'PNG end marker'); assert.equal(position, screen.length, 'no trailing screenshot data');
+  }
 });
 
 test('README directory trees describe every actual release file and the test lists cover all test programs', () => {
@@ -213,22 +277,71 @@ test('README directory trees describe every actual release file and the test lis
   }
 });
 
-test('all seven physical scheme states stay untested and author trials are explicitly planned', () => {
+test('physical recovery is limited to two recorded configurations and other schemes remain untested', () => {
   const ids = Object.keys(vc.SCHEMES);
   assert.equal(ids.length, 7);
-  for (const scheme of Object.values(vc.SCHEMES)) assert.equal(scheme.status, 'untested');
+  for (const [id, scheme] of Object.entries(vc.SCHEMES)) assert.equal(scheme.status, id === '2-2' ? 'conditional' : 'untested');
   for (const [language, text] of Object.entries(docs)) {
-    const section = sections(text)[4].body, split = section.indexOf('### ');
-    assert.ok(split > 0, language + ': independent planned trial subsection');
-    const states = section.slice(0, split), planned = section.slice(split);
+    const section = sections(text)[4].body, states = section.slice(0, section.indexOf('### '));
+    const recorded = subsection(section, language === 'ja' ? '実物で復元を確認した条件' : 'Conditions with confirmed physical recovery');
+    const planned = subsection(section, language === 'ja' ? '作者の印刷試験予定' : 'Planned physical trials');
     for (const id of ids) {
       const name = '(' + id.replace('-', ',') + ')';
       const state = states.split('\n').find(line => line.startsWith('| ' + name + ' |'));
       const trial = planned.split('\n').find(line => line.startsWith('| ' + name + ' |'));
       assert.ok(state, language + ': status row ' + name); assert.ok(trial, language + ': trial row ' + name);
-      assert.match(state, language === 'ja' ? /未試験/ : /Untested/i);
+      if (id === '2-2') {
+        assert.match(state, language === 'ja' ? /復元確認.*条件限定/ : /recovery.*(?:limited|conditions)/i);
+        assert.match(state, /4\s*\/\s*M.*2\.54/);
+        assert.ok(state.includes('2.032'), language + ': both recorded sizes are scoped');
+      } else assert.match(state, language === 'ja' ? /未試験/ : /Untested/i);
       assert.match(trial, language === 'ja' ? /試験予定/ : /Planned/i);
-      assert.doesNotMatch(state, language === 'ja' ? /試験済み/ : /\|\s*Tested\s*\|/i);
+    }
+    for (const term of ['2026-10-24', '(2,2)', 'TA', 'TB', '2.54', '2.032', 'iPhone']) {
+      assert.ok(recorded.includes(term), language + ': recorded physical condition ' + term);
+    }
+    assert.match(recorded, language === 'ja' ? /版4.*M/ : /version 4.*M/i);
+    assert.match(recorded, language === 'ja' ? /トレース台/ : /light box/i);
+    const rows = recorded.split('\n').filter(line => line.startsWith('| '))
+      .map(line => line.split('|').slice(1, -1).map(cell => cell.trim().replace(/`/g, '')));
+    const header = rows.find(cells => cells[0] === (language === 'ja' ? '項目' : 'Item'));
+    assert.ok(header && header[1].includes('2.54') && header[2].includes('2.032'), language + ': size column order');
+    const recovered = rows.find(cells => cells[0] === (language === 'ja' ? '復元したテスト値' : 'Recovered test value'));
+    assert.ok(recovered, language + ': recovered values row');
+    assert.deepEqual(recovered.slice(1), ['TEST-B3967BF33EFC', 'TEST-24DE75D71F98'], language + ': test value per size');
+    const diagnosis = rows.find(cells => cells[0] === (language === 'ja' ? '画面の診断' : 'On-screen diagnosis'));
+    assert.ok(diagnosis, language + ': diagnosis row');
+    assert.deepEqual(diagnosis.slice(1), language === 'ja' ? ['○ 余裕あり', '× 不足'] : ['○ Adequate', '× Insufficient']);
+    assert.match(recorded, language === 'ja' ? /診断.*(?:濃淡|余裕)/ : /diagnos.*(?:contrast|margin)/i);
+    assert.match(recorded, language === 'ja' ? /復号.*(?:成否|成功)/ : /decod.*(?:success|successful)/i);
+    const unknown = recorded.split('\n').find(line => language === 'ja'
+      ? /自動.*手動.*未確認/.test(line) : /automatic.*manual.*unconfirmed/i.test(line));
+    assert.ok(unknown, language + ': unrecorded conditions are identified');
+    assert.match(unknown, language === 'ja' ? /自動.*手動/ : /automatic.*manual/i);
+    assert.match(recorded, language === 'ja' ? /成功回数や成功率は算出していません/ : /(?:not|no).*success (?:count|rate)/i);
+    assert.match(recorded, language === 'ja' ? /別のQR設定.*成功を示しません/ : /(?:does|do) not establish success.*different QR settings/i);
+    assert.match(recorded, language === 'ja' ? /ほかの6方式は未試験/ : /other six schemes remain untested/i);
+  }
+});
+
+test('light-source guidance separates unmeasured alternatives from the physical recovery record', () => {
+  for (const [language, text] of Object.entries(docs)) {
+    const light = subsection(sections(text)[3].body, language === 'ja' ? '光源の選び方' : 'Choosing a light source');
+    const sun = light.split('\n').find(line => /^\| /.test(line) && (language === 'ja' ? /太陽光/.test(line) : /sunlight/i.test(line)));
+    const screen = light.split('\n').find(line => /^\| /.test(line) && /iPad/.test(line));
+    assert.ok(sun && screen, language + ': alternative light-source rows');
+    for (const row of [sun, screen]) {
+      assert.match(row, language === 'ja' ? /未確認.*(?:原理|候補)/ : /not (?:yet )?(?:verified|tested)|unverified|unconfirmed/i);
+      assert.match(row, language === 'ja' ? /平ら/ : /flat/i);
+      assert.match(row, language === 'ja' ? /読み取り範囲全体/ : /entire.*(?:area|region)/i);
+    }
+    assert.match(sun, language === 'ja' ? /裏側.*反対側/ : /behind.*opposite/i);
+    assert.match(screen, language === 'ja' ? /白.*輝度.*別の/ : /white.*brightness.*(?:separate|another)/i);
+    assert.match(light, language === 'ja' ? /反射光/ : /reflect/i);
+    assert.match(light, language === 'ja' ? /2枚を通り抜けた光/ : /light.*(?:passes|passing).*both sheets/i);
+    assert.match(light, language === 'ja' ? /散乱と吸収/ : /scatter.*absorp/i);
+    for (const term of language === 'ja' ? ['暗部ノイズ', '露光時間', 'ぶれ'] : ['noise', 'exposure', 'blur']) {
+      assert.ok(light.includes(term), language + ': low-light limitation ' + term);
     }
   }
 });
@@ -315,11 +428,11 @@ test('README names, privacy boundaries, print route, related tools and inclusive
     if (language === 'ja') {
       assert.ok(/作者の紙による予備試験.*標準のカメラ.*読み取れませんでした/.test(usage), 'record the failed paper-camera observation');
       assert.ok(usage.includes('標準のカメラで読める保証はありません'), 'no standard-camera guarantee');
-      assert.ok(/公開版OQS v1.*全方式が未試験/.test(usage), 'prototype observation does not certify the release');
+      assert.match(usage, /公開版OQS v1.*\(2,2\).*版4.*M.*2\.54mm.*実物の復元/, 'scope the later physical observation');
     } else {
       assert.ok(/preliminary paper trial.*standard camera.*could not read/i.test(usage), 'record the failed paper-camera observation');
       assert.ok(/standard camera apps is not guaranteed/i.test(usage), 'no standard-camera guarantee');
-      assert.ok(/all schemes.*OQS v1.*remain untested/i.test(usage), 'prototype observation does not certify the release');
+      assert.match(usage, /OQS v1.*\(2,2\).*version 4.*M.*2\.54mm/i, 'scope the later physical observation');
     }
     const print = sections(text)[8].body;
     for (const term of ['USB', 'Wi-Fi', 'LAN', 'WSD', 'HTTP', 'PDF']) assert.ok(print.includes(term), language + ': print route ' + term);

@@ -27,9 +27,9 @@
     stepRead: 'テストを読む',
     stepSecret: '本番',
     prepareTitle: '用意するもの',
-    prepareBody: 'A4の紙、プリンター、トレース台、カメラ付きの端末。このページで、印刷面どうしを重ねたシートを読みます。',
+    prepareBody: 'A4の紙、プリンター、トレース台などの背面光源、カメラ付きの端末。このページで、印刷面どうしを重ねたシートを読みます。',
     trialTitle: 'まず、テスト印刷から',
-    trialBody: '印刷と素材で結果が変わります。全方式が未試験です。秘密を刷る前に、お使いの環境で戻せることを確かめます。',
+    trialBody: '限られた条件で、2つの寸法の実物復元を確認しました。ほかの設定は未試験です。秘密を刷る前に、お使いの環境で戻せることを確かめます。',
     stageNotice: '現在は画面と基礎処理の確認用です。シートの作成・印刷はまだ利用できません。',
     readEyebrow: '光を通して読む',
     readTitle: '印刷面どうしを合わせる。',
@@ -37,7 +37,7 @@
     overlayPlace: '1枚を印刷面を上にして置きます。',
     overlayFlip: 'もう1枚を上下方向に裏返して、印刷面を下にして重ねます。印刷面どうしが触れるようにします。',
     overlayAlign: '上の見本の大きな四角が3つとも1本の線になるまで合わせます。紙の端では合わせません。',
-    overlayLight: 'トレース台の上に置き、部屋の照明を消して、真上から撮ります。',
+    overlayLight: 'トレース台などの背面光源に置き、部屋の照明を消して、真上から撮ります。',
     filmOverlay: '3枚以上を全部使う方式は透明フィルム専用・未試験です。全シートの上の正像を揃えます。3枚以上の印刷面をすべて互いに接触させることはできません。',
     cameraNotice: '紙では標準のカメラで読めませんでした。このページの「重ねて読む」が必要です。',
     guideEyebrow: '使う前に知っておくこと',
@@ -55,7 +55,7 @@
     helpContent: '使い方の説明',
     helpIntro: 'Overlay QR Sharesは、QRコードを視覚暗号で複数のシートに分け、重ねて読むためのツールです。',
     helpPrepareTitle: '印刷の前に',
-    helpPrepare: 'テスト用のシートで、印刷・位置合わせ・読み取りを確かめてから本番へ進みます。全方式が未試験です。',
+    helpPrepare: 'テスト用のシートで、印刷・位置合わせ・読み取りを確かめてから本番へ進みます。復元できた2つの寸法も、別の環境での復元は保証しません。',
     helpPrivacyTitle: '秘密の扱い',
     helpPrivacy: '秘密を外部に送らず、保存しません。印刷の経路、プリンターの記憶、PDFのクラウド同期には別の注意が必要です。',
     helpKeysTitle: 'キーボード',
@@ -68,6 +68,7 @@
     filmTitle: '全部を使う方式：透明フィルム専用',
     filmNote: '3枚以上を使う方式は未試験です。紙では印刷面どうしを合わせられません。プリンターが対応する透明フィルムだけを使います。',
     schemePrimary: '未試験 · (2,2) · 紙で試すときの基本の方式です。',
+    schemePrimaryTested: '実物で復元確認（条件限定） · (2,2) · ほかの印刷・読み取り環境での復元は保証しません。',
     schemeExperimental: n => `未試験・実験的 · (2,${n}) · ${n}枚のうち、どれか2枚を重ねます。`,
     schemeFilm: n => `未試験・透明フィルム専用 · (${n},${n}) · ${n}枚すべてが必要です。`,
     sizeLabel: 'モジュール寸法',
@@ -76,7 +77,7 @@
     sizeHint: (r, c, y, x, max) => `1モジュールを${r}行×${c}列に分けます。細かな区画は縦${y} mm × 横${x} mm。容量は${max}バイトです。`,
     fitNote: 'A4に収まる版だけを選べます。2.54 mmでは版3・4、2.032 mmでは版3〜7です。',
     testTitle: '2　テスト用のシートを作る',
-    testIntro: 'まず秘密を使わず、印刷と読み取りを確かめます。全方式が未試験です。記号TA・TBなどでテスト用のシートを区別します。',
+    testIntro: 'まず秘密を使わず、印刷と読み取りを確かめます。実物では限られた条件の2つの寸法で復元を確認しています。記号TA・TBなどでテスト用のシートを区別します。',
     testSeparatePages: '収まる寸法ごとに別のA4シートを作ります。2.032 mmと2.54 mmの組を混ぜず、同じ寸法とセットIDで重ねてください。',
     makeTest: 'テスト用のシートを作る',
     testReadTitle: '3　印刷したテストを読む',
@@ -127,6 +128,7 @@
     printAlign: '紙の端ではなく、3つの大きな四角で合わせる',
     printTest: 'TEST · テスト印刷',
     printUntested: '未試験',
+    printTested: '復元実例あり',
     printKeep: '物差しを測る / 片面・100% / 刷り損じは処分'
   };
   const en = {
@@ -149,9 +151,11 @@
     stepRead: 'Read the test',
     stepSecret: 'Your secret',
     prepareTitle: 'What you need',
-    prepareBody: 'A4 paper, a printer, a light box, and a device with a camera. Use this page to read sheets with their printed faces touching.',
+    prepareBody: 'A4 paper, a printer, a backlight such as a light box, and a device with a camera. '
+      + 'Use this page to read sheets with their printed faces touching.',
     trialTitle: 'Start with a test print',
-    trialBody: 'Results depend on the printer and material. All schemes are untested. Check recovery in your setup before printing a secret.',
+    trialBody: 'Physical recovery has been confirmed at two module sizes under limited conditions. '
+      + 'Other settings remain untested. Test recovery in your setup before printing a secret.',
     stageNotice: 'This build is for checking the interface and core operations. Sheet creation and printing are not available yet.',
     readEyebrow: 'Read with transmitted light',
     readTitle: 'Put printed faces together.',
@@ -159,7 +163,7 @@
     overlayPlace: 'Place one sheet with its printed face up.',
     overlayFlip: 'Flip the other sheet top to bottom and place it printed face down. The two printed faces must touch.',
     overlayAlign: 'Align all three large squares in the upper sample until each has a single outline. Do not align the paper edges.',
-    overlayLight: 'Place the sheets on a light box, turn off the room lights, and photograph them from directly above.',
+    overlayLight: 'Place the sheets on a backlight such as a light box, turn off the room lights, and photograph them from directly above.',
     filmOverlay: 'All-sheet schemes with three or more sheets are untested and require transparent film. '
       + 'Align every upper normal sample. All printed faces cannot touch each other at once.',
     cameraNotice: 'Standard camera readers could not read the paper trials. Use “Overlay & read” on this page.',
@@ -180,7 +184,8 @@
     helpContent: 'Help instructions',
     helpIntro: 'Overlay QR Shares divides a QR code into visual cryptography sheets for recovery by overlay.',
     helpPrepareTitle: 'Before printing',
-    helpPrepare: 'Check printing, alignment, and reading with test sheets before using a real secret. All schemes are untested.',
+    helpPrepare: 'Check printing, alignment, and reading with test sheets before using a real secret. '
+      + 'Recovery at the two confirmed sizes does not guarantee recovery in another setup.',
     helpPrivacyTitle: 'Handling secrets',
     helpPrivacy: 'Secrets are neither sent externally nor saved. The print route, printer memory, and cloud sync of saved PDFs need separate care.',
     helpKeysTitle: 'Keyboard',
@@ -193,6 +198,7 @@
     filmTitle: 'All-sheet schemes: transparent film only',
     filmNote: 'Schemes using three or more sheets are untested. Their printed faces cannot all touch on paper. Use only printer-compatible film.',
     schemePrimary: 'Untested · (2,2) · The primary scheme for paper trials.',
+    schemePrimaryTested: 'Physical recovery confirmed (limited conditions) · (2,2) · Recovery in other printing or reading setups is not guaranteed.',
     schemeExperimental: n => `Untested / experimental · (2,${n}) · Overlay any two of the ${n} sheets.`,
     schemeFilm: n => `Untested / transparent film only · (${n},${n}) · All ${n} sheets are required.`,
     sizeLabel: 'Module size',
@@ -201,7 +207,8 @@
     sizeHint: (r, c, y, x, max) => `${r} rows × ${c} columns per module. Subpixels: ${y} mm high × ${x} mm wide. Capacity: ${max} bytes.`,
     fitNote: 'Only versions that fit A4 are available: versions 3–4 at 2.54 mm, or versions 3–7 at 2.032 mm.',
     testTitle: '2  Create test sheets',
-    testIntro: 'First check printing and reading without a secret. Every scheme is untested. Test sheets use symbols such as TA and TB.',
+    testIntro: 'First check printing and reading without a secret. '
+      + 'Physical recovery has been confirmed at two sizes under limited conditions. Test sheets use symbols such as TA and TB.',
     testSeparatePages: 'Each size has separate A4 sheets. Keep the 2.032 mm and 2.54 mm sets separate. Overlay sheets with the same size and set ID.',
     makeTest: 'Create test sheets',
     testReadTitle: '3  Read the printed test',
@@ -254,6 +261,7 @@
     printAlign: 'Align the three large squares, not the paper edges',
     printTest: 'TEST PRINT',
     printUntested: 'Untested',
+    printTested: 'Trial recorded',
     printKeep: 'Measure the ruler / Single-sided, 100% / Destroy failed prints'
   };
   Object.assign(ja, {
