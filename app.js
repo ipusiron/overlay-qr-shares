@@ -598,7 +598,7 @@
     }
   }
   function renderEducation() {
-    const figure = (name, draw, target) => {
+    const figure = (name, draw, target, legends = []) => {
       const container = element('figure', 'instruction-figure');
       const svg = svgElement('svg', { viewBox: '0 0 256 170', width: 256, height: 170, role: 'img',
         'aria-label': t(name), 'font-family': "Meiryo, 'Yu Gothic', sans-serif" });
@@ -606,6 +606,12 @@
       draw(svg);
       const caption = element('figcaption');
       caption.append(element('strong', '', t(name)), element('p', '', t(name + 'Body')));
+      if (legends.length) {
+        container.classList.add('alignment-figure');
+        const list = element('ol', 'diagram-legend');
+        list.append(...legends.map(key => element('li', '', t(key))));
+        caption.append(list);
+      }
       container.append(svg, caption);
       $(target).append(container);
     };
@@ -616,32 +622,51 @@
     const letter = (svg, x, y, text, fill) => svg.append(svgElement('text', {
       x, y, fill: fill || '#111', 'font-size': 30, 'font-weight': 700, 'text-anchor': 'middle'
     }, text));
-    const arrowDown = (svg, x, from, to) => {
-      line(svg, x, from, x, to - 12);
-      svg.append(svgElement('polygon', { points: `${x - 6},${to - 12} ${x + 6},${to - 12} ${x},${to}`, fill: '#111' }));
-    };
+    const label = (svg, x, y, text) => svg.append(svgElement('text', {
+      x, y, fill: '#111', 'font-size': 15, 'font-weight': 700, 'text-anchor': 'middle'
+    }, text));
     const finder = (svg, x, y) => { rect(svg, x, y, 30, 30, '#111'); rect(svg, x + 6, y + 6, 18, 18, '#fff');
       rect(svg, x + 11, y + 11, 8, 8, '#111'); };
     $('setup-diagrams').replaceChildren();
     figure('diagramFlip', svg => {
-      rect(svg, 24, 48, 76, 86); line(svg, 24, 50, 100, 50); letter(svg, 62, 103, 'A');
-      rect(svg, 151, 18, 76, 52); line(svg, 151, 20, 227, 20); letter(svg, 189, 55, 'B');
-      arrowDown(svg, 189, 79, 112);
-      rect(svg, 151, 123, 76, 20); line(svg, 151, 141, 227, 141);
-      svg.append(svgElement('path', { d: 'M130 38L130 24Q130 18 136 18L142 18L142 45L151 51',
-        fill: 'none', stroke: '#111', 'stroke-width': 3 }));
+      label(svg, 63, 23, t('diagramFaceUp')); label(svg, 200, 23, t('diagramFaceDown'));
+      rect(svg, 32, 42, 64, 102); rect(svg, 169, 42, 64, 102);
+      svg.append(svgElement('rect', { x: 32, y: 42, width: 64, height: 5, fill: '#111' }));
+      svg.append(svgElement('rect', { x: 169, y: 139, width: 64, height: 5, fill: '#111' }));
+      label(svg, 20, 51, '1'); label(svg, 20, 144, '2');
+      label(svg, 157, 51, '2'); label(svg, 157, 144, '1');
+      letter(svg, 64, 105, 'B');
+      const back = svgElement('g', { transform: 'translate(0 186) scale(1 -1)' });
+      letter(back, 201, 105, 'B'); svg.append(back);
+      line(svg, 108, 92, 133, 92);
+      svg.append(svgElement('polygon', { points: '133,86 133,98 145,92', fill: '#111' }));
     }, 'setup-diagrams');
     figure('diagramLight', svg => {
       rect(svg, 102, 12, 52, 30, '#111'); rect(svg, 122, 19, 14, 14, '#fff');
-      line(svg, 128, 48, 128, 64);
-      rect(svg, 28, 77, 200, 13); rect(svg, 28, 91, 200, 13);
-      line(svg, 28, 90, 228, 90);
-      rect(svg, 28, 143, 200, 15);
-      for (const x of [64, 128, 192]) {
+      letter(svg, 24, 80, 'B'); letter(svg, 24, 104, 'A');
+      rect(svg, 48, 62, 180, 20); rect(svg, 48, 82, 180, 20);
+      svg.append(svgElement('rect', { x: 48, y: 79, width: 180, height: 6, fill: '#111' }));
+      rect(svg, 48, 143, 180, 15);
+      for (const x of [80, 138, 196]) {
         line(svg, x, 136, x, 122);
         svg.append(svgElement('polygon', { points: `${x - 6},122 ${x + 6},122 ${x},110`, fill: '#111' }));
       }
     }, 'setup-diagrams');
+    figure('diagramAlign', svg => {
+      rect(svg, 61, 30, 115, 115);
+      finder(svg, 66, 35); finder(svg, 141, 35); finder(svg, 66, 110);
+      rect(svg, 184, 30, 19, 115);
+      for (let row = 0; row < 10; row++) {
+        svg.append(svgElement('rect', { x: 187, y: 34 + row * 11, width: row % 3 ? 13 : 6, height: 5, fill: '#111' }));
+      }
+      for (const [x, y] of [[44, 13], [210, 13], [210, 152], [44, 152]]) rect(svg, x, y, 9, 9, '#111');
+      rect(svg, 46, 15, 5, 5, '#fff', '#fff');
+      svg.append(svgElement('rect', { x: 38, y: 80, width: 12, height: 5, fill: '#111' }));
+      svg.append(svgElement('rect', { x: 38, y: 86, width: 12, height: 5, fill: '#111' }));
+      label(svg, 122, 94, '1'); line(svg, 133, 81, 145, 69);
+      label(svg, 238, 156, '2'); line(svg, 228, 153, 223, 153);
+      label(svg, 16, 91, '3'); line(svg, 25, 85, 31, 85);
+    }, 'setup-diagrams', ['diagramAlignFinder', 'diagramAlignCorner', 'diagramAlignRectangle']);
     figure('diagramWrongFour', svg => {
       for (const [x, y] of [[43, 25], [183, 25], [43, 115], [183, 115]]) finder(svg, x, y);
       line(svg, 111, 72, 145, 106); line(svg, 145, 72, 111, 106);

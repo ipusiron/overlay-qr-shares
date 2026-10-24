@@ -1,6 +1,7 @@
 """Browser gates for Overlay QR Shares. Uses local demo data only."""
 import argparse
 import json
+import re
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
@@ -20,6 +21,43 @@ def measure(page, label):
     assert result['overflow'] == 0, (label, result)
     assert not result['small'], (label, result)
     return result
+
+
+def read_instructions(page, language):
+    """The reader tab must contain the whole preparation flow and translated diagrams."""
+    panel = page.locator('#panel-read')
+    dictionary = page.evaluate("""language => Object.fromEntries(Object.entries(OQS.messages[language])
+      .filter(([, value]) => typeof value === 'string'))""", language)
+    step_keys = ['overlayPlace', 'overlayFlip', 'overlayContact', 'overlayAlign', 'overlayMarks']
+    required = ['overlayStepsTitle', 'overlayPair', 'overlaySeparateMarks', 'overlayLight']
+    required += [key + suffix for key in step_keys for suffix in ('Title', '')]
+    for key in required:
+        text = panel.locator('[data-i18n="' + key + '"]')
+        assert text.count() == 1 and text.is_visible(), (language, key, 'instruction visible inside reader tab')
+        assert text.inner_text() == dictionary[key], (language, key, 'current translation')
+    steps = panel.locator('.overlay-steps > li').evaluate_all("""items => items.map(item => ({
+      title:item.querySelector('strong')?.dataset.i18n, body:item.querySelector('p')?.dataset.i18n
+    }))""")
+    assert steps == [{'title': key + 'Title', 'body': key} for key in step_keys], (language, steps)
+    diagrams = ['diagramFlip', 'diagramLight', 'diagramAlign', 'diagramWrongFour', 'diagramWrongFace']
+    figures = panel.locator('#setup-diagrams figure')
+    assert figures.count() == len(diagrams), (language, 'all preparation diagrams are in reader tab')
+    svg_text = []
+    for key in diagrams:
+        svg = panel.get_by_role('img', name=dictionary[key], exact=True)
+        assert svg.count() == 1 and svg.is_visible(), (language, key, 'translated accessible diagram')
+        figure = svg.locator('..')
+        assert figure.locator('figcaption strong').inner_text() == dictionary[key], (language, key, 'matching title')
+        assert figure.locator('figcaption p').first.inner_text() == dictionary[key + 'Body'], (language, key, 'matching explanation')
+        svg_text += [text.strip() for text in svg.locator('text').all_text_contents() if text.strip()]
+        if key == 'diagramAlign':
+            legend_keys = ['diagramAlignFinder', 'diagramAlignCorner', 'diagramAlignRectangle']
+            assert figure.locator('figcaption li').all_text_contents() == [dictionary[name] for name in legend_keys]
+    for key in ('diagramFaceUp', 'diagramFaceDown'):
+        assert dictionary[key] in svg_text, (language, key, 'printed-face direction shown in diagram')
+    for text in svg_text:
+        assert text in dictionary.values() or re.fullmatch(r'[A-E0-9\s+×=().,:-]+', text), (language, text, 'localized SVG text')
+    return {'steps': len(steps), 'diagrams': len(diagrams), 'legendItems': len(legend_keys), 'svgTextChecked': len(svg_text)}
 
 
 def interface(browser, name, width, results, stage, base_url=None):
@@ -58,6 +96,8 @@ def interface(browser, name, width, results, stage, base_url=None):
                         panel_id = page.locator('#' + other).get_attribute('aria-controls')
                         assert not page.locator('#' + panel_id).is_visible()
                 data = measure(page, (name, width, language, theme, tab))
+                if tab == 'tab-read':
+                    data['readInstructions'] = read_instructions(page, language)
                 results.append({'browser':name, 'width':width, 'language':language,
                                 'theme':theme, 'tab':tab, **data})
             page.click('#help')

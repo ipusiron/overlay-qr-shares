@@ -70,9 +70,16 @@ Versions 3 and 4 produce separate test sets for 2.032mm and 2.54mm; each sheet i
 Versions 5–7 fit only at 2.032mm.
 Do not mix sheets with different sizes or set IDs, even if both carry the symbol TA.
 
-For two paper sheets, place one printed face up, then flip the other top to bottom and place it printed face down.
-Keep the printed faces in contact and align the three large squares (finder patterns) in the upper sample until each outline forms a single line.
-Either sheet may be the one that is flipped.
+The two-sheet example uses A and B (TA and TB for a test print).
+
+1. **Place A flat with its printed face up.**
+2. **Turn B over top to bottom, not left to right, so its printed face points down.** Its top and bottom edges exchange places. This is not a 180-degree rotation flat on the table.
+3. **Place B on top of A, with B's printed face directly touching A's printed face.**
+
+Align the three large squares (finder patterns) of the upper QR until the corresponding outlines from both sheets coincide.
+Use the surrounding small squares (one is hollow) as secondary references: match corresponding positions on the two sheets.
+**The black rectangles halfway along the side of the QR do not need to overlap each other.** Do not shift the sheets just to make these rectangles overlap.
+Include the upper QR and its surrounding small squares in the camera frame.
 Also check that the reflected “FLIPPED OK” label is readable.
 Do not align the paper edges.
 A printer's positional offset doubles when one sheet is flipped; the author's preliminary trial produced a 3mm offset.
