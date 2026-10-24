@@ -43,7 +43,7 @@ The round buttons at the top right control the theme, language, and help.
 > *A demo A4 sheet with a normal sample above and its vertical reflection below.*
 
 ![Overlay reading instructions](assets/en/overlay-read.png)
-> *Printed faces in contact, a light box, alignment, and examples of incorrect placement.*
+> *① Put printed faces together; ② Read with camera. Both sections start open and can be collapsed independently.*
 
 ![Principles and limits](assets/en/limits.png)
 > *Overlaying black and white patterns, and tradeoffs with numerical secret sharing.*
@@ -111,6 +111,11 @@ Changes that alter the patterns invalidate the old set, and stale results from w
 Changing the language or theme does not regenerate the set.
 
 ### 3. Read the overlay
+
+The tab has two sections: “① Put printed faces together” and “② Read with camera.”
+Both start open; select either heading to collapse or expand that section.
+Once the sheets are ready, you can collapse section ① and use section ② to read them.
+Closing section ② stops the camera. Reopening it does not restart the camera automatically.
 
 “Read with camera” requests the rear camera.
 Processing proceeds through registration-mark candidates, finder patterns, the metadata band, illumination, and module contrast.

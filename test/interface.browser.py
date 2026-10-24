@@ -60,6 +60,57 @@ def read_instructions(page, language):
     return {'steps': len(steps), 'diagrams': len(diagrams), 'legendItems': len(legend_keys), 'svgTextChecked': len(svg_text)}
 
 
+def read_accordions(page, label):
+    """Native sections toggle independently and keep their state across UI rendering."""
+    setup = page.locator('details#overlay-setup')
+    camera = page.locator('details#reader-camera')
+    assert setup.count() == camera.count() == 1, (label, 'two native reader sections')
+    assert setup.locator(':scope > summary').count() == camera.locator(':scope > summary').count() == 1
+    assert setup.locator('.overlay-steps').count() == setup.locator('#setup-diagrams').count() == 1
+    for selector in ('#camera-button', '#camera-status', '#manual-view', '#read-result', '#diagnostic'):
+        assert camera.locator(selector).count() == 1, (label, selector, 'inside camera section')
+
+    def state(expected, detail):
+        actual = page.locator('#overlay-setup, #reader-camera').evaluate_all(
+            '(els) => Object.fromEntries(els.map(el => [el.id, el.open]))')
+        assert actual == expected, (label, detail, actual)
+        assert setup.locator('.overlay-steps').is_visible() == expected['overlay-setup']
+        assert setup.locator('#setup-diagrams').is_visible() == expected['overlay-setup']
+        assert camera.locator('#camera-button').is_visible() == expected['reader-camera']
+        assert setup.locator(':scope > summary').is_visible() and camera.locator(':scope > summary').is_visible()
+        measure(page, (label, detail))
+
+    def preserve(expected):
+        for control, attribute in (('language', 'lang'), ('theme', 'data-theme')):
+            before = page.locator('html').get_attribute(attribute)
+            page.click('#' + control)
+            assert page.locator('html').get_attribute(attribute) != before
+            state(expected, control + ' changed with independent section state')
+            page.click('#' + control)
+            assert page.locator('html').get_attribute(attribute) == before
+            state(expected, control + ' restored with independent section state')
+
+    page.click('#tab-read')
+    state({'overlay-setup': True, 'reader-camera': True}, 'both sections initially open')
+    setup.locator(':scope > summary').focus()
+    page.keyboard.press('Enter')
+    expected = {'overlay-setup': False, 'reader-camera': True}
+    state(expected, 'Enter closes only setup')
+    preserve(expected)
+    camera.locator(':scope > summary').focus()
+    page.keyboard.press('Space')
+    state({'overlay-setup': False, 'reader-camera': False}, 'Space closes camera while setup stays closed')
+    setup.locator(':scope > summary').focus()
+    page.keyboard.press('Space')
+    expected = {'overlay-setup': True, 'reader-camera': False}
+    state(expected, 'Space opens only setup')
+    preserve(expected)
+    camera.locator(':scope > summary').focus()
+    page.keyboard.press('Enter')
+    state({'overlay-setup': True, 'reader-camera': True}, 'Enter restores both sections for instruction checks')
+    return {'initialOpen': True, 'keyboardToggles': 4, 'preservedLanguageThemeChanges': 8, 'independent': True}
+
+
 def interface(browser, name, width, results, stage, base_url=None):
     context = browser.new_context(viewport={'width': width, 'height': 960}, locale='ja-JP',
                                   color_scheme='light', reduced_motion='reduce',
@@ -74,6 +125,7 @@ def interface(browser, name, width, results, stage, base_url=None):
     assert page.locator('html').get_attribute('lang') == 'ja'
     tab_ids = page.locator('[role=tab]').evaluate_all('(els) => els.map(e => e.id)')
     assert len(tab_ids) == 3
+    accordions = read_accordions(page, (name, width))
     for language in ('ja', 'en'):
         if page.locator('html').get_attribute('lang') != language:
             page.click('#language')
@@ -98,6 +150,7 @@ def interface(browser, name, width, results, stage, base_url=None):
                 data = measure(page, (name, width, language, theme, tab))
                 if tab == 'tab-read':
                     data['readInstructions'] = read_instructions(page, language)
+                    data['readAccordions'] = accordions
                 results.append({'browser':name, 'width':width, 'language':language,
                                 'theme':theme, 'tab':tab, **data})
             page.click('#help')

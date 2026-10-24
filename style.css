@@ -391,6 +391,24 @@ button:disabled {
 .camera-actions {
   margin-top: 1.5rem;
 }
+.reader-section {
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--line);
+}
+.reader-section > summary {
+  min-height: 44px;
+  padding: .85rem 0;
+  color: var(--ink);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.reader-section > summary::marker {
+  color: var(--accent);
+}
+.reader-section[open] > summary {
+  margin-bottom: 1rem;
+}
 .overlay-steps li {
   padding-left: .25rem;
   margin-bottom: 1.25rem;
