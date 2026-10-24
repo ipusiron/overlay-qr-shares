@@ -12,7 +12,7 @@ English · [日本語](README.md)
 
 Overlay QR Shares is a tool that splits a QR code containing a secret string into 2–5 visual cryptography sheets, then reads the required overlay with a camera.
 Choose “any two” or “all” to try keeping short recovery codes, safe combinations, and similar information in separate places.
-In the author's physical trials on 2026-10-24, an iPhone recovered overlays of two paper sheets using (2,2), version 4, M, and a light box at both 2.54mm and 2.032mm module sizes.
+In the author's physical trials on 2026-10-24, this tool running on an iPhone recovered overlays of two paper sheets using (2,2), version 4, M, and a light box at both 2.54mm and 2.032mm module sizes.
 This confirmation applies only to the recorded conditions; before entering a real secret, complete a test print and recovery using the intended printer and material.
 
 The name combines “overlay” for placing sheets on top of one another, “QR” for the code, and “shares” for the distributed pieces.
@@ -46,7 +46,7 @@ The round buttons at the top right control the theme, language, and help.
 > *① Put printed faces together; ② Read with camera. Both sections start open and can be collapsed independently.*
 
 ![Principles and limits](assets/en/limits.png)
-> *Overlaying black and white patterns, and tradeoffs with numerical secret sharing.*
+> *Overlaying black and white patterns, compared with numerical secret sharing.*
 
 ## ✨ Features
 
@@ -87,8 +87,9 @@ A printer's positional offset doubles when one sheet is flipped; the author's pr
 Pass enough light through the back of the stacked paper and capture it from the opposite side.
 A light box makes it easier to keep the sheets flat; reduce room lighting if it causes excessive surface reflections.
 If four large squares appear, check how the sheet was flipped; if only one sheet's text looks faded, check that the printed faces touch.
-In the author's preliminary paper trial, a standard camera app could not read the overlaid pattern.
-Reading with standard camera apps is not guaranteed.
+In the author's preliminary paper trial, the iPhone's standard QR reader displayed no reading result.
+That observation alone does not identify whether the process stopped at QR location detection, decoding, or result display.
+Reading with standard QR readers is not guaranteed.
 Use the “Read overlay” tab, and verify that the test value is recovered before proceeding to production.
 This is a user's confirmation and does not change the published scheme status to physically tested.
 Separately from those preliminary observations, physical recovery with the released OQS v1 format has been confirmed for the (2,2), version 4, M, 2.54mm and 2.032mm conditions documented below.
@@ -111,6 +112,13 @@ Changes that alter the patterns invalidate the old set, and stale results from w
 Changing the language or theme does not regenerate the set.
 
 ### 3. Read the overlay
+
+For practical recovery, use the dedicated recovery feature in this tool’s “Read overlay” tab.
+It corrects perspective and illumination, averages subpixel darkness within each module to classify black and white, and decodes the reconstructed ordinary QR.
+“Dedicated” describes the feature provided here; it does not mean that only this app can recover the secret.
+Another reader implementing the same preprocessing can also recover it.
+The included [read_photo.py](read_photo.py) is an independent implementation that reconstructs an ordinary black-and-white QR image from a photograph.
+It outputs PBM and does not decode the text.
 
 The tab has two sections: “① Put printed faces together” and “② Read with camera.”
 Both start open; select either heading to collapse or expand that section.
@@ -186,7 +194,7 @@ The white and black figures below are black-area fractions under ideal stacking 
 
 ### Conditions with confirmed physical recovery
 
-The author's supplied photographs and reading screens confirm recovery of the respective test values under the following two conditions.
+The author's supplied photographs and screens from this tool’s “Read overlay” feature confirm recovery of the respective test values under the following two conditions.
 The author explicitly confirmed the 2.54mm module size; the printed label in the additional photograph identifies the 2.032mm size.
 
 | Item | 2.54mm example | 2.032mm example |
@@ -207,7 +215,7 @@ In the 2.032mm example, the string was decoded despite the “Insufficient” di
 > *The author's physical trial: paper sheets TA and TB on a light box, using (2,2), version 4, M, and 2.54mm modules.*
 
 ![Test value recovered on an iPhone](assets/physical/iphone-recovery.png)
-> *The supplied iPhone screen shows recovered TEST-B3967BF33EFC and an “Adequate” diagnosis in Japanese.*
+> *The supplied iPhone screen shows this tool recovering TEST-B3967BF33EFC with an “Adequate” diagnosis in Japanese.*
 
 ![Physical 2.032mm TA and TB sheets on a light box](assets/physical/tracebox-ta-tb-2_032.jpg)
 > *The additional trial stacks TA and TB using (2,2), version 4, M, and 2.032mm modules on the same light box.*
@@ -267,7 +275,7 @@ It also creates normal and mirrored synthetic images of one representative subse
 These are functional checks.
 They do not establish physical print quality, the security of the entire implementation, or the absence of deliberate alteration.
 
-## ⚖️ Tradeoffs with Day124
+## ⚖️ Comparison with Scatter Seeds
 
 | Aspect | Day125 Overlay QR Shares | Day124 Scatter Seeds |
 |---|---|---|
@@ -276,9 +284,13 @@ They do not establish physical print quality, the security of the entire impleme
 | Sheet counts | (2,2)–(2,5) and (3,3)–(5,5) | Select threshold k and total n |
 | Capacity | 62 bytes at version 4/M; up to 122 bytes in the supported range | A numerical format for strings and seeds; see that tool's limits |
 | Errors and tampering | Band CRC and QR error correction; no authentication of deliberate changes | CRC, a short fingerprint, and consistency of extra shares; no authentication tag |
+| Information exposed | Format version, scheme, QR version, error correction level, module size, set ID, and fixed patterns are public. Version and error correction reveal the capacity limit, but the actual input byte length is not directly published | Format version, set ID, threshold, total count, share index, and share-data length are public. Share-data length reveals the secret’s byte length. The secret type and short fingerprint are split into shares, not published in plaintext |
 | Plaintext during recovery | The overlaid pattern, camera image, and reading device | The device performing reconstruction |
 | Main constraints | Printing, material, illumination, misalignment, and local distortion | Trust in share input and numerical implementation |
 
+In Scatter Seeds, byte length means UTF-8 length for text or the original entropy length for BIP39.
+
+With the public conditions above fixed and independent uniform randomness, the ideal models of both schemes reveal no additional information about the secret’s content from fewer than the required number of shares.
 Both approaches assume that the creator can see the secret, that holders of enough shares can cooperate, and that devices and printing routes must be trusted.
 Choose after considering the differences in computation and physical handling.
 
@@ -395,7 +407,7 @@ The reference (2,2), version 4, M, 2.54mm set with ID `M9VH` has this band:
 
 ## 🐍 Recovery without the browser tool
 
-[read_photo.py](read_photo.py) uses only the Python standard library to turn a PNG photograph of an overlay into a QR image in PBM format.
+[read_photo.py](read_photo.py) uses only the Python standard library to reconstruct an ordinary black-and-white QR image in PBM format from a PNG photograph of an overlay.
 It needs neither the original secret, the original QR, nor a JavaScript runtime.
 Specify the centers of the four registration marks in image order: top left, top right, bottom right, bottom left.
 
@@ -414,7 +426,7 @@ Output has a four-module quiet zone on each side and an initial scale of 8; `--s
 If necessary, use `--threshold-offset` with `-0.2`, `-0.1`, `0`, `0.1`, or `0.2` to adjust classification relative to the calibrated contrast, trying a different output filename.
 Existing output files are not overwritten.
 
-Python does not decode the QR into a string, so recovery of the secret string remains unverified.
+The script itself does not decode the QR into a string, and it does not verify the string that a separate QR reader recovers from its output.
 Exit code 0 means only that a PBM was produced; a separate QR reader is needed.
 Exit code 1 indicates an input, band, calibration, or output error, and 2 indicates invalid command-line arguments.
 The PBM stores the recovered secret as a QR image and must be handled like the secret itself.

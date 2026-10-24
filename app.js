@@ -709,7 +709,7 @@
       $('six-patterns').append(svg);
     }
     $('comparison-rows').replaceChildren();
-    for (const key of ['comparePrinciple', 'compareNeeds', 'compareCapacity', 'compareTamper', 'compareCount', 'comparePlain']) {
+    for (const key of ['comparePrinciple', 'compareNeeds', 'compareCapacity', 'compareLeak', 'compareTamper', 'compareCount', 'comparePlain']) {
       const row = element('tr');
       const heading = element('th', '', t(key));
       heading.scope = 'row';

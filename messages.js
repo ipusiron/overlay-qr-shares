@@ -52,7 +52,7 @@
     overlaySeparateMarks: '上下2つのQRの間に並ぶ小さい四角は、それぞれ別のQRの角の目印です。この一対を互いに1個へ重ねるものではありません。',
     overlayLight: '背面光源（トレース台など）の上で、真上から撮ります。周囲の小さい四角もカメラに入れてください。部屋の照明の映り込みを避けます。',
     filmOverlay: '3枚以上を全部使う方式は透明フィルム専用・未試験です。全シートの上の正像を揃えます。3枚以上の印刷面をすべて互いに接触させることはできません。',
-    cameraNotice: '紙では標準のカメラで読めませんでした。このページの「重ねて読む」が必要です。',
+    cameraNotice: '紙の試験では、iPhone標準のQRリーダーから読み取り結果が出ませんでした。このページの「重ねて読む」を使ってください。',
     guideEyebrow: '使う前に知っておくこと',
     guideTitle: '柄を重ねる、視覚暗号。',
     guideIntro: '白と黒を細かな柄に分け、必要なシートを重ねたときの濃さの差で元に戻します。',
@@ -62,11 +62,13 @@
     limitsBody: '方式によっては、1枚の持ち主が秘密を知らなくても中身を書き換えられます。改ざんを検出する仕組みはありません。',
     printRoute: '紙に印刷する場合、シートのデータはOSの印刷処理を経てプリンターへ送られます。Wi-FiやLANの印刷が暗号化されないことがあります。本物の秘密はUSBで直接つないで刷ります。',
     footerPrivacy: 'このページに保存するのは、言語と明暗の設定だけです。',
+    footerDescription: 'QRコードを複数のシートに分け、重ねて復元するツール。',
     sourceLink: 'ソースコード · GitHub',
     helpTitle: '使い方',
     close: '閉じる',
     helpContent: '使い方の説明',
-    helpIntro: 'Overlay QR Sharesは、QRコードを視覚暗号で複数のシートに分け、重ねて読むためのツールです。',
+    helpIntro: 'Overlay QR Sharesは、QRコードを視覚暗号で複数のシートに分け、重ねて読むための',
+    helpIntroTerm: 'ツール', helpIntroEnd: 'です。',
     helpPrepareTitle: '印刷の前に',
     helpPrepare: 'テスト用のシートで、印刷・位置合わせ・読み取りを確かめてから本番へ進みます。復元できた2つの寸法も、別の環境での復元は保証しません。',
     helpPrivacyTitle: '秘密の扱い',
@@ -195,7 +197,7 @@
       + 'Avoid reflections from room lighting.',
     filmOverlay: 'All-sheet schemes with three or more sheets are untested and require transparent film. '
       + 'Align every upper normal sample. All printed faces cannot touch each other at once.',
-    cameraNotice: 'Standard camera readers could not read the paper trials. Use “Overlay & read” on this page.',
+    cameraNotice: 'The standard iPhone QR reader returned no reading result in the paper trials. Use “Overlay & read” on this page.',
     guideEyebrow: 'Before you use it',
     guideTitle: 'Patterns that recover by overlay.',
     guideIntro: 'Black and white modules become small patterns. The density difference when enough sheets overlap recovers the original.',
@@ -207,11 +209,13 @@
     printRoute: 'Printing on paper sends sheet data through the OS print system to the printer. '
       + 'Wi-Fi and LAN printing may be unencrypted. Connect the printer directly by USB for real secrets.',
     footerPrivacy: 'Only language and theme preferences are saved by this page.',
+    footerDescription: 'Split a QR code into sheets and recover it by overlay.',
     sourceLink: 'Source code · GitHub',
     helpTitle: 'How to use',
     close: 'Close',
     helpContent: 'Help instructions',
-    helpIntro: 'Overlay QR Shares divides a QR code into visual cryptography sheets for recovery by overlay.',
+    helpIntro: 'Overlay QR Shares divides a QR code into visual cryptography sheets for recovery by ',
+    helpIntroTerm: 'overlay', helpIntroEnd: '.',
     helpPrepareTitle: 'Before printing',
     helpPrepare: 'Check printing, alignment, and reading with test sheets before using a real secret. '
       + 'Recovery at the two confirmed sizes does not guarantee recovery in another setup.',
@@ -350,7 +354,12 @@
     oneSheetBody: '白を分けたときも黒を分けたときも、1枚に現れる柄の組み合わせは同じです。秘密を分ける各モジュールを独立の一様な乱数で選ぶため、1枚の柄では元の白黒を区別できません。'
       + '全部を使う方式では、1枚少ない束まで同じ性質を持ちます。方式・版・寸法・セットIDは公開情報です。',
     sixPatterns: '(2,2)で1枚に現れる6通りの柄', sixPatternsNote: '図は(2,2)の6通りの例です。試行回数の多さではなく、白と黒で柄の分布が等しいことが根拠です。',
-    comparisonTitle: 'Scatter Seedsとの交換条件', comparisonItem: '項目',
+    comparisonTitle: 'Scatter Seedsとの比較', comparisonItem: '項目',
+    scatterSeedsLink: 'Scatter Seedsを開く',
+    compareLeak: '漏れる情報',
+    compareLeakO: '形式版・方式・QR版・誤り訂正・寸法・セットID・固定模様は公開。容量上限はわかるが、実際の入力バイト長は直接公開しない',
+    compareLeakS: '形式版・セットID・必要枚数・総数・共有番号・共有データ長は公開。共有データ長から元データのバイト数がわかる',
+    comparisonPrivacyNote: '公開条件を固定し、独立で一様な乱数を使う理想モデルでは、どちらも必要枚数未満から秘密の内容について追加情報を得られません。Scatter Seedsでわかる長さは、文字列ではUTF-8のバイト数、BIP39では元エントロピーのバイト数です。',
     comparePrinciple: '原理', comparePrincipleO: '視覚暗号。重ねて戻す', comparePrincipleS: 'シャミア方式。数を計算して戻す',
     compareNeeds: '戻すために要るもの', compareNeedsO: '必要なシート、光、平らな場所、カメラ端末、このページ',
     compareNeedsS: '必要枚数の文字列またはQR、計算する端末',
@@ -364,7 +373,7 @@
     limitPartial: '1枚を持つ人に別のシートの一部を見られると、その部分が漏れます。シートの写真・コピー・スキャンも同じシートとして扱います。重ねた束の写真は平文と同じです。',
     limitRevoke: 'なくしたシートやコピーを無効にはできません。作り直す際は古い組を回収して壊します。新旧のセットを混ぜて復元することはできません。',
     limitMaterial: '印刷、紙、フィルム、光で結果が変わります。熱や湿度による局所的な伸び縮みは、射影変換では直せません。',
-    limitDevice: '復元にはカメラ付きの端末、光、平らな場所が必要です。紙では標準のカメラで読めませんでした。唯一のバックアップにしないでください。',
+    limitDevice: '復元にはカメラ付きの端末、光、平らな場所が必要です。紙の試験では、iPhone標準のQRリーダーから読み取り結果が出ませんでした。唯一のバックアップにしないでください。',
     limitTrust: '分ける人は秘密を見ます。必要枚数を持つ人たちが集まれば戻せます。ブラウザー、拡張機能、配信元を信頼する必要があります。',
     limitScreen: '振り分けたQRやシートの縮小画像は画面に出しません。別の端末の読み取り履歴、クラウド同期、URLの自動オープンを避けるためです。',
     storageTitle: '保管の指針',
@@ -436,7 +445,16 @@
       + 'For all-sheet schemes, even a group missing one sheet has this property. Scheme, version, size, and set ID are public metadata.',
     sixPatterns: 'Six possible patterns on one (2,2) sheet',
     sixPatternsNote: 'These six (2,2) patterns are an example. Security follows from equal pattern distributions, not from a large trial count.',
-    comparisonTitle: 'Tradeoffs with Scatter Seeds', comparisonItem: 'Item',
+    comparisonTitle: 'Comparison with Scatter Seeds', comparisonItem: 'Item',
+    scatterSeedsLink: 'Open Scatter Seeds',
+    compareLeak: 'Information exposed',
+    compareLeakO: 'Format version, scheme, QR version, error correction, size, set ID, and fixed patterns are public. Capacity is '
+      + 'visible; exact input byte length is not directly exposed',
+    compareLeakS: 'Format version, set ID, threshold, total count, share number, and share-data length are public. Share-data '
+      + 'length reveals the exact byte length of the original data',
+    comparisonPrivacyNote: 'With the public parameters held fixed and independent, uniform randomness, neither scheme reveals additional '
+      + 'information about the secret content below its threshold in the ideal model. Scatter Seeds exposes the UTF-8 '
+      + 'byte count for text, or the original entropy byte count for BIP39.',
     comparePrinciple: 'Principle', comparePrincipleO: 'Visual cryptography; recover by overlay', comparePrincipleS: 'Shamir sharing; recover by arithmetic',
     compareNeeds: 'Recovery needs', compareNeedsO: 'Enough sheets, light, a flat surface, a camera device, and this page',
     compareNeedsS: 'Enough text or QR shares and a computing device',
@@ -454,7 +472,8 @@
       + 'A photo of the overlaid stack is equivalent to plaintext.',
     limitRevoke: 'Lost sheets and copies cannot be revoked. Collect and destroy the old set when replacing it. Old and new sets cannot be mixed for recovery.',
     limitMaterial: 'Results depend on printing, paper, film, and light. A projective transform cannot fix local stretching caused by heat or humidity.',
-    limitDevice: 'Recovery needs a camera device, light, and a flat surface. Standard cameras failed in paper trials. Do not make this your only backup.',
+    limitDevice: 'Recovery needs a camera device, light, and a flat surface. The standard iPhone QR reader returned no reading '
+      + 'result in the paper trials. Do not make this your only backup.',
     limitTrust: 'The person splitting sees the secret. Holders of enough sheets can cooperate to recover it. '
       + 'You must trust the browser, extensions, and page distributor.',
     limitScreen: 'Sheet thumbnails and the classified QR are never displayed. '
