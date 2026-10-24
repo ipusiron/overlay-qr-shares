@@ -447,7 +447,7 @@
     });
   }
   async function startCamera() {
-    if (cameraPending || cameraStream) return;
+    if (cameraPending || cameraStream || !$('reader-camera').open) return;
     clearRead(false);
     $('camera-fallback').hidden = true;
     if (!navigator.mediaDevices || typeof navigator.mediaDevices.getUserMedia !== 'function') {
@@ -458,11 +458,13 @@
     const ticket = ++cameraGeneration;
     cameraPending = true;
     setCameraMessage('cameraRequest');
+    // Touch browsers may leave focus on an off-screen tab; anchor it before the permission prompt.
+    $('stop-camera').focus({ preventScroll: true });
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: {
         facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 }
       }, audio: false });
-      if (ticket !== cameraGeneration || active !== 'read' || document.hidden) {
+      if (ticket !== cameraGeneration || active !== 'read' || document.hidden || !$('reader-camera').open) {
         stream.getTracks().forEach(track => track.stop());
         return;
       }
@@ -565,8 +567,18 @@
   function renderReader() {
     $('camera-status').textContent = t(cameraMessage.key, ...cameraMessage.args);
     if (cameraStream && diagnosis) $('camera-status').textContent += ' ' + t('cameraScanning', Number(diagnosis.marks) || 0);
-    $('camera-button').disabled = cameraPending || !!cameraStream;
-    $('stop-camera').hidden = !cameraPending && !cameraStream;
+    const cameraBusy = cameraPending || !!cameraStream;
+    const start = $('camera-button'), stop = $('stop-camera');
+    // Move focus before disabling/hiding its current control, without moving the viewport.
+    if (cameraBusy) {
+      stop.hidden = false;
+      if (document.activeElement === start) stop.focus({ preventScroll: true });
+      start.disabled = true;
+    } else {
+      start.disabled = false;
+      if (document.activeElement === stop) start.focus({ preventScroll: true });
+      stop.hidden = true;
+    }
     $('camera-view').hidden = !cameraStream;
     $('manual-button').disabled = !cameraStream || $('camera-video').readyState < 2;
     $('manual-view').hidden = !frozen;
@@ -812,6 +824,13 @@
     testMessage = null;
     clearRead(true);
     render();
+  });
+  $('reader-camera').addEventListener('toggle', () => {
+    if ($('reader-camera').open) return;
+    if (cameraPending || cameraStream) stopCamera(true);
+    clearFrozen();
+    revealed = false;
+    renderReader();
   });
   $('camera-button').addEventListener('click', startCamera);
   $('stop-camera').addEventListener('click', () => stopCamera(true));

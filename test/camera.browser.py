@@ -1,4 +1,5 @@
 """Synthetic camera acceptance, lifecycle and narrow-screen checks; no physical camera or printing."""
+import argparse
 import base64
 import json
 import os
@@ -10,6 +11,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / '.work' / 'camera'
+BASE_URL = (ROOT / 'index.html').as_uri()
 DEMO = json.loads((ROOT / 'test' / 'vectors.json').read_text(encoding='utf-8'))['sets'][0]['text']
 
 
@@ -101,6 +103,11 @@ def manual_and_lifecycle(page, marks):
     assert page.locator('#read-value').is_hidden()
     page.click('#reveal')
     assert page.locator('#read-value').inner_text() == DEMO
+    page.locator('#reader-camera > summary').click()
+    page.wait_for_function('() => document.getElementById("read-value").hidden')
+    page.locator('#reader-camera > summary').click()
+    assert page.locator('#read-mask').is_visible()
+    assert page.locator('#read-value').inner_text() == ''
     assert page.evaluate('() => window.__manualFrames.length > 0 && window.__manualFrames.every(a => a.every(v => v === 0))')
     assert canvas.evaluate('(e) => e.width === 0 && e.height === 0')
     page.click('#clear-read')
@@ -109,6 +116,16 @@ def manual_and_lifecycle(page, marks):
     page.click('#manual-button')
     page.click('#manual-cancel')
     assert canvas.evaluate('(e) => e.width === 0 && e.height === 0')
+    assert tracks_stopped(page)
+    page.click('#camera-button')
+    page.wait_for_function('() => !document.getElementById("manual-button").disabled && document.getElementById("camera-video").readyState >= 2')
+    page.click('#manual-button')
+    page.locator('#reader-camera > summary').click()
+    page.wait_for_function('() => document.getElementById("manual-canvas").width === 0')
+    assert canvas.evaluate('(e) => e.width === 0 && e.height === 0')
+    page.locator('#reader-camera > summary').click()
+    assert page.locator('#manual-view').is_hidden()
+    assert page.locator('#camera-view').is_hidden()
     assert tracks_stopped(page)
     page.click('#camera-button')
     page.wait_for_function('() => !document.getElementById("manual-button").disabled && document.getElementById("camera-video").readyState >= 2')
@@ -143,6 +160,7 @@ def manual_and_lifecycle(page, marks):
     page.evaluate('() => dispatchEvent(new Event("pagehide"))')
     assert tracks_stopped(page)
     return {'manualFourPoints':True, 'manualSnapOffsetPx':2, 'frameWiped':True, 'cancelWiped':True,
+            'collapseMasksResult':True, 'collapseWipesFrozen':True,
             'tabStopsCamera':True, 'pagehideStopsCamera':True, 'hiddenStopsCamera':True, 'pendingStopRace':True}
 
 def capture_failures(browser):
@@ -165,7 +183,7 @@ def capture_failures(browser):
         }};''')
         errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
-        page.goto((ROOT / 'index.html').as_uri() + '?lang=en')
+        page.goto(page_url('en'))
         page.click('#tab-read')
         page.click('#camera-button')
         if manual:
@@ -182,6 +200,185 @@ def capture_failures(browser):
         page.close()
     return 3
 
+
+def viewport_state(page):
+    return page.evaluate("""() => ({y:scrollY, focus:document.activeElement.id || document.activeElement.tagName,
+      buttonTop:document.getElementById('camera-button').getBoundingClientRect().top,
+      height:document.documentElement.scrollHeight})""")
+
+
+def assert_same_viewport(before, after, label):
+    assert before['y'] > 100, (label, 'test must start below the page top', before)
+    assert abs(after['y'] - before['y']) <= 2, (label, before, after)
+    assert abs(after['buttonTop'] - before['buttonTop']) <= 2, (label, before, after)
+
+
+def scroll_while_waiting(page):
+    before = viewport_state(page)
+    page.mouse.wheel(0, -180)
+    page.wait_for_timeout(200)
+    after = viewport_state(page)
+    assert after['y'] < before['y'] - 100, ('user wheel did not move the page', before, after)
+    return after
+
+
+def start_measured(page, tap_without_focus=False):
+    button = page.locator('#camera-button')
+    button.scroll_into_view_if_needed()
+    if tap_without_focus:
+        page.evaluate("() => document.getElementById('tab-read').focus({preventScroll:true})")
+    else:
+        button.focus()
+    before = viewport_state(page)
+    if tap_without_focus:
+        # Simulate the focus behavior of a tap: dispatch click without first focusing the button.
+        button.evaluate('(e) => e.click()')
+    else:
+        page.keyboard.press('Enter')
+    pending = viewport_state(page)
+    assert_same_viewport(before, pending, 'start pending')
+    assert pending['focus'] == 'stop-camera', pending
+    return before, pending
+
+
+def permission_scroll_cases(browser, name, width, language):
+    """No camera requested: delayed/rejected permission replies exercise the real app lifecycle."""
+    page = browser.new_page(viewport={'width':width, 'height':844})
+    page.set_default_timeout(15000)
+    errors = []
+    page.on('pageerror', lambda error: errors.append(str(error)))
+    page.add_init_script("""(() => {
+      window.__requests = []; window.__streams = [];
+      Object.defineProperty(navigator, 'mediaDevices', {configurable:true, value:{
+        getUserMedia:() => new Promise((resolve, reject) => window.__requests.push({resolve, reject}))
+      }});
+      window.__resolveRequest = index => {
+        const track = {readyState:'live', stop() { this.readyState = 'ended'; }};
+        const stream = {getTracks:() => [track]};
+        window.__streams.push(stream); window.__requests[index].resolve(stream);
+      };
+    })();""")
+    page.goto(page_url(language))
+    page.click('#tab-read')
+    assert page.locator('#overlay-setup').evaluate('(e) => e.open')
+    assert page.locator('#reader-camera').evaluate('(e) => e.open')
+    before, pending = start_measured(page, tap_without_focus=True)
+    assert before['focus'] == 'tab-read', before
+    user_scroll = scroll_while_waiting(page)
+    page.evaluate("() => window.__requests[0].reject(new DOMException('Synthetic denial', 'NotAllowedError'))")
+    page.wait_for_function('() => !document.getElementById("camera-button").disabled')
+    denied = viewport_state(page)
+    assert_same_viewport(user_scroll, denied, 'permission denial preserves user scroll')
+    assert denied['focus'] == 'camera-button', denied
+    assert not page.locator('#read-result').is_visible()
+
+    restart, restarted_pending = start_measured(page)
+    user_restart = scroll_while_waiting(page)
+    page.keyboard.press('Enter')  # Focused stop control cancels the pending request.
+    stopped = viewport_state(page)
+    assert_same_viewport(user_restart, stopped, 'pending stop preserves user scroll')
+    assert stopped['focus'] == 'camera-button', stopped
+    page.evaluate('() => window.__resolveRequest(1)')
+    page.wait_for_function('() => window.__streams[0].getTracks()[0].readyState === "ended"')
+    assert page.locator('#camera-video').evaluate('(e) => e.srcObject === null')
+
+    start_measured(page)
+    page.locator('#reader-camera > summary').click()
+    page.wait_for_function("""() => !document.getElementById('reader-camera').open
+      && !document.getElementById('camera-button').disabled && document.getElementById('stop-camera').hidden""")
+    page.evaluate('() => window.__resolveRequest(2)')
+    page.wait_for_function('() => window.__streams.every(s => s.getTracks().every(t => t.readyState === "ended"))')
+    assert page.locator('#camera-video').evaluate('(e) => e.srcObject === null')
+    page.locator('#camera-button').evaluate('(e) => e.click()')
+    assert page.evaluate('() => window.__requests.length') == 3
+    page.locator('#reader-camera > summary').click()
+    page.wait_for_timeout(100)
+    assert page.evaluate('() => window.__requests.length') == 3
+    assert page.locator('#camera-view').is_hidden()
+    assert page.locator('#camera-button').is_enabled()
+    assert not errors, errors
+    result = {'browser':name, 'width':width, 'language':language, 'before':before, 'pending':pending,
+              'userScroll':user_scroll, 'denied':denied, 'restart':restart, 'restartedPending':restarted_pending,
+              'userRestart':user_restart, 'stopped':stopped, 'lateStreamStopped':True, 'collapsePendingStopped':True,
+              'tapWithoutFocus':True, 'closedStartRejected':True, 'reopenDoesNotStart':True, 'pageErrors':len(errors)}
+    page.close()
+    return result
+
+
+def live_scroll_cases(browser, name):
+    results = []
+    for width, language in [(320, 'ja'), (390, 'en')]:
+        page = browser.new_page(viewport={'width':width, 'height':844})
+        page.set_default_timeout(15000)
+        instrumentation(page)
+        page.goto(page_url(language))
+        page.click('#tab-read')
+        page.evaluate("""() => {
+          OQS.reader = {...OQS.reader, readFrame:() => ({ok:false, reason:'marks', diag:{marks:0, flags:[]}})};
+          const original = navigator.mediaDevices.getUserMedia.bind(navigator.mediaDevices);
+          let first = true;
+          navigator.mediaDevices.getUserMedia = async constraints => {
+            const stream = await original(constraints);
+            if (first) { first = false; await new Promise(resolve => { window.__releaseLive = resolve; }); }
+            return stream;
+          };
+        }""")
+        before, pending = start_measured(page)
+        page.wait_for_function('() => typeof window.__releaseLive === "function"')
+        permission_scroll = scroll_while_waiting(page)
+        page.evaluate('() => window.__releaseLive()')
+        page.wait_for_function('() => document.getElementById("camera-video").readyState >= 2')
+        page.wait_for_timeout(150)
+        started = viewport_state(page)
+        assert_same_viewport(permission_scroll, started, 'permission accepted preserves user scroll')
+        user_scroll = scroll_while_waiting(page)
+        page.keyboard.press('Enter')
+        stopped = viewport_state(page)
+        assert_same_viewport(user_scroll, stopped, 'live stop')
+        assert stopped['focus'] == 'camera-button', stopped
+        assert tracks_stopped(page)
+        page.keyboard.press('Enter')
+        page.wait_for_function('() => document.getElementById("camera-video").readyState >= 2')
+        page.wait_for_timeout(150)
+        restarted = viewport_state(page)
+        assert_same_viewport(stopped, restarted, 'live restart')
+        assert restarted['focus'] == 'stop-camera', restarted
+        page.locator('#reader-camera > summary').click()
+        page.wait_for_function('() => window.__streams.every(s => s.getTracks().every(t => t.readyState === "ended"))')
+        assert page.locator('#camera-video').evaluate('(e) => e.srcObject === null')
+        count = page.evaluate('() => window.__streams.length')
+        page.locator('#reader-camera > summary').click()
+        page.wait_for_timeout(100)
+        assert page.evaluate('() => window.__streams.length') == count
+        assert page.locator('#camera-view').is_hidden()
+        results.append({'browser':name, 'width':width, 'language':language, 'before':before, 'pending':pending,
+                        'permissionScroll':permission_scroll, 'started':started, 'userScroll':user_scroll,
+                        'stopped':stopped, 'restarted':restarted,
+                        'collapseLiveStopped':True, 'reopenDoesNotStart':True})
+        page.close()
+    return results
+
+
+def page_url(language='ja'):
+    return BASE_URL + ('&' if '?' in BASE_URL else '?') + 'lang=' + language
+
+
+def scroll_only():
+    results = []
+    with sync_playwright() as p:
+        for name in ['chromium', 'firefox', 'webkit']:
+            print('permission: launching ' + name, flush=True)
+            browser = getattr(p, name).launch(timeout=15000)
+            for width, language in [(320, 'ja'), (390, 'en')]:
+                print(f'permission: start {name} {width} {language}', flush=True)
+                results.append(permission_scroll_cases(browser, name, width, language))
+                print(f'permission: passed {name} {width} {language}', flush=True)
+            browser.close()
+            print('permission: closed ' + name, flush=True)
+    (OUT / 'scroll-results.json').write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding='utf-8')
+    print(json.dumps(results, ensure_ascii=False, indent=2))
+
+
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     video, marks = fixture()
@@ -194,7 +391,7 @@ def main():
         errors = []
         page.on('pageerror', lambda error: errors.append(str(error)))
         page.on('console', lambda msg: errors.append(msg.text) if msg.type == 'error' else None)
-        page.goto((ROOT / 'index.html').as_uri() + '?lang=ja')
+        page.goto(page_url('ja'))
         page.click('#tab-read')
         start = time.perf_counter()
         page.click('#camera-button')
@@ -225,7 +422,7 @@ def main():
         denied.add_init_script('''navigator.mediaDevices.getUserMedia = async () => {
           throw new DOMException('Synthetic permission denial', 'NotAllowedError');
         };''')
-        denied.goto((ROOT / 'index.html').as_uri() + '?lang=ja')
+        denied.goto(page_url('ja'))
         denied.click('#tab-read')
         denied.click('#camera-button')
         denied.wait_for_function('() => !document.getElementById("camera-fallback").hidden')
@@ -234,12 +431,13 @@ def main():
         denied.close()
         results[0]['filePermissionFallback'] = True
         results[0]['captureFailureCases'] = capture_failures(browser)
+        results[0]['scrollLifecycle'] = live_scroll_cases(browser, 'chromium')
         browser.close()
         firefox = p.firefox.launch(firefox_user_prefs={'media.navigator.streams.fake':True,
                                                       'media.navigator.permission.disabled':True})
         page = firefox.new_page(viewport={'width':390, 'height':960})
         instrumentation(page)
-        page.goto((ROOT / 'index.html').as_uri() + '?lang=en')
+        page.goto(page_url('en'))
         page.click('#tab-read')
         page.click('#camera-button')
         page.wait_for_function('() => document.getElementById("camera-video").readyState >= 2', timeout=30000)
@@ -247,10 +445,18 @@ def main():
         assert tracks_stopped(page)
         results.append({'browser':'firefox', 'protocol':'file:', 'camera':True, 'stopped':True,
                         'decoded':'not tested; Firefox fake camera shows its own pattern'})
+        results[-1]['scrollLifecycle'] = live_scroll_cases(firefox, 'firefox')
         firefox.close()
     (OUT / 'results.json').write_text(json.dumps(results, ensure_ascii=False, indent=2), encoding='utf-8')
     print(json.dumps(results, ensure_ascii=False, indent=2))
+    scroll_only()
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--url', default=BASE_URL, help='Tool entry URL; defaults to the local file page.')
+    parser.add_argument('--scroll-only', action='store_true', help='Stubbed permission/scroll/collapse checks; no camera requested.')
+    options = parser.parse_args()
+    BASE_URL = options.url
+    OUT.mkdir(parents=True, exist_ok=True)
+    scroll_only() if options.scroll_only else main()
