@@ -47,22 +47,78 @@ def help_intro(page, language):
     return {'sentencePreserved': True, 'wordLines': len(layout['fragments']), 'overflow': layout['overflow']}
 
 
-def footer_copy(page, language):
-    """The privacy note and tool description remain two readable, vertically ordered paragraphs."""
-    paragraphs = page.locator('.page-footer .footer-copy > p')
-    assert paragraphs.count() == 2, (language, 'footer contains privacy and description paragraphs')
+def help_keyboard_reading(page, label):
+    """Read the final help paragraph with the keyboard while its close control stays available."""
+    content = page.locator('#help-content')
+    close = page.locator('#help-close')
+
+    def geometry():
+        return page.evaluate("""() => {
+          const content = document.getElementById('help-content');
+          const rect = el => {const r = el.getBoundingClientRect();
+            return {top:r.top, bottom:r.bottom, left:r.left, right:r.right};};
+          return {scrollTop:content.scrollTop, maxScroll:content.scrollHeight-content.clientHeight,
+            content:rect(content), first:rect(content.firstElementChild), last:rect(content.lastElementChild),
+            close:rect(document.getElementById('help-close')), width:innerWidth, height:innerHeight};
+        }""")
+
+    def close_visible(data):
+        box = data['close']
+        assert close.is_visible(), (label, 'close control stays visible')
+        assert box['top'] >= 0 and box['left'] >= 0, (label, 'close control inside viewport', data)
+        assert box['bottom'] <= data['height'] and box['right'] <= data['width'], (label, 'close control inside viewport', data)
+
+    initial = geometry()
+    close_visible(initial)
+    content.focus()
+    page.keyboard.press('End')
+    page.wait_for_function("""() => {const e = document.getElementById('help-content');
+      return e.scrollTop + e.clientHeight >= e.scrollHeight - 2;}""")
+    end = geometry()
+    assert end['last']['top'] >= end['content']['top'] - 1, (label, 'last paragraph starts inside scroll viewport', end)
+    assert end['last']['bottom'] <= end['content']['bottom'] + 1, (label, 'last paragraph is readable through its end', end)
+    close_visible(end)
+    page.keyboard.press('Tab')
+    assert close.evaluate('(e) => document.activeElement === e'), (label, 'Tab reaches close from help scroll area')
+    page.keyboard.press('Shift+Tab')
+    assert content.evaluate('(e) => document.activeElement === e'), (label, 'Shift+Tab returns to help scroll area')
+    scroll_height = initial['content']['bottom'] - initial['content']['top']
+    page_up_count = int(initial['maxScroll'] / max(1, scroll_height / 2)) + 3
+    for _ in range(page_up_count):
+        page.keyboard.press('PageUp', delay=200)
+    page.wait_for_function("() => document.getElementById('help-content').scrollTop <= 1")
+    start = geometry()
+    assert start['first']['top'] >= start['content']['top'] - 1, (label, 'PageUp restores help introduction', start)
+    close_visible(start)
+    return {'scrollable': initial['maxScroll'] > 1, 'keyboardEnd': True, 'keyboardPageUp': page_up_count,
+            'lastParagraphVisible': True, 'closeInViewport': True, 'keyboardCloseReachable': True}
+
+
+def header_description(page, language):
+    """The translated tool description follows the title once, inside the page header."""
     dictionary = page.evaluate("""language => Object.fromEntries(Object.entries(OQS.messages[language])
       .filter(([, value]) => typeof value === 'string'))""", language)
-    keys = ('footerPrivacy', 'footerDescription')
-    boxes = []
-    for index, key in enumerate(keys):
-        paragraph = paragraphs.nth(index)
-        assert paragraph.is_visible() and paragraph.text_content() == dictionary[key], (language, key)
-        box = paragraph.bounding_box()
-        assert box and box['width'] > 0 and box['height'] > 0, (language, key, box)
-        boxes.append(box)
-    assert boxes[0]['y'] + boxes[0]['height'] <= boxes[1]['y'] + .1, (language, 'footer paragraphs stack without overlap', boxes)
-    return {'paragraphs': 2, 'privacyBeforeDescription': True}
+    title = page.locator('.page-header .masthead .brand > h1')
+    description = page.locator('.page-header .masthead .brand > p.tagline[data-i18n="toolDescription"]')
+    assert title.count() == description.count() == 1, (language, 'title and description share the header brand')
+    assert description.is_visible() and description.text_content() == dictionary['toolDescription']
+    assert description.evaluate('(el) => el.previousElementSibling?.tagName === "H1"'), (language, 'description directly follows title')
+    assert page.locator('[data-i18n="toolDescription"]').count() == 1, (language, 'description appears once')
+    assert page.locator('[data-i18n="footerDescription"]').count() == 0, (language, 'old footer description removed')
+    layout = description.evaluate("""el => {
+      const description = el.getBoundingClientRect(), title = el.previousElementSibling.getBoundingClientRect();
+      const header = el.closest('header').getBoundingClientRect();
+      return {belowTitle:description.top >= title.bottom - .1,
+        insideHeader:description.top >= header.top && description.bottom <= header.bottom,
+        width:description.width, height:description.height};
+    }""")
+    assert layout['belowTitle'] and layout['insideHeader'], (language, 'description sits below title within header', layout)
+    assert layout['width'] > 0 and layout['height'] > 0, (language, 'description has readable dimensions', layout)
+    footer = page.locator('.page-footer')
+    privacy = footer.locator('p[data-i18n="footerPrivacy"]')
+    assert privacy.is_visible() and privacy.text_content() == dictionary['footerPrivacy'], (language, 'footer privacy preserved')
+    assert dictionary['toolDescription'] not in footer.text_content(), (language, 'description is not repeated in footer')
+    return {'belowTitle': True, 'insideHeader': True, 'translated': True, 'noFooterDuplicate': True}
 
 
 def comparison_content(page, language):
@@ -78,8 +134,18 @@ def comparison_content(page, language):
     assert link.get_attribute('href') == 'https://ipusiron.github.io/scatter-seeds/'
     assert link.get_attribute('target') == '_blank'
     assert {'noopener', 'noreferrer'} <= set((link.get_attribute('rel') or '').split())
-    assert 'Scatter Seeds' in link.inner_text(), (language, 'link names its destination')
-    return {'disclosureRows': 1, 'relatedToolHref': link.get_attribute('href'), 'safeNewTab': True}
+    label = link.locator('span[data-i18n="scatterSeedsLink"]')
+    assert label.is_visible() and label.inner_text() == dictionary['scatterSeedsLink'], (language, 'translated destination name')
+    assert 'Scatter Seeds' in label.inner_text(), (language, 'link names its destination')
+    assert link.get_attribute('aria-label') == dictionary['scatterSeedsLinkLabel'], (language, 'accessible new-tab description')
+    assert label.inner_text() in link.get_attribute('aria-label'), (language, 'visible label is included in accessible name')
+    icon = link.locator('span.external-link-icon[aria-hidden="true"]')
+    assert icon.count() == 1 and icon.is_visible() and icon.inner_text() == '\u2197', (language, 'visible decorative external-link icon')
+    assert link.evaluate('(el) => getComputedStyle(el).textDecorationLine') == 'none', (language, 'link has no underline')
+    box = link.bounding_box()
+    assert box and box['width'] >= 43.99 and box['height'] >= 43.99, (language, 'related link has a 44px touch target', box)
+    return {'disclosureRows': 1, 'relatedToolHref': link.get_attribute('href'), 'safeNewTab': True,
+            'translatedNewTabLabel': True, 'externalIcon': True, 'underline': False, 'touchHeight': box['height']}
 
 
 def read_instructions(page, language):
@@ -207,7 +273,7 @@ def interface(browser, name, width, results, stage, base_url=None):
                         panel_id = page.locator('#' + other).get_attribute('aria-controls')
                         assert not page.locator('#' + panel_id).is_visible()
                 data = measure(page, (name, width, language, theme, tab))
-                data['footerCopy'] = footer_copy(page, language)
+                data['headerDescription'] = header_description(page, language)
                 if tab == 'tab-read':
                     data['readInstructions'] = read_instructions(page, language)
                     data['readAccordions'] = accordions
@@ -223,6 +289,7 @@ def interface(browser, name, width, results, stage, base_url=None):
             for _ in range(5):
                 page.keyboard.press('Tab')
                 assert page.locator('#help-dialog').evaluate('(e) => e.contains(document.activeElement)')
+            results[-1]['helpKeyboardReading'] = help_keyboard_reading(page, (name, width, language, theme))
             page.keyboard.press('Escape')
             assert not page.locator('#help-dialog').is_visible()
             assert page.locator('#help').evaluate('(e) => document.activeElement === e')

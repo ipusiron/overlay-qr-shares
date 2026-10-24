@@ -12,6 +12,11 @@ English · [日本語](README.md)
 
 Overlay QR Shares is a tool that splits a QR code containing a secret string into 2–5 visual cryptography sheets, then reads the required overlay with a camera.
 Choose “any two” or “all” to try keeping short recovery codes, safe combinations, and similar information in separate places.
+
+This is a public experimental release.
+Keep another recovery method; do not use this tool as your only backup.
+Successful reading does not prove that the sheets or recovered content are free from tampering.
+
 In the author's physical trials on 2026-10-24, this tool running on an iPhone recovered overlays of two paper sheets using (2,2), version 4, M, and a light box at both 2.54mm and 2.032mm module sizes.
 This confirmation applies only to the recorded conditions; before entering a real secret, complete a test print and recovery using the intended printer and material.
 
@@ -24,7 +29,10 @@ A device is still needed to classify that contrast and recover the string.
 👉 **[Open Overlay QR Shares](https://ipusiron.github.io/overlay-qr-shares/)**
 
 Download the complete repository and open `index.html` using `file://` to run it locally.
-The app makes no external requests and has no runtime CDN or additional package requirements.
+Splitting and recovery run in the browser; the app does not send secrets or sheet data to an external service.
+Loading the published version or following an external link uses the network.
+Libraries are bundled, with no runtime CDN or additional package requirements.
+Print data is passed to the operating system; the selected print route determines delivery to a printer or saving as a PDF.
 If the local browser cannot use the camera, follow the on-screen link to the GitHub Pages version.
 For secrets, use a saved copy of the code on a trusted device, and check offline operation in advance.
 
@@ -64,10 +72,11 @@ The round buttons at the top right control the theme, language, and help.
 ### 1. Print and read a test
 
 In “Split,” choose the sheet count and recovery condition.
-Start with (2,2), QR version 4, error correction M, and 2.54mm modules.
+Start with (2,2), QR version 4, error correction M, and 2.54mm modules, then select “Create test sheets.”
 The test string is generated randomly and does not use the secret input.
 Versions 3 and 4 produce separate test sets for 2.032mm and 2.54mm; each sheet is printed on its own A4 page.
 Versions 5–7 fit only at 2.032mm.
+For the first trial, choose the 2.54mm cards with the same set ID, then select “Print sheet TA” and “Print sheet TB” to print one of each.
 Do not mix sheets with different sizes or set IDs, even if both carry the symbol TA.
 
 The two-sheet example uses A and B (TA and TB for a test print).
@@ -90,7 +99,7 @@ If four large squares appear, check how the sheet was flipped; if only one sheet
 In the author's preliminary paper trial, the iPhone's standard QR reader displayed no reading result.
 That observation alone does not identify whether the process stopped at QR location detection, decoding, or result display.
 Reading with standard QR readers is not guaranteed.
-Use the “Read overlay” tab, and verify that the test value is recovered before proceeding to production.
+Reveal the recovered value in the “Overlay & read” tab and compare it with `TEST-...` on the test card before proceeding to production.
 This is a user's confirmation and does not change the published scheme status to physically tested.
 Separately from those preliminary observations, physical recovery with the released OQS v1 format has been confirmed for the (2,2), version 4, M, 2.54mm and 2.032mm conditions documented below.
 
@@ -101,19 +110,20 @@ This is not a procedure for stacking 3–5 sheets of ordinary paper.
 
 ### 2. Create production sheets
 
-Confirm that a test was read using the same scheme and module size, then enter the secret.
+Return to the “Split” tab on the PC where you created the test sheets, and check the confirmation that you recovered a printed test using the same scheme and module size.
+Enter the secret and select “Split and check.”
 The initial version 4/M settings allow 62 bytes; this is not the same as a character count for non-ASCII text.
 Input is never silently trimmed, normalized, or shortened.
 URL-like text and surrounding whitespace produce notices, but creation remains available after the user checks them.
 
 After creation, the result says that this is a functional check, not a security audit.
 Check the symbol and set ID and print each sheet separately using actions such as “Print sheet A.”
-Changes that alter the patterns invalidate the old set, and stale results from work already in progress are discarded.
+Changes that alter the patterns remove the generated set from the interface and print selection, and discard stale results from work already in progress.
 Changing the language or theme does not regenerate the set.
 
 ### 3. Read the overlay
 
-For practical recovery, use the dedicated recovery feature in this tool’s “Read overlay” tab.
+For practical recovery, use the dedicated recovery feature in this tool’s “Overlay & read” tab.
 It corrects perspective and illumination, averages subpixel darkness within each module to classify black and white, and decodes the reconstructed ordinary QR.
 “Dedicated” describes the feature provided here; it does not mean that only this app can recover the secret.
 Another reader implementing the same preprocessing can also recover it.
@@ -130,10 +140,13 @@ Processing proceeds through registration-mark candidates, finder patterns, the m
 The “Adequate,” “Borderline,” and “Insufficient” diagnostics describe image conditions; they do not prove that a secret or sheet is authentic.
 Messages about alignment or illumination also describe possible causes.
 
-If automatic reading fails, freeze one frame and select registration-mark centers in image order: top left, top right, bottom right, bottom left.
+If automatic reading fails, select “Freeze and select corners” and choose the centers of the four small registration marks around the QR in image order: top left, top right, bottom right, bottom left.
+Do not select the three large finder patterns.
 A magnifier and snapping to nearby marks are available.
 Use arrow keys to move, hold Shift for finer movement, and press Enter or Space to select a point.
-“Select corners again” resets the selected points; “Cancel and erase image” clears the frozen image.
+Before all four points are selected, “Select corners again” resets your selections.
+“Cancel and erase image” clears the frozen image.
+The frozen image is erased after the four-point read, whether or not it succeeds; if it fails, start again with “Read with camera.”
 
 When a value is read, the camera stops and the value remains masked.
 Use “Reveal” to inspect it, and “Copy text” only when needed.
@@ -194,7 +207,7 @@ The white and black figures below are black-area fractions under ideal stacking 
 
 ### Conditions with confirmed physical recovery
 
-The author's supplied photographs and screens from this tool’s “Read overlay” feature confirm recovery of the respective test values under the following two conditions.
+The author's supplied photographs and screens from this tool’s “Overlay & read” feature confirm recovery of the respective test values under the following two conditions.
 The author explicitly confirmed the 2.54mm module size; the printed label in the additional photograph identifies the 2.032mm size.
 
 | Item | 2.54mm example | 2.032mm example |
@@ -256,9 +269,13 @@ This combinatorial property establishes secrecy in the ideal model; failure to r
 
 ### Public and shared modules
 
-Finder patterns, separators, timing patterns, alignment patterns, the dark module, and version information are independent of the secret and are printed openly.
-Format information is shared.
-Its mask number is chosen by the encoder from the data, so publishing it could leak up to three secret-dependent bits.
+A design that leaves all QR function patterns and format information public also leaves the input-dependent mask number visible on each share.
+The mask number has eight possible values, so exposing it can disclose secret-dependent information with an upper bound of three bits.
+This is a design bound derived from those eight values, not a measured three-bit leak or a claim that fragments of the secret text become directly visible.
+
+This implementation therefore prints only fixed modules that are independent of the secret for the selected QR version.
+These are the finder patterns, separators, timing patterns, alignment patterns, dark module, and version information; format information is shared along with the data.
+This changes which modules are shared, not the QR standard; after reconstruction, the result is decoded as a standard QR code.
 
 The scheme, QR version, error correction, module size, and set ID in the machine-readable band are public.
 The set ID helps prevent mixing sets and is not an authentication value.
@@ -305,14 +322,15 @@ Choose after considering the differences in computation and physical handling.
 - The browser, operating system, extensions, randomness source, and printer must be trusted. Memory clearing does not guarantee complete erasure
 - Keep another recovery method and perform periodic reading checks; do not rely on this as the only backup
 
-The app does not display shared or reconstructed QR patterns on screen.
-Standard camera apps may retain scanning history, synchronize to the cloud, or automatically open URLs.
+Generated shares, synthetic images, and reconstructed black-and-white QR codes are not previewed in the normal interface.
+The live camera view and the frozen image for manual selection do show the overlaid pattern.
+Depending on the app and its settings, external camera apps or QR readers may retain scanning history, synchronize to the cloud, or automatically open URLs.
 Print previews, physical prints, screen sharing, and screenshots require separate handling.
 This app's camera does not automatically open recovered strings.
 
 ## 🖨️ Printing route and network interception
 
-An app that makes no network requests does not ensure that data between the operating system and printer is encrypted.
+Processing secrets in the browser does not ensure that data between the operating system and printer is encrypted.
 Wi-Fi or LAN printing may expose the patterns; the author's environment used HTTP for WSD printing.
 For real secrets, connect the printer directly by USB and avoid unnecessary network printing.
 
@@ -530,9 +548,10 @@ These tests do not replace trials with physical cameras, paper, or film.
 ## 🔗 Prior work and related tools
 
 The foundations of visual cryptography are described in Naor and Shamir's [Visual Cryptography, author version](https://www.wisdom.weizmann.ac.il/~naor/PAPERS/vis.pdf).
-Many studies of splitting and overlaying QR codes with visual cryptography have appeared since around 2011, including [Fang (2011)](https://doi.org/10.1109/IIHMSP.2011.10), Cao et al. (2016), and Liu, Yan, and Pan (2019).
-[Cao et al.'s 2016 paper](https://www.atlantis-press.com/proceedings/aiie-16/25866401) also combines QR codes and visual cryptography.
-This tool follows the same overlay-recovery approach and combines seven schemes, normal/reflected artwork, registration marks, calibration, diagnostics, test printing, and a bilingual UI without network requests.
+Prior examples combining QR codes and visual cryptography include [Fang (2011)](https://doi.org/10.1109/IIHMSP.2011.10), [Cao et al. (2016)](https://www.atlantis-press.com/proceedings/aiie-16/25866401), and [Liu, Yan, and Pan (2019)](https://www.mdpi.com/2076-3417/9/21/4670).
+Cao et al. reconstruct information by stacking two share images.
+Liu et al. use a different construction with colored share images and standard QR decoders; their security analysis also restricts the attacker to using a standard QR decoder.
+This tool combines seven schemes, normal/reflected artwork, registration marks, calibration, diagnostics, test printing, and a bilingual UI that processes data in the browser.
 It does not claim a new cryptographic scheme or a world-first mechanism.
 
 - [Day124 Scatter Seeds](https://ipusiron.github.io/scatter-seeds/): a practical tool for splitting secrets into paper shares with Shamir sharing and reconstructing them numerically

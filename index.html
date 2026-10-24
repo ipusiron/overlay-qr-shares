@@ -24,7 +24,10 @@
   <a class="skip-link" href="#main" data-i18n="skipLink"></a>
   <header class="page-header">
     <div class="masthead">
-      <h1>Overlay <span>QR</span> Shares</h1>
+      <div class="brand">
+        <h1>Overlay <span>QR</span> Shares</h1>
+        <p class="tagline" data-i18n="toolDescription"></p>
+      </div>
       <div class="header-tools">
         <button id="theme" class="icon-button" type="button" data-label="theme">◐</button>
         <button id="language" class="icon-button" type="button" data-label="language">EN</button>
@@ -221,7 +224,8 @@
         <p class="note" data-i18n="sixPatternsNote"></p></section>
       <section class="work-section"><h3 data-i18n="comparisonTitle"></h3>
         <a class="related-tool-link" href="https://ipusiron.github.io/scatter-seeds/" target="_blank"
-          rel="noopener noreferrer" data-i18n="scatterSeedsLink"></a>
+          rel="noopener noreferrer" data-label="scatterSeedsLinkLabel"><span data-i18n="scatterSeedsLink"></span>
+          <span class="external-link-icon" aria-hidden="true">↗</span></a>
         <div class="table-frame"><table><thead><tr><th data-i18n="comparisonItem"></th>
           <th>Overlay QR Shares</th><th>Scatter Seeds</th></tr></thead><tbody id="comparison-rows"></tbody></table></div>
         <p class="note" data-i18n="comparisonPrivacyNote"></p></section>
@@ -232,10 +236,7 @@
     </section>
   </main>
   <footer class="page-footer">
-    <div class="footer-copy">
-      <p data-i18n="footerPrivacy"></p>
-      <p data-i18n="footerDescription"></p>
-    </div>
+    <p data-i18n="footerPrivacy"></p>
     <a href="https://github.com/ipusiron/overlay-qr-shares" target="_blank" rel="noopener noreferrer"
       data-i18n="sourceLink"></a>
   </footer>
@@ -247,13 +248,24 @@
     </div>
     <div id="help-content" class="help-content" tabindex="0" data-label="helpContent">
       <p class="lead"><span data-i18n="helpIntro"></span><span class="help-intro-term" data-i18n="helpIntroTerm"></span><span data-i18n="helpIntroEnd"></span></p>
+      <h3 data-i18n="helpStatusTitle"></h3>
+      <p data-i18n="helpStatus"></p>
+      <p class="notice" data-i18n="helpLimits"></p>
       <h3 data-i18n="helpPrepareTitle"></h3>
-      <p data-i18n="helpPrepare"></p>
+      <ol class="reading-list">
+        <li data-i18n="helpPrepare"></li>
+        <li data-i18n="helpOverlay"></li>
+        <li data-i18n="helpRead"></li>
+        <li data-i18n="helpProduction"></li>
+      </ol>
+      <h3 data-i18n="helpReaderTitle"></h3>
+      <p data-i18n="cameraNotice"></p>
+      <p data-i18n="helpReader"></p>
       <h3 data-i18n="helpPrivacyTitle"></h3>
       <p data-i18n="helpPrivacy"></p>
+      <p data-i18n="helpClear"></p>
       <h3 data-i18n="helpKeysTitle"></h3>
       <p data-i18n="helpKeys"></p>
-      <p class="notice" data-i18n="cameraNotice"></p>
     </div>
   </dialog>
 </body>
