@@ -391,6 +391,24 @@ button:disabled {
 .camera-actions {
   margin-top: 1.5rem;
 }
+.overlay-steps li {
+  padding-left: .25rem;
+  margin-bottom: 1.25rem;
+}
+.overlay-steps strong {
+  display: block;
+  line-height: 1.6;
+}
+.overlay-steps p {
+  margin: .35rem 0 0;
+}
+.diagram-legend {
+  margin: .8rem 0 0;
+  padding-left: 1.4rem;
+}
+.diagram-legend li + li {
+  margin-top: .6rem;
+}
 .camera-view {
   max-width: 48rem;
   margin: 1rem 0;
@@ -604,6 +622,12 @@ dialog::backdrop {
   }
   .diagram-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .alignment-figure {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
   }
   .page-footer {
     flex-direction: row;
