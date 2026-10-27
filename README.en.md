@@ -522,6 +522,7 @@ The Python recovery test reads the PBM generated from synthetic PNGs with a QR d
 | `reader-sample.test.js`, `reader.test.js` | Sampling, detection, rotation, reflection, projection, and manual corners |
 | `read-photo.test.js` | Python PNG input, PBM output, and malformed inputs |
 | `static.test.js`, `i18n.test.js` | CSP, storage, vendor files, translations, and forbidden wording |
+| `theme-init.test.js` | Initial theme choice and its load position in `<head>` |
 | `contrast.test.js`, `format.test.js` | Colors, line lengths, and file formatting |
 | `readme.test.js` | Documentation numbers, languages, images, YAML, and distribution files |
 | `robustness.js`, `robustness.json` | Explicit measurement and saved results |
@@ -568,6 +569,7 @@ overlay-qr-shares/                     # Complete tool distribution
 │       └── test.yml                   # Tests using Node 22
 ├── index.html                         # Three tabs and help
 ├── style.css                          # Screen and A4 print styles
+├── theme-init.js                      # Sets the theme before the first paint
 ├── app.js                             # UI, printing, camera, and clearing
 ├── messages.js                        # Japanese and English strings
 ├── rng.js                             # Cryptographic randomness and shuffling
@@ -617,6 +619,7 @@ overlay-qr-shares/                     # Complete tool distribution
     ├── reader.test.js                 # Automatic detection and manual corners
     ├── read-photo.test.js             # Python PNG and PBM handling
     ├── static.test.js                 # CSP, storage, and vendor files
+    ├── theme-init.test.js             # Initial theme choice and load position
     ├── i18n.test.js                   # Translations and forbidden wording
     ├── contrast.test.js               # Text contrast in both themes
     ├── format.test.js                 # Line lengths and formatting
