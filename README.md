@@ -545,6 +545,7 @@ Python復元の試験は合成PNGから出力したPBMをQRリーダーで検査
 | `reader-sample.test.js`、`reader.test.js` | 標本化、自動検出、回転、鏡像、射影、手動4点 |
 | `read-photo.test.js` | PythonのPNG入力、PBM出力、異常入力 |
 | `static.test.js`、`i18n.test.js` | CSP、保存、vendor、辞書、禁止語 |
+| `theme-init.test.js` | 明暗の初期判定と`<head>`での読み込み位置 |
 | `contrast.test.js`、`format.test.js` | 配色、行長、ファイルの整形 |
 | `readme.test.js` | 本文の数値、日英、画像、YAML、配布一覧 |
 | `robustness.js`、`robustness.json` | 明示的に実行する測定と保存した結果 |
@@ -591,6 +592,7 @@ overlay-qr-shares/                     # 配布するツール一式
 │       └── test.yml                   # Node 22で実行するテスト
 ├── index.html                         # 3つのタブとヘルプ
 ├── style.css                          # 画面とA4印刷のスタイル
+├── theme-init.js                      # 最初の描画の前に明暗を決める
 ├── app.js                             # 画面、印刷、カメラ、消去
 ├── messages.js                        # 日本語と英語の辞書
 ├── rng.js                             # 暗号用乱数と並べ替え
@@ -640,6 +642,7 @@ overlay-qr-shares/                     # 配布するツール一式
     ├── reader.test.js                 # 自動検出と手動4点
     ├── read-photo.test.js             # PythonのPNGとPBM
     ├── static.test.js                 # CSPと保存とvendor
+    ├── theme-init.test.js             # 明暗の初期判定と読み込み位置
     ├── i18n.test.js                   # 辞書と禁止語
     ├── contrast.test.js               # 明暗の文字コントラスト
     ├── format.test.js                 # 行長とファイルの整形

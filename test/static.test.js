@@ -54,12 +54,18 @@ test('only language and theme preferences can be written to browser storage', ()
     const source = read(file);
     assert.doesNotMatch(source, /sessionStorage|indexedDB|document\.cookie|history\.(?:pushState|replaceState)/, file);
     assert.doesNotMatch(source, /location\.(?:hash|search|href)\s*=/, file);
-    if (file !== 'app.js') assert.doesNotMatch(source, /localStorage/, file);
+    // theme-init.js reads only the saved theme in <head> before the first paint.
+    if (file === 'theme-init.js') {
+      const uses = [...source.matchAll(/localStorage\.(\w+)\('([^']+)'/g)].map(match => match[1] + ' ' + match[2]);
+      assert.deepEqual(uses, ['getItem overlay-qr-shares.theme'], file);
+      assert.equal((source.match(/localStorage/g) || []).length, 1, file);
+    } else if (file !== 'app.js') assert.doesNotMatch(source, /localStorage/, file);
   }
 });
 
 test('core modules have UMD exports and no DOM or browser storage access', () => {
-  for (const file of scripts.filter(name => name !== 'app.js' && name !== 'messages.js')) {
+  const pageScripts = ['app.js', 'messages.js', 'theme-init.js'];
+  for (const file of scripts.filter(name => !pageScripts.includes(name))) {
     const source = read(file);
     assert.match(source, /module\.exports/, file);
     assert.doesNotMatch(source, /\bdocument\b|\bHTMLElement\b|localStorage|sessionStorage|\.getContext\(/, file);
@@ -93,5 +99,5 @@ test('tabs, dialog, focus and reduced-motion styles are present', () => {
   assert.match(read('style.css'), /\[hidden\]\s*\{\s*display:\s*none !important;/);
   assert.match(read('style.css'), /:focus-visible/);
   assert.match(read('style.css'), /prefers-reduced-motion:\s*reduce/);
-  assert.match(app, /prefers-color-scheme: dark/);
+  assert.match(read('theme-init.js'), /prefers-color-scheme: dark/);
 });

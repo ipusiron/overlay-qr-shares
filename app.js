@@ -13,12 +13,11 @@
   }
   const langParam = new URLSearchParams(location.search).get('lang');
   const savedLanguage = stored('language');
-  const savedTheme = stored('theme');
   let language = ['ja', 'en'].includes(langParam) ? langParam
     : ['ja', 'en'].includes(savedLanguage) ? savedLanguage
       : navigator.language.startsWith('ja') ? 'ja' : 'en';
-  let theme = ['light', 'dark'].includes(savedTheme) ? savedTheme
-    : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  // theme-init.js sets data-theme in <head> before the first paint; keep that value here.
+  let theme = document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light';
   const tabs = ['split', 'read', 'guide'];
   let active = 'split';
   let generation = 0;
