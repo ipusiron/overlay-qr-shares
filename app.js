@@ -792,6 +792,8 @@
     });
     document.querySelectorAll('[data-label]').forEach(element => {
       element.setAttribute('aria-label', t(element.dataset.label));
+      // Symbol-only header buttons also show their name as a tooltip.
+      if (element.classList.contains('icon-button')) element.title = t(element.dataset.label);
     });
     $('language').textContent = language === 'ja' ? 'EN' : 'JA';
     $('theme').setAttribute('aria-pressed', String(theme === 'dark'));
