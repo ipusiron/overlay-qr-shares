@@ -30,7 +30,6 @@
     prepareBody: 'A4の紙、プリンター、トレース台などの背面光源、カメラ付きの端末。このページで、印刷面どうしを重ねたシートを読みます。',
     trialTitle: 'まず、テスト印刷から',
     trialBody: '限られた条件で、2つの寸法の実物復元を確認しました。ほかの設定は未試験です。秘密を刷る前に、お使いの環境で戻せることを確かめます。',
-    stageNotice: '現在は画面と基礎処理の確認用です。シートの作成・印刷はまだ利用できません。',
     readEyebrow: '光を通して読む',
     readTitle: '重ねたシートを読み取る。',
     readIntro: '重ねたシートに後ろから光を当て、このページのカメラで読み取ります。',
@@ -183,7 +182,6 @@
     trialTitle: 'Start with a test print',
     trialBody: 'Physical recovery has been confirmed at two module sizes under limited conditions. '
       + 'Other settings remain untested. Test recovery in your setup before printing a secret.',
-    stageNotice: 'This build is for checking the interface and core operations. Sheet creation and printing are not available yet.',
     readEyebrow: 'Read with transmitted light',
     readTitle: 'Read your overlaid sheets.',
     readIntro: 'Light the overlaid sheets from behind, then read them using the camera on this page.',
