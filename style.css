@@ -493,11 +493,8 @@ button:disabled {
   margin: .35rem 0 0;
 }
 .step-figure {
-  max-width: 34rem;
+  max-width: 38rem;
   margin-top: .9rem;
-}
-#figure-align {
-  max-width: 46rem;
 }
 .step-figure:empty {
   display: none;
@@ -737,6 +734,11 @@ dialog::backdrop {
   }
   .diagram-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .step-figure .instruction-figure {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
   }
   .alignment-figure {
     display: grid;
