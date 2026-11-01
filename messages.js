@@ -123,7 +123,7 @@
     functionalCheck: '作成後は、組ごとの復元と合成画像の読み取りを確かめます。機能の確認です。安全性の検査ではありません。',
     working: 'シートを作成し、確かめています…',
     checkProgressText: (done, total) => `${done} / ${total} 組を確認`,
-    checkImage: '合成画像から、正像と鏡像を確かめています…',
+    checkImage: '合成画像から、そのままと裏返しの両方で読めるか確かめています…',
     completed: (count, seconds) => `${count}枚を作成しました。必要枚数のすべての組と、1枚少ない組を確認しました（${seconds}秒）。`,
     testsCompleted: 'テスト用のシートを作成し、機能を確認しました。これは実物の印刷試験の成功を示すものではありません。',
     changed: '入力または設定が変わったため、作成したシートを消しました。',
@@ -366,7 +366,7 @@
     flagInkSpread: '白の区画が濃い可能性があります。にじみや紙の散乱を確認してください。',
     flagMisaligned: '濃さの差が小さい状態です。位置のずれや光を確認してください。',
     flagGlare: '照り返しの可能性があります。部屋の照明を消してください。',
-    reasonMarks: '四隅のマークがそろいません。見本全体を写すか、手で四隅を指定してください。',
+    reasonMarks: '四隅の基準マークがそろいません。見本全体を写すか、手で四隅を指定してください。',
     reasonBand: '機械読み取り帯が読めません。右側の帯も写してください。',
     reasonGeometry: '配置を読み取れません。平らにして、真上から写してください。',
     reasonDecode: '文字列を戻せません。印刷面、位置合わせ、照明を確かめてください。',
@@ -378,9 +378,10 @@
     diagramLight: '横から見る：上はB、下はA',
     diagramLightBody: '太い黒線は接触する印刷面です。Bの下面とAの上面を直接触れさせます。下から背面光源の光を通し、カメラを真上に構えます。',
     diagramAlign: '上のQR：位置合わせの目印',
-    diagramAlignBody: '上のQRと右の帯を示した模式図です。大きな四角3つを合わせてから、周囲の小さい四角もカメラに入れます。',
+    diagramAlignBody: '上のQRと右の帯を示した模式図です。大きな四角3つを合わせてから、周囲の小さい四角もカメラに入れます。'
+      + '右の帯（機械読み取り帯）には方式・版・誤り訂正・寸法・セットIDが入っています。この帯も写してください。',
     diagramAlignFinder: '大きな四角3つ：主な目印。3つとも輪郭を1本に合わせます。',
-    diagramAlignCorner: '周囲の小さい四角4つ：補助目印（1つは中抜き）。撮影・手動四隅の指定にも使います。',
+    diagramAlignCorner: '周囲の小さい四角4つ（基準マーク）：補助目印（1つは中抜き）。撮影・手動四隅の指定にも使います。',
     diagramAlignRectangle: '左脇中央の黒い長方形：AとBでは上下に分かれる形です。これら同士を重ねるために紙をずらしません。',
     diagramWrongFour: '誤り：大きな四角が4つ見える',
     diagramWrongFourBody: '上下の裏返し方が違います。上の見本の大きな四角が3つになるように合わせ直します。',
@@ -452,7 +453,7 @@
     flagFaintToner: 'Black may be too faint. Check toner-saving settings.',
     flagInkSpread: 'White areas may be too dark. Check spreading ink and paper scattering.',
     flagMisaligned: 'The density difference is small. Check alignment and lighting.', flagGlare: 'Possible glare. Turn off the room lights.',
-    reasonMarks: 'Four marks were not found. Include the whole sample, or select the corners manually.',
+    reasonMarks: 'Four registration marks were not found. Include the whole sample, or select the corners manually.',
     reasonBand: 'The metadata band could not be read. Include the band on the right.',
     reasonGeometry: 'The layout could not be read. Keep it flat and photograph from directly above.',
     reasonDecode: 'Could not recover the text. Check printed faces, alignment, and lighting.',
@@ -468,9 +469,11 @@
       + 'Backlight shines from below; the camera looks straight down.',
     diagramAlign: 'Upper QR: alignment guides',
     diagramAlignBody: 'Schematic of the upper QR and its right-hand band. Match the three large squares, '
-      + 'then include the small surrounding squares in the camera view.',
+      + 'then include the small surrounding squares in the camera view. '
+      + 'The band on the right (metadata band) holds the scheme, version, error correction, size, and set ID. Include it in the frame.',
     diagramAlignFinder: 'Three large squares: the main guides. Match each pair of outlines into one.',
-    diagramAlignCorner: 'Four small outer squares: extra guides (one is hollow). Include them when filming and selecting four corners manually.',
+    diagramAlignCorner: 'Four small outer squares (registration marks): extra guides (one is hollow). '
+      + 'Include them when filming and selecting four corners manually.',
     diagramAlignRectangle: 'Black rectangles midway along the left side: A and B occupy opposite halves. '
       + 'Do not shift the sheets to overlap these rectangles.',
     diagramWrongFour: 'Wrong: four large squares', diagramWrongFourBody: 'The flip is incorrect. Realign until the upper sample has three large squares.',
