@@ -540,6 +540,14 @@ button:disabled {
 .step-figure figcaption p {
   margin: 0;
 }
+.step-figure figcaption strong {
+  margin-bottom: .6rem;
+}
+/* The step list's item spacing must not leak into a diagram's legend inside a step. */
+.overlay-steps .diagram-legend li {
+  margin-bottom: 0;
+  padding-left: 0;
+}
 /* Navigation (another tab or another place on the page) looks like a link with an arrow, not like an action button. */
 .nav-link {
   display: inline-flex;
@@ -632,19 +640,25 @@ pre {
   gap: 1rem;
   margin: 1.5rem 0;
 }
+/* One inner spacing for every diagram frame: the same padding on all four sides and the same gap
+   between the diagram and its caption, whether they are stacked or side by side. */
 .instruction-figure {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
   min-width: 0;
   margin: 0;
+  padding: 1rem;
   border: 1px solid var(--line);
 }
 /* Diagrams sit on a slightly muted paper-colored mat with a thin frame in both themes.
    Only the mat uses that color; white inside the drawn samples is white (slightly dimmed in the dark theme). */
 .instruction-figure svg {
   display: block;
-  width: calc(100% - 1.5rem);
+  width: 100%;
   max-width: 24rem;
   height: auto;
-  margin: .75rem auto 0;
+  margin: 0 auto;
   padding: .5rem;
   border: 1px solid var(--diagram-frame);
   border-radius: .25rem;
@@ -667,7 +681,7 @@ pre {
   shape-rendering: crispEdges;
 }
 figcaption {
-  padding: 1rem;
+  min-width: 0;
 }
 figcaption strong {
   display: block;
@@ -815,16 +829,13 @@ dialog::backdrop {
   .diagram-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .step-figure .instruction-figure {
-    display: grid;
+  .step-figure .instruction-figure, .alignment-figure {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
     align-items: center;
   }
   .alignment-figure {
-    display: grid;
     grid-column: 1 / -1;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: center;
   }
   .page-footer {
     flex-direction: row;
