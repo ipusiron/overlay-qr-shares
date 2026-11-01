@@ -595,6 +595,37 @@ Liuらは色の共有画像と標準のQRデコーダーを使う別の構成で
 - [Day070 VisualCryptography CipherLab](https://ipusiron.github.io/visual-cryptography-cipherlab/)：視覚暗号の柄と重ね合わせを学ぶツール
 - [Day102 QRCrashTest](https://ipusiron.github.io/qrcrashtest/)：QRの読み取りと破損を試すツール。同梱のQRライブラリーとライセンスの取得元
 
+**組み合わせた学習例**
+
+**画面の上の視覚暗号から、紙の上の視覚暗号へ**（[Day070 VisualCryptography CipherLab](https://ipusiron.github.io/visual-cryptography-cipherlab/)）
+
+学べること：2×2の柄で白と黒の濃さに差が出る仕組みと、重ねる位置のずれが読みやすさに与える影響です。
+
+1. VisualCryptography CipherLabの「暗号化」で画像を2枚のシェアに分け、「復号」で重ねます。位置の調整で横や縦に少しずらし、絵がどう崩れるかを見ます。
+2. 同じツールの「乱数のわな」で、予測できる乱数を使うと1枚から秘密が漏れることを確かめます。
+3. 本ツールの「仕組みと限界」で、(2,2)の6通りの柄と、白と黒で柄の分布が等しいことを読みます。
+4. 本ツールでテスト用のシートを作って印刷し、「重ねて読む」の手順で紙を重ねます。大きな四角3つの輪郭がそろうまで合わせ、画面上のずれと紙のずれを比べます。
+
+**QRの「当たりどころ」と、重ねたシートの読み取り**（[Day102 QRCrashTest](https://ipusiron.github.io/qrcrashtest/)）
+
+学べること：位置検出パターンと誤り訂正の役割と、本ツールが大きな四角3つで紙を合わせ、誤り訂正MとQを選べる理由です。
+
+1. QRCrashTestでサンプルのQRを読み込み、構造レイヤーの表示でFinder・Timing・Dataの領域の位置を確かめます。
+2. 攻撃シナリオのプリセットのうち「Finder破壊」と「Data汚損」を比べ、同じくらい傷付けても読めるかどうかが変わることを観察します。
+3. 本ツールの「重ねて読む」の①を読み、大きな四角3つ（位置検出パターン）で紙を合わせる理由を考えます。
+4. 本ツールで誤り訂正をMとQに切り替え、「分ける」の注記に出る容量の変化を見ます。
+
+**3つの方式で「2枚あれば戻る」を比べる**（[Day123 ShamirSharing CipherLab](https://ipusiron.github.io/shamir-sharing-cipherlab/)、[Day126 BlakleySharing CipherLab](https://ipusiron.github.io/blakley-sharing-cipherlab/)）
+
+学べること：同じ(2,3)でも、Shamirは多項式、Blakleyは交点、視覚暗号は重ねた濃さで戻すことです。読めたことが改ざんされていない証明にならない点は共通しています。
+
+1. ShamirSharing CipherLabの「(2, n)を可視化する」で、1個のシェアでは秘密の候補が残り、2個で直線が1本に決まることを確かめます。
+2. BlakleySharing CipherLabの「交点で追う（k=2）」で、1本の直線では候補が残り、2本の交点で秘密が決まることを確かめます。
+3. 本ツールで3枚・どれか2枚を選び、方式の状態の表示と「仕組みと限界」の説明を読みます。1枚の柄から白黒を区別できない理由を、1と2の「候補が残る」と比べます。
+4. 両CipherLabの「確かめる」で改ざんの模型を見たあと、本ツールの「⚠️ 限界と改ざん」を読み、検出の仕組みがあるかどうかを比べます。
+
+(2,3)は未試験の方式です。実物で試す場合はテスト用の文字列を使います。
+
 ## 📁 ディレクトリー構造
 
 ```text

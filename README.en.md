@@ -572,6 +572,37 @@ It does not claim a new cryptographic scheme or a world-first mechanism.
 - [Day070 VisualCryptography CipherLab](https://ipusiron.github.io/visual-cryptography-cipherlab/): a tool for learning visual cryptography patterns and overlays
 - [Day102 QRCrashTest](https://ipusiron.github.io/qrcrashtest/): a tool for experimenting with QR reading and damage, and the source of the bundled QR libraries and licenses
 
+**Learning with related tools**
+
+**From on-screen to on-paper visual cryptography** ([Day070 VisualCryptography CipherLab](https://ipusiron.github.io/visual-cryptography-cipherlab/))
+
+What you learn: how 2×2 patterns create a density difference between white and black, and how misalignment affects readability.
+
+1. In VisualCryptography CipherLab, split an image into two shares on the Encrypt tab and overlay them on the Decode tab. Use the offset controls to shift one share slightly and watch the image break down.
+2. On the same tool's RNG trap tab, see how predictable randomness lets one share leak the secret.
+3. On this tool's “How it works & limits” tab, read about the six (2,2) patterns and why their distribution is the same for white and black.
+4. Create and print test sheets here, then follow “Overlay & read.” Align until the three large squares have single outlines, and compare on-screen offsets with paper misalignment.
+
+**QR “hit points” and reading overlaid sheets** ([Day102 QRCrashTest](https://ipusiron.github.io/qrcrashtest/))
+
+What you learn: the roles of finder patterns and error correction, and why this tool aligns sheets by the three large squares and offers levels M and Q.
+
+1. Load a sample QR in QRCrashTest and use the structure layers to locate the Finder, Timing, and Data regions.
+2. Compare the Finder Attack and Data Damage presets. Similar amounts of damage can lead to different results.
+3. Read section ① of “Overlay & read” here and consider why the sheets are aligned by the three large squares (finder patterns).
+4. Switch error correction between M and Q here and watch the capacity change in the note on the Split tab.
+
+**Comparing “any two recover” across three schemes** ([Day123 ShamirSharing CipherLab](https://ipusiron.github.io/shamir-sharing-cipherlab/), [Day126 BlakleySharing CipherLab](https://ipusiron.github.io/blakley-sharing-cipherlab/))
+
+What you learn: in (2,3), Shamir recovers by polynomials, Blakley by intersections, and visual cryptography by overlaid density. In all three, a successful read does not prove the shares are untampered.
+
+1. In ShamirSharing CipherLab, use “Visualize (2, n)” to see that one share leaves candidate secrets and two shares fix a single line.
+2. In BlakleySharing CipherLab, use “Intersections (k=2)” to see that one line leaves candidates and two lines meet at the secret.
+3. Here, choose three sheets with any two required, and read the scheme status and the “How it works & limits” tab. Compare why one sheet's pattern cannot distinguish white from black with the remaining candidates in steps 1 and 2.
+4. After the tampering models on both CipherLabs' “Pitfalls” tabs, read “⚠️ Limits and tampering” here and compare whether tampering is detected.
+
+(2,3) is untested; use test text for physical trials.
+
 ## 📁 Directory structure
 
 ```text
