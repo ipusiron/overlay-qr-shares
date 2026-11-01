@@ -549,7 +549,7 @@ python test/camera.browser.py
 python test/screenshot.browser.py
 ```
 
-Browser tests require Python Playwright and its browsers; PDF measurements use PyMuPDF.
+Browser tests require Python Playwright and its browsers; PDF measurements use PyMuPDF. Demo screenshots are saved with 256 colors using Pillow.
 Chromium, Firefox, and WebKit are checked at 320/390/1280px in both languages and themes, with reduced motion and keyboard navigation for tabs and help.
 Chromium checks creation from `file://`, separate single-sheet PDFs, rulers, subpixel dimensions, and zero horizontal overflow.
 Automated tests do not print physical sheets.

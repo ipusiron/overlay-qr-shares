@@ -572,7 +572,7 @@ python test/camera.browser.py
 python test/screenshot.browser.py
 ```
 
-ブラウザーテストにはPython Playwrightと対応ブラウザーが必要で、PDFの測定にはPyMuPDFを使います。
+ブラウザーテストにはPython Playwrightと対応ブラウザーが必要で、PDFの測定にはPyMuPDFを使います。デモ画像の撮影では、Pillowで256色に減らして保存します。
 Chromium、Firefox、WebKitで320/390/1280px、日英、明暗、reduced-motion、タブとヘルプのキーボード操作を検査します。
 Chromiumでは`file://`の作成、1シートずつのPDF、物差し、サブピクセルの実寸、横はみ出し0を検査します。
 実物への印刷は自動テストでは行いません。
