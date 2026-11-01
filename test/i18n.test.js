@@ -40,3 +40,27 @@ test('language selection covers hidden content and accessible labels', () => {
   assert.match(app, /document\.documentElement\.lang\s*=\s*language/);
   assert.match(app, /new URLSearchParams\(location\.search\)\.get\('lang'\)/);
 });
+
+test('navigation labels repeat the destination names exactly and show an arrow', () => {
+  const { ja, en } = messages;
+  for (const [key, target] of [['openReader', 'readTab'], ['openGuide', 'guideTab'], ['readerCameraJump', 'readerCameraTitle']]) {
+    assert.equal(ja[key], `「${ja[target]}」へ`, 'ja ' + key);
+    assert.equal(en[key], `Go to “${en[target]}”`, 'en ' + key);
+  }
+  const buttons = [...html.matchAll(/<button id="([^"]+)" class="nav-link" type="button" data-tab-target="(\w+)">([\s\S]*?)<\/button>/g)];
+  assert.equal(buttons.length, 2, 'two tab-switch buttons');
+  for (const [, id, target, body] of buttons) {
+    assert.match(html, new RegExp(`id="tab-${target}"`), id);
+    assert.match(body, /<span class="nav-arrow" aria-hidden="true">→<\/span>/, id);
+  }
+  assert.match(html, /<a class="nav-link" href="#reader-camera" data-jump>[\s\S]*?aria-hidden="true">↓<\/span><\/a>/);
+});
+
+test('the split requirement points to the step 3 heading as it appears on screen', () => {
+  const compose = dictionary => dictionary.requirementStart + dictionary.testReadTitle.replace(/\s+/g, ' ') + dictionary.requirementEnd;
+  assert.equal(compose(messages.ja), '先に「3 印刷したテストを読む」の確認欄にチェックしてください。');
+  assert.equal(compose(messages.en), 'First check the confirmation box under “3 Read the printed test.”');
+  assert.match(html, /<p id="split-requirement" class="requirement" hidden><span class="requirement-icon" aria-hidden="true">/);
+  assert.match(html, /<a id="requirement-link" href="#test-read-confirm" data-jump><\/a>/);
+  assert.match(app, /setAttribute\('aria-describedby', 'split-requirement'\)/);
+});

@@ -76,16 +76,20 @@ function pngBrightness(file) {
   const width = bytes.readUInt32BE(16), height = bytes.readUInt32BE(20), color = bytes[25];
   assert.equal(bytes[24], 8, '8-bit screenshot: ' + file);
   assert.equal(bytes[28], 0, 'noninterlaced screenshot: ' + file);
-  assert.ok(color === 2 || color === 6, 'RGB/RGBA screenshot: ' + file);
+  assert.ok(color === 2 || color === 3 || color === 6, 'RGB/RGBA/palette screenshot: ' + file);
   assert.ok(width >= 600 && width <= 2000 && height >= 150 && height <= 4000, 'readable image dimensions: ' + file);
   const packed = [];
+  let palette = null, alphas = null;
   for (let position = 8; position + 12 <= bytes.length;) {
     const size = bytes.readUInt32BE(position), type = bytes.subarray(position + 4, position + 8).toString('ascii');
     assert.ok(position + size + 12 <= bytes.length, 'PNG chunk bounds: ' + file);
     if (type === 'IDAT') packed.push(bytes.subarray(position + 8, position + 8 + size));
+    if (type === 'PLTE') palette = bytes.subarray(position + 8, position + 8 + size);
+    if (type === 'tRNS') alphas = bytes.subarray(position + 8, position + 8 + size);
     position += size + 12;
   }
-  const channels = color === 2 ? 3 : 4, stride = width * channels;
+  if (color === 3) assert.ok(palette && palette.length > 0 && palette.length % 3 === 0, 'palette: ' + file);
+  const channels = color === 2 ? 3 : color === 6 ? 4 : 1, stride = width * channels;
   const raw = zlib.inflateSync(Buffer.concat(packed), { maxOutputLength: (stride + 1) * height });
   assert.equal(raw.length, (stride + 1) * height);
   let previous = Buffer.alloc(stride), bright = 0;
@@ -98,9 +102,18 @@ function pngBrightness(file) {
       row[i] = (row[i] + predictor) & 255;
     }
     for (let x = 0; x < width; x++) {
-      const offset = x * channels;
-      if ((299 * row[offset] + 587 * row[offset + 1] + 114 * row[offset + 2]) / 1000 > 170) bright++;
-      if (channels === 4) assert.equal(row[offset + 3], 255, 'opaque light screenshot: ' + file);
+      let red, green, blue;
+      if (color === 3) {
+        const index = row[x];
+        assert.ok(index * 3 + 2 < palette.length, 'palette index: ' + file);
+        [red, green, blue] = [palette[index * 3], palette[index * 3 + 1], palette[index * 3 + 2]];
+        if (alphas && index < alphas.length) assert.equal(alphas[index], 255, 'opaque light screenshot: ' + file);
+      } else {
+        const offset = x * channels;
+        [red, green, blue] = [row[offset], row[offset + 1], row[offset + 2]];
+        if (channels === 4) assert.equal(row[offset + 3], 255, 'opaque light screenshot: ' + file);
+      }
+      if ((299 * red + 587 * green + 114 * blue) / 1000 > 170) bright++;
     }
     previous = row;
   }

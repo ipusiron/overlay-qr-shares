@@ -23,6 +23,7 @@
   let generation = 0;
   let busy = false;
   let trials = [];
+  let confirmedSize = null;
   let outputs = [];
   let message = null;
   let testMessage = null;
@@ -33,6 +34,12 @@
   let frameHandle = null;
   let frameCount = 0;
   let cameraMessage = { key: 'cameraIdle', args: [] };
+  // Live scanning: the status changes at most every STATUS_INTERVAL ms, and a failure reason appears only
+  // after REASON_DELAY ms without success. This keeps the polite live region readable.
+  const STATUS_INTERVAL = 1500;
+  const REASON_DELAY = 6000;
+  let scanStarted = 0;
+  let statusShown = { text: '', at: 0, language: '' };
   let recovered = '';
   let revealed = false;
   let diagnosis = null;
@@ -66,6 +73,13 @@
     return { id: k + '-' + n, version: Number($('qr-version').value), ecl: $('error-correction').value,
       m: Number($('module-size').value), n, k };
   }
+  // Test sets count only for the selected scheme, version and error correction; the confirmation is per size.
+  function flowState() {
+    const p = parameters();
+    const trialSizes = trials.filter(record => record.set.id === p.id && record.set.version === p.version
+      && record.set.ecl === p.ecl).map(record => record.set.m);
+    return { trialSizes, confirmedSize, size: p.m };
+  }
   function zeroSet(set) {
     for (const array of [...set.data, ...set.calib, set.modules, set.plain, set.band]) array.fill(0);
   }
@@ -86,6 +100,7 @@
     discard(outputs);
     if (all) {
       discard(trials);
+      confirmedSize = null;
       $('test-read-confirm').checked = false;
       testMessage = null;
     }
@@ -129,9 +144,16 @@
     if (value && value !== value.trim()) warnings.push(t('spaceWarning'));
     $('input-warnings').textContent = warnings.join(' ');
     $('input-warnings').hidden = warnings.length === 0;
-    $('split-button').disabled = busy || !!state.error || !$('test-read-confirm').checked;
+    const flow = flowState();
+    $('split-button').disabled = busy || !!state.error || !OQS.flow.canCreate(flow);
     $('test-button').disabled = busy;
-    $('test-read-confirm').disabled = busy || !trials.some(record => record.set.m === parameters().m);
+    $('test-read-confirm').checked = flow.confirmedSize === flow.size;
+    $('test-read-confirm').disabled = busy || !OQS.flow.canConfirm(flow);
+    // A disabled button cannot be pressed, so show why it is disabled next to it.
+    const blocked = !busy && !OQS.flow.canCreate(flow);
+    $('split-requirement').hidden = !blocked;
+    if (blocked) $('split-button').setAttribute('aria-describedby', 'split-requirement');
+    else $('split-button').removeAttribute('aria-describedby');
   }
   function renderSplit() {
     const p = parameters(), basis = OQS.vc.basis(p.id);
@@ -147,6 +169,11 @@
       $('progress-bar').max = progress.total;
       $('progress-text').textContent = t(progress.image ? 'checkImage' : 'checkProgressText', progress.done, progress.total);
     }
+    const step = OQS.flow.currentStep(flowState());
+    document.querySelectorAll('.steps a[data-step]').forEach(link => {
+      if (Number(link.dataset.step) === step) link.setAttribute('aria-current', 'step');
+      else link.removeAttribute('aria-current');
+    });
     $('print-checks').hidden = !outputs.length;
     const checked = ['check-all-sheets', 'check-ruler', 'check-disposal'].every(id => $(id).checked);
     $('clear-reminder').textContent = t(checked ? 'clearReady' : 'clearPending');
@@ -211,7 +238,7 @@
   }
   async function generate(isTest) {
     if (busy) return;
-    if (!isTest && (!$('test-read-confirm').checked || !trials.some(record => record.set.m === parameters().m))) {
+    if (!isTest && !OQS.flow.canCreate(flowState())) {
       status('trialRequired', [], false);
       return;
     }
@@ -305,15 +332,26 @@
     $('test-cards').replaceChildren();
     $('share-cards').replaceChildren();
     $('print-root').replaceChildren();
-    for (const record of [...trials, ...outputs]) {
+    // Group test sheets by module size, with the selected size first, so TA and TB of one size stay together.
+    const size = parameters().m;
+    const ordered = [...trials].sort((a, b) => Number(b.set.m === size) - Number(a.set.m === size));
+    for (const record of [...ordered, ...outputs]) {
       const set = record.set, basis = OQS.vc.basis(set.id);
+      let target = $('share-cards');
+      if (record.type === 'test') {
+        const group = element('section', 'test-group');
+        group.append(element('h4', 'test-group-title', t('testGroup', set.m, set.setId)));
+        target = element('div', 'sheet-cards');
+        group.append(target);
+        $('test-cards').append(group);
+      }
       for (let index = 0; index < set.n; index++) {
         const symbol = (record.type === 'test' ? 'T' : '') + String.fromCharCode(65 + index);
         const key = record.token + '-' + symbol;
         const card = element('article', 'sheet-card');
         card.dataset.sheet = symbol;
         card.dataset.moduleSize = String(set.m);
-        card.append(element('h4', 'sheet-symbol', symbol));
+        card.append(element(record.type === 'test' ? 'h5' : 'h4', 'sheet-symbol', symbol));
         card.append(element('p', 'sheet-title', t('sheetTitle', symbol)));
         card.append(element('p', 'note', t('sheetInfo', set.id, set.setId, set.m)));
         card.append(element('p', 'note', t('sheetMeasure', set.m / basis.c, set.m / basis.r)));
@@ -324,7 +362,7 @@
         button.addEventListener('click', () => printOne(record, index, symbol, key));
         card.append(button);
         if (record.printed.has(index)) card.append(element('p', 'note print-attempted', t('printAttempted')));
-        $(record.type === 'test' ? 'test-cards' : 'share-cards').append(card);
+        target.append(card);
         $('print-root').append(makePrintSheet(record, index, symbol, key));
       }
     }
@@ -402,8 +440,11 @@
     if (!video.videoWidth || !video.videoHeight || video.readyState < 2) return null;
     return frameImage(fullCanvas, video, video.videoWidth, video.videoHeight);
   }
-  function applyReading(result) {
-    diagnosis = result.diag || null;
+  function applyReading(result, live) {
+    const diag = result.diag || null;
+    // Show a diagnosis only when white and black were measured; while scanning, keep the last measured one.
+    if (diag && Number.isFinite(diag.margin)) diagnosis = diag;
+    else if (!live) diagnosis = null;
     if (result.ok) {
       recovered = result.text;
       result.text = '';
@@ -415,7 +456,14 @@
       const reasons = { marks: 'reasonMarks', band: 'reasonBand', metadata: 'reasonBand', geometry: 'reasonGeometry',
         finder: 'reasonGeometry', manual: 'reasonGeometry', image: 'reasonGeometry', illumination: 'reasonIllumination',
         calibration: 'reasonCalibration', decode: 'reasonDecode' };
-      cameraMessage = { key: reasons[result.reason] || 'reasonDecode', args: [] };
+      const reason = reasons[result.reason] || 'reasonDecode';
+      if (live) {
+        const count = Array.isArray(result.marks) ? result.marks.length : Number(diag && diag.marks) || 0;
+        const late = performance.now() - scanStarted >= REASON_DELAY;
+        cameraMessage = { key: 'cameraScanning', args: [count], reason: late ? reason : null };
+      } else {
+        cameraMessage = { key: reason, args: [], retry: true };
+      }
     }
     renderReader();
   }
@@ -432,7 +480,7 @@
             const scale = Math.min(1, 640 / Math.max(image.w, image.h));
             small = frameImage(detectCanvas, fullCanvas, Math.round(image.w * scale), Math.round(image.h * scale));
             const result = OQS.reader.readFrame(image, { detectImage: small });
-            if (ticket === cameraGeneration) applyReading(result);
+            if (ticket === cameraGeneration) applyReading(result, true);
           }
         } catch (_) {
           if (ticket === cameraGeneration) { stopCamera(false); setCameraMessage('reasonGeometry'); }
@@ -474,6 +522,7 @@
       await $('camera-video').play();
       if (ticket !== cameraGeneration) return;
       frameCount = 0;
+      scanStarted = performance.now();
       setCameraMessage('cameraScanning', [0]);
       nextFrame(ticket);
     } catch (_) {
@@ -557,15 +606,23 @@
     drawManual();
     if (corners.length === 4) {
       const result = OQS.reader.readFrame(frozen, { manualCorners: corners });
-      applyReading(result);
+      applyReading(result, false);
       // The frozen frame is no longer needed once all four points have been processed.
       clearFrozen();
     }
     renderReader();
   }
   function renderReader() {
-    $('camera-status').textContent = t(cameraMessage.key, ...cameraMessage.args);
-    if (cameraStream && diagnosis) $('camera-status').textContent += ' ' + t('cameraScanning', Number(diagnosis.marks) || 0);
+    let status = t(cameraMessage.key, ...cameraMessage.args);
+    if (cameraMessage.reason) status += ' ' + t(cameraMessage.reason);
+    if (cameraMessage.retry) status += ' ' + t('readAgain');
+    const now = performance.now();
+    const throttled = !!cameraStream && cameraMessage.key === 'cameraScanning' && statusShown.language === language
+      && now - statusShown.at < STATUS_INTERVAL;
+    if (status !== statusShown.text && !throttled) {
+      $('camera-status').textContent = status;
+      statusShown = { text: status, at: now, language };
+    }
     const cameraBusy = cameraPending || !!cameraStream;
     const start = $('camera-button'), stop = $('stop-camera');
     // Move focus before disabling/hiding its current control, without moving the viewport.
@@ -580,6 +637,11 @@
     }
     $('camera-view').hidden = !cameraStream;
     $('manual-button').disabled = !cameraStream || $('camera-video').readyState < 2;
+    const manualBlocked = $('manual-button').disabled && !frozen;
+    $('manual-requirement').hidden = !manualBlocked;
+    $('manual-requirement').textContent = manualBlocked ? t('manualEmpty') : '';
+    if (manualBlocked) $('manual-button').setAttribute('aria-describedby', 'manual-requirement');
+    else $('manual-button').removeAttribute('aria-describedby');
     $('manual-view').hidden = !frozen;
     if (frozen) {
       const names = ['cornerTL', 'cornerTR', 'cornerBR', 'cornerBL'];
@@ -608,13 +670,20 @@
       $('diagnostic-detail').append(element('p', 'note', t('diagTemporary')));
     }
   }
+  // The mat behind a diagram uses the muted paper color; white inside the drawn samples stays white and black stays black.
+  function paperize(svg) {
+    svg.querySelectorAll('[fill="#fff"]').forEach(node => node.classList.add(node.classList.contains('mat') ? 'paper' : 'sample-white'));
+    svg.querySelectorAll('[stroke="#fff"]').forEach(node => node.classList.add('sample-white-stroke'));
+    svg.querySelectorAll('[fill="#aaa"]').forEach(node => node.classList.add('faint'));
+  }
   function renderEducation() {
     const figure = (name, draw, target, legends = []) => {
       const container = element('figure', 'instruction-figure');
       const svg = svgElement('svg', { viewBox: '0 0 256 170', width: 256, height: 170, role: 'img',
         'aria-label': t(name), 'font-family': "Meiryo, 'Yu Gothic', sans-serif" });
-      svg.append(svgElement('rect', { x: 0, y: 0, width: 256, height: 170, fill: '#fff' }));
+      svg.append(svgElement('rect', { x: 0, y: 0, width: 256, height: 170, fill: '#fff', class: 'mat' }));
       draw(svg);
+      paperize(svg);
       const caption = element('figcaption');
       caption.append(element('strong', '', t(name)), element('p', '', t(name + 'Body')));
       if (legends.length) {
@@ -638,7 +707,7 @@
     }, text));
     const finder = (svg, x, y) => { rect(svg, x, y, 30, 30, '#111'); rect(svg, x + 6, y + 6, 18, 18, '#fff');
       rect(svg, x + 11, y + 11, 8, 8, '#111'); };
-    $('setup-diagrams').replaceChildren();
+    for (const id of ['figure-flip', 'figure-light', 'figure-align', 'setup-mistakes']) $(id).replaceChildren();
     figure('diagramFlip', svg => {
       label(svg, 63, 23, t('diagramFaceUp')); label(svg, 200, 23, t('diagramFaceDown'));
       rect(svg, 32, 42, 64, 102); rect(svg, 169, 42, 64, 102);
@@ -651,7 +720,7 @@
       letter(back, 201, 105, 'B'); svg.append(back);
       line(svg, 108, 92, 133, 92);
       svg.append(svgElement('polygon', { points: '133,86 133,98 145,92', fill: '#111' }));
-    }, 'setup-diagrams');
+    }, 'figure-flip');
     figure('diagramLight', svg => {
       rect(svg, 102, 12, 52, 30, '#111'); rect(svg, 122, 19, 14, 14, '#fff');
       letter(svg, 24, 80, 'B'); letter(svg, 24, 104, 'A');
@@ -662,7 +731,7 @@
         line(svg, x, 136, x, 122);
         svg.append(svgElement('polygon', { points: `${x - 6},122 ${x + 6},122 ${x},110`, fill: '#111' }));
       }
-    }, 'setup-diagrams');
+    }, 'figure-light');
     figure('diagramAlign', svg => {
       rect(svg, 61, 30, 115, 115);
       finder(svg, 66, 35); finder(svg, 141, 35); finder(svg, 66, 110);
@@ -677,16 +746,16 @@
       label(svg, 122, 94, '1'); line(svg, 133, 81, 145, 69);
       label(svg, 238, 156, '2'); line(svg, 228, 153, 223, 153);
       label(svg, 16, 91, '3'); line(svg, 25, 85, 31, 85);
-    }, 'setup-diagrams', ['diagramAlignFinder', 'diagramAlignCorner', 'diagramAlignRectangle']);
+    }, 'figure-align', ['diagramAlignFinder', 'diagramAlignCorner', 'diagramAlignRectangle']);
     figure('diagramWrongFour', svg => {
       for (const [x, y] of [[43, 25], [183, 25], [43, 115], [183, 115]]) finder(svg, x, y);
       line(svg, 111, 72, 145, 106); line(svg, 145, 72, 111, 106);
-    }, 'setup-diagrams');
+    }, 'setup-mistakes');
     figure('diagramWrongFace', svg => {
       rect(svg, 32, 26, 192, 118);
       letter(svg, 88, 101, 'A'); letter(svg, 167, 101, 'B', '#aaa');
       line(svg, 35, 127, 221, 127); line(svg, 35, 135, 221, 135);
-    }, 'setup-diagrams');
+    }, 'setup-mistakes');
     const pattern = (svg, bits, x, y, size) => {
       rect(svg, x, y, size, size);
       bits.forEach((bit, index) => {
@@ -705,6 +774,7 @@
     for (const pair of OQS.vc.PAIRS) {
       const svg = svgElement('svg', { viewBox: '0 0 60 60', width: 60, height: 60, 'aria-hidden': 'true' });
       pattern(svg, [0, 1, 2, 3].map(index => Number(pair.includes(index))), 2, 2, 56);
+      paperize(svg);
       $('six-patterns').append(svg);
     }
     $('comparison-rows').replaceChildren();
@@ -729,8 +799,12 @@
     });
     document.querySelectorAll('[data-label]').forEach(element => {
       element.setAttribute('aria-label', t(element.dataset.label));
+      // Symbol-only header buttons also show their name as a tooltip.
+      if (element.classList.contains('icon-button')) element.title = t(element.dataset.label);
     });
     $('language').textContent = language === 'ja' ? 'EN' : 'JA';
+    // The requirement names the heading of step 3 exactly as shown on screen.
+    $('requirement-link').textContent = t('testReadTitle').replace(/\s+/g, ' ');
     $('theme').setAttribute('aria-pressed', String(theme === 'dark'));
     tabs.forEach(name => {
       const selected = name === active;
@@ -762,6 +836,18 @@
       nextTab.focus();
     });
   });
+  // In-page links scroll and move focus without writing a fragment to the URL or history.
+  document.querySelectorAll('a[data-jump]').forEach(link => link.addEventListener('click', event => {
+    const target = $(link.getAttribute('href').slice(1));
+    if (!target) return;
+    event.preventDefault();
+    if (target.tagName === 'DETAILS') target.open = true;
+    let focusTarget = target.tagName === 'DETAILS' ? target.querySelector(':scope > summary') : target;
+    // A disabled checkbox cannot take focus; use the heading of its section instead.
+    if (focusTarget.disabled) focusTarget = target.closest('section').querySelector('h3');
+    target.scrollIntoView({ block: target.tagName === 'INPUT' ? 'center' : 'start' });
+    focusTarget.focus({ preventScroll: true });
+  }));
   $('theme').addEventListener('click', () => {
     theme = theme === 'dark' ? 'light' : 'dark';
     save('theme', theme);
@@ -800,21 +886,37 @@
       first.focus();
     }
   });
-  for (const id of ['sheet-count', 'recover-any', 'recover-all', 'module-size', 'qr-version', 'error-correction']) {
+  for (const id of ['sheet-count', 'recover-any', 'recover-all', 'qr-version', 'error-correction']) {
     $(id).addEventListener('change', () => {
       invalidate(true);
       fitVersions();
       render();
     });
   }
+  // Test sets cover every fitting size, so a size change keeps them; the confirmation was for the old size.
+  $('module-size').addEventListener('change', () => {
+    confirmedSize = null;
+    invalidate(false);
+    fitVersions();
+    render();
+  });
   $('secret-input').addEventListener('input', () => {
     invalidate(false);
     render();
   });
   $('test-button').addEventListener('click', () => { generate(true); });
   $('split-button').addEventListener('click', () => { generate(false); });
-  $('test-read-confirm').addEventListener('change', renderSplit);
-  $('open-reader').addEventListener('click', () => { active = 'read'; render(); $('tab-read').focus(); });
+  $('test-read-confirm').addEventListener('change', () => {
+    confirmedSize = $('test-read-confirm').checked ? parameters().m : null;
+    renderSplit();
+  });
+  // Buttons that switch tabs: show the top of the destination tab and focus its heading.
+  document.querySelectorAll('button[data-tab-target]').forEach(button => button.addEventListener('click', () => {
+    const name = button.dataset.tabTarget;
+    $('tab-' + name).click();
+    $('tab-' + name).scrollIntoView({ block: 'start' });
+    $('panel-' + name).querySelector('h2').focus({ preventScroll: true });
+  }));
   for (const id of ['check-all-sheets', 'check-ruler', 'check-disposal']) $(id).addEventListener('change', renderSplit);
   $('clear-all').addEventListener('click', () => {
     invalidate(true);

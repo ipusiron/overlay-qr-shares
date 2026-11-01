@@ -42,7 +42,7 @@ The five screenshots below use light mode and the test-vector string `TEST-OQS-1
 The round buttons at the top right control the theme, language, and help.
 
 ![Split tab](assets/en/screenshot.png)
-> *Choose the number of shares and recovery condition, starting with a test print.*
+> *What you need, a start-with-a-test-print note, and four steps that show the current one.*
 
 ![Sheet cards](assets/en/sheets.png)
 > *Select sheets by symbol and set ID without displaying their patterns on screen.*
@@ -51,7 +51,7 @@ The round buttons at the top right control the theme, language, and help.
 > *A demo A4 sheet with a normal sample above and its vertical reflection below.*
 
 ![Overlay reading instructions](assets/en/overlay-read.png)
-> *① Put printed faces together; ② Read with camera. Both sections start open and can be collapsed independently.*
+> *① Put printed faces together; ② Read with camera. Section ① places a diagram in each step, and a link at the top goes to ②.*
 
 ![Principles and limits](assets/en/limits.png)
 > *Overlaying black and white patterns, compared with numerical secret sharing.*
@@ -71,11 +71,14 @@ The round buttons at the top right control the theme, language, and help.
 
 ### 1. Print and read a test
 
+“Split” begins with what you need and a note to start with a test print.
+The four steps at the top show the current step; select one to go to its heading.
 In “Split,” choose the sheet count and recovery condition.
 Start with (2,2), QR version 4, error correction M, and 2.54mm modules, then select “Create test sheets.”
 The test string is generated randomly and does not use the secret input.
 Versions 3 and 4 produce separate test sets for 2.032mm and 2.54mm; each sheet is printed on its own A4 page.
 Versions 5–7 fit only at 2.032mm.
+Test sheets are grouped by module size, with the selected size first.
 For the first trial, choose the 2.54mm cards with the same set ID, then select “Print sheet TA” and “Print sheet TB” to print one of each.
 Do not mix sheets with different sizes or set IDs, even if both carry the symbol TA.
 
@@ -111,6 +114,9 @@ This is not a procedure for stacking 3–5 sheets of ordinary paper.
 ### 2. Create production sheets
 
 Return to the “Split” tab on the PC where you created the test sheets, and check the confirmation that you recovered a printed test using the same scheme and module size.
+The confirmation applies to one module size. Switching the size keeps the test sets but clears the checkbox.
+Until the box is checked, “Split and check” is disabled and the reason appears below the button.
+Select “3 Read the printed test” in that notice to go to the checkbox.
 Enter the secret and select “Split and check.”
 The initial version 4/M settings allow 62 bytes; this is not the same as a character count for non-ASCII text.
 Input is never silently trimmed, normalized, or shortened.
@@ -132,6 +138,8 @@ It outputs PBM and does not decode the text.
 
 The tab has two sections: “① Put printed faces together” and “② Read with camera.”
 Both start open; select either heading to collapse or expand that section.
+In section ①, the flip, side-view, and alignment diagrams sit inside the steps they illustrate.
+The link at the top of the tab goes directly to section ②, so you can skip section ①.
 Once the sheets are ready, you can collapse section ① and use section ② to read them.
 Closing section ② stops the camera. Reopening it does not restart the camera automatically.
 
@@ -139,6 +147,8 @@ Closing section ② stops the camera. Reopening it does not restart the camera a
 Processing proceeds through registration-mark candidates, finder patterns, the metadata band, illumination, and module contrast.
 The “Adequate,” “Borderline,” and “Insufficient” diagnostics describe image conditions; they do not prove that a secret or sheet is authentic.
 Messages about alignment or illumination also describe possible causes.
+The diagnosis appears only after white and black darkness have been measured.
+While scanning, the status updates every few seconds and adds a reason if reading keeps failing.
 
 If automatic reading fails, select “Freeze and select corners” and choose the centers of the four small registration marks around the QR in image order: top left, top right, bottom right, bottom left.
 Do not select the three large finder patterns.
@@ -147,6 +157,7 @@ Use arrow keys to move, hold Shift for finer movement, and press Enter or Space 
 Before all four points are selected, “Select corners again” resets your selections.
 “Cancel and erase image” clears the frozen image.
 The frozen image is erased after the four-point read, whether or not it succeeds; if it fails, start again with “Read with camera.”
+After a failed read, the reason is shown together with that instruction.
 
 When a value is read, the camera stops and the value remains masked.
 Use “Reveal” to inspect it, and “Copy text” only when needed.
@@ -157,6 +168,7 @@ The camera also stops on a stop action, a tab change, page hiding, or leaving th
 
 After collecting the required sheets and checking the rulers and test recovery, follow the post-print checklist and store the shares separately.
 Collect and shred failed prints, then use “Clear everything” to remove input, sheets, and recovered values.
+The same action in “Overlay & read” also clears the Split input and sheets, so it is labeled “Clear everything (including “Split”).”
 Arrays are overwritten with zeros and frozen images are cleared, but JavaScript strings and internal browser or operating-system copies cannot be guaranteed to be erased.
 
 ### Print settings
@@ -523,6 +535,7 @@ The Python recovery test reads the PBM generated from synthetic PNGs with a QR d
 | `read-photo.test.js` | Python PNG input, PBM output, and malformed inputs |
 | `static.test.js`, `i18n.test.js` | CSP, storage, vendor files, translations, and forbidden wording |
 | `theme-init.test.js` | Initial theme choice and its load position in `<head>` |
+| `flow.test.js` | A confirmation at one module size cannot create sheets at another size; current step |
 | `contrast.test.js`, `format.test.js` | Colors, line lengths, and file formatting |
 | `readme.test.js` | Documentation numbers, languages, images, YAML, and distribution files |
 | `robustness.js`, `robustness.json` | Explicit measurement and saved results |
@@ -536,7 +549,7 @@ python test/camera.browser.py
 python test/screenshot.browser.py
 ```
 
-Browser tests require Python Playwright and its browsers; PDF measurements use PyMuPDF.
+Browser tests require Python Playwright and its browsers; PDF measurements use PyMuPDF. Demo screenshots are saved with 256 colors using Pillow.
 Chromium, Firefox, and WebKit are checked at 320/390/1280px in both languages and themes, with reduced motion and keyboard navigation for tabs and help.
 Chromium checks creation from `file://`, separate single-sheet PDFs, rulers, subpixel dimensions, and zero horizontal overflow.
 Automated tests do not print physical sheets.
@@ -560,6 +573,37 @@ It does not claim a new cryptographic scheme or a world-first mechanism.
 - [Day070 VisualCryptography CipherLab](https://ipusiron.github.io/visual-cryptography-cipherlab/): a tool for learning visual cryptography patterns and overlays
 - [Day102 QRCrashTest](https://ipusiron.github.io/qrcrashtest/): a tool for experimenting with QR reading and damage, and the source of the bundled QR libraries and licenses
 
+**Learning with related tools**
+
+**From on-screen to on-paper visual cryptography** ([Day070 VisualCryptography CipherLab](https://ipusiron.github.io/visual-cryptography-cipherlab/))
+
+What you learn: how 2×2 patterns create a density difference between white and black, and how misalignment affects readability.
+
+1. In VisualCryptography CipherLab, split an image into two shares on the Encrypt tab and overlay them on the Decode tab. Use the offset controls to shift one share slightly and watch the image break down.
+2. On the same tool's RNG trap tab, see how predictable randomness lets one share leak the secret.
+3. On this tool's “How it works & limits” tab, read about the six (2,2) patterns and why their distribution is the same for white and black.
+4. Create and print test sheets here, then follow “Overlay & read.” Align until the three large squares have single outlines, and compare on-screen offsets with paper misalignment.
+
+**QR “hit points” and reading overlaid sheets** ([Day102 QRCrashTest](https://ipusiron.github.io/qrcrashtest/))
+
+What you learn: the roles of finder patterns and error correction, and why this tool aligns sheets by the three large squares and offers levels M and Q.
+
+1. Load a sample QR in QRCrashTest and use the structure layers to locate the Finder, Timing, and Data regions.
+2. Compare the Finder Attack and Data Damage presets. Similar amounts of damage can lead to different results.
+3. Read section ① of “Overlay & read” here and consider why the sheets are aligned by the three large squares (finder patterns).
+4. Switch error correction between M and Q here and watch the capacity change in the note on the Split tab.
+
+**Comparing “any two recover” across three schemes** ([Day123 ShamirSharing CipherLab](https://ipusiron.github.io/shamir-sharing-cipherlab/), [Day126 BlakleySharing CipherLab](https://ipusiron.github.io/blakley-sharing-cipherlab/))
+
+What you learn: in (2,3), Shamir recovers by polynomials, Blakley by intersections, and visual cryptography by overlaid density. In all three, a successful read does not prove the shares are untampered.
+
+1. In ShamirSharing CipherLab, use “Visualize (2, n)” to see that one share leaves candidate secrets and two shares fix a single line.
+2. In BlakleySharing CipherLab, use “Intersections (k=2)” to see that one line leaves candidates and two lines meet at the secret.
+3. Here, choose three sheets with any two required, and read the scheme status and the “How it works & limits” tab. Compare why one sheet's pattern cannot distinguish white from black with the remaining candidates in steps 1 and 2.
+4. After the tampering models on both CipherLabs' “Pitfalls” tabs, read “⚠️ Limits and tampering” here and compare whether tampering is detected.
+
+(2,3) is untested; use test text for physical trials.
+
 ## 📁 Directory structure
 
 ```text
@@ -579,6 +623,7 @@ overlay-qr-shares/                     # Complete tool distribution
 ├── layout-core.js                     # OQS v1 layout and metadata band
 ├── render-core.js                     # SVG paths and synthetic images
 ├── reader-core.js                     # Mark detection and image reading
+├── flow-core.js                       # Split-tab steps and test confirmation
 ├── read_photo.py                      # Standard-library PNG-to-PBM recovery
 ├── package.json                       # Node test commands
 ├── README.md                          # Japanese documentation
@@ -625,6 +670,7 @@ overlay-qr-shares/                     # Complete tool distribution
     ├── contrast.test.js               # Text contrast in both themes
     ├── format.test.js                 # Line lengths and formatting
     ├── readme.test.js                 # Bilingual docs, numbers, and distribution
+    ├── flow.test.js                   # Size-specific test confirmation and steps
     ├── helpers.js                     # Deterministic test randomness
     ├── vectors.json                   # Fixed known answers
     ├── robustness.js                  # Explicit synthetic measurement

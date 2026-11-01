@@ -3,11 +3,19 @@ import hashlib
 import json
 from pathlib import Path
 import fitz
+from PIL import Image
 from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / '.work' / 'screenshots'
 DEMO = json.loads((ROOT / 'test' / 'vectors.json').read_text(encoding='utf-8'))['sets'][0]['text']
+
+
+def reduce_colors(file):
+    """Save a 256-color copy so each README image stays under the size limit."""
+    with Image.open(file) as image:
+        reduced = image.convert('RGB').quantize(colors=256, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE)
+    reduced.save(file, optimize=True)
 
 
 def main():
@@ -49,6 +57,7 @@ def main():
             page.close()
             for filename in ['screenshot.png', 'sheets.png', 'print-sheet.png', 'overlay-read.png', 'limits.png']:
                 file = assets / filename
+                reduce_colors(file)
                 data = file.read_bytes()
                 width, height = int.from_bytes(data[16:20], 'big'), int.from_bytes(data[20:24], 'big')
                 assert len(data) < 300000, (str(file), len(data))

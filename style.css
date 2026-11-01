@@ -10,6 +10,10 @@
   --button-ink: #ffffff;
   --wash: #e7edf1;
   --shade: #101820;
+  --diagram-paper: #ece6d6;
+  --diagram-frame: #8f8a7c;
+  --diagram-faint: #948e80;
+  --diagram-white: #ffffff;
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
@@ -23,6 +27,10 @@
   --button-ink: #172633;
   --wash: #2b394c;
   --shade: #101820;
+  --diagram-paper: #b9b2a2;
+  --diagram-frame: #6b7a8f;
+  --diagram-faint: #706b5e;
+  --diagram-white: #e4e1d9;
 }
 *, *::before, *::after {
   box-sizing: border-box;
@@ -227,12 +235,34 @@ h3 {
   list-style: none;
 }
 .steps li {
+  min-width: 0;
+  font-size: .875rem;
+  font-weight: 600;
+}
+.steps a {
   display: flex;
   align-items: center;
   min-width: 0;
+  min-height: 44px;
   gap: .5rem;
-  font-size: .875rem;
-  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+}
+.steps a:hover .step-label {
+  text-decoration: underline;
+}
+.step-label {
+  min-width: 0;
+  word-break: auto-phrase;
+  overflow-wrap: anywhere;
+}
+.steps a[aria-current="step"] {
+  font-weight: 700;
+}
+.steps a[aria-current="step"] .step-number {
+  border-color: var(--button);
+  background: var(--button);
+  color: var(--button-ink);
 }
 .step-number {
   display: grid;
@@ -255,6 +285,9 @@ h3 {
 .preparation p {
   margin-bottom: 0;
   color: var(--muted);
+}
+.start-grid {
+  margin-bottom: 0;
 }
 .notice {
   margin: 1.5rem 0 0;
@@ -282,6 +315,7 @@ h3 {
 }
 .form-grid {
   display: grid;
+  align-items: start;
   gap: 1rem;
 }
 .form-grid > *, .stack {
@@ -363,6 +397,41 @@ button:disabled {
   border-style: dashed;
   cursor: not-allowed;
 }
+/* A notice about what to do next: accent color and a frame, not the gray of supplementary notes, and never red. */
+.requirement {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  margin: .75rem 0 0;
+  padding: .7rem .85rem;
+  border: 1px solid var(--accent);
+  border-left-width: 4px;
+  border-radius: .25rem;
+  background: var(--wash);
+  color: var(--ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.requirement-icon {
+  display: grid;
+  flex: 0 0 1.4rem;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-top: .1rem;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  font: 700 .85rem/1 Georgia, "Times New Roman", serif;
+}
+.requirement a {
+  color: var(--accent);
+}
+.button-primary:disabled {
+  border-color: var(--line);
+  background: var(--card);
+  color: var(--muted);
+}
 .actions {
   display: flex;
   flex-wrap: wrap;
@@ -376,6 +445,18 @@ button:disabled {
   grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
   gap: 1rem;
   margin-top: 1rem;
+}
+.test-group {
+  margin-top: 1.25rem;
+}
+.test-group-title {
+  margin: 0;
+  padding-bottom: .4rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 1rem;
+}
+.test-group .sheet-cards {
+  margin-top: .75rem;
 }
 .sheet-card {
   min-width: 0;
@@ -449,6 +530,46 @@ button:disabled {
 .overlay-steps p {
   margin: .35rem 0 0;
 }
+.step-figure {
+  max-width: 38rem;
+  margin-top: .9rem;
+}
+.step-figure:empty {
+  display: none;
+}
+.step-figure figcaption p {
+  margin: 0;
+}
+.step-figure figcaption strong {
+  margin-bottom: .6rem;
+}
+/* The step list's item spacing must not leak into a diagram's legend inside a step. */
+.overlay-steps .diagram-legend li {
+  margin-bottom: 0;
+  padding-left: 0;
+}
+/* Navigation (another tab or another place on the page) looks like a link with an arrow, not like an action button. */
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  min-height: 44px;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nav-link > span:first-child {
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+.nav-link:hover > span:first-child {
+  text-decoration-thickness: 2px;
+}
 .diagram-legend {
   margin: .8rem 0 0;
   padding-left: 1.4rem;
@@ -519,20 +640,48 @@ pre {
   gap: 1rem;
   margin: 1.5rem 0;
 }
+/* One inner spacing for every diagram frame: the same padding on all four sides and the same gap
+   between the diagram and its caption, whether they are stacked or side by side. */
 .instruction-figure {
+  display: grid;
+  align-content: start;
+  gap: 1rem;
   min-width: 0;
   margin: 0;
+  padding: 1rem;
   border: 1px solid var(--line);
 }
+/* Diagrams sit on a slightly muted paper-colored mat with a thin frame in both themes.
+   Only the mat uses that color; white inside the drawn samples is white (slightly dimmed in the dark theme). */
 .instruction-figure svg {
   display: block;
   width: 100%;
   max-width: 24rem;
   height: auto;
   margin: 0 auto;
+  padding: .5rem;
+  border: 1px solid var(--diagram-frame);
+  border-radius: .25rem;
+  background: var(--diagram-paper);
+}
+.paper {
+  fill: var(--diagram-paper);
+}
+.sample-white {
+  fill: var(--diagram-white);
+}
+.sample-white-stroke {
+  stroke: var(--diagram-white);
+}
+.faint {
+  fill: var(--diagram-faint);
+}
+/* Adjacent black cells must not show a hairline seam of paper between them. */
+.instruction-figure rect, .six-patterns rect {
+  shape-rendering: crispEdges;
 }
 figcaption {
-  padding: 1rem;
+  min-width: 0;
 }
 figcaption strong {
   display: block;
@@ -546,6 +695,10 @@ figcaption p {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: .75rem;
   max-width: 24rem;
+  padding: .75rem;
+  border: 1px solid var(--diagram-frame);
+  border-radius: .25rem;
+  background: var(--diagram-paper);
 }
 .six-patterns svg {
   max-width: 100%;
@@ -573,7 +726,7 @@ progress {
   width: 100%;
   accent-color: var(--accent);
 }
-[role="status"]:empty, .sheet-cards:empty {
+[role="status"]:empty, .sheet-cards:empty, .test-groups:empty {
   display: none;
 }
 #print-root {
@@ -676,11 +829,13 @@ dialog::backdrop {
   .diagram-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .alignment-figure {
-    display: grid;
-    grid-column: 1 / -1;
+  .step-figure .instruction-figure, .alignment-figure {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-content: center;
     align-items: center;
+  }
+  .alignment-figure {
+    grid-column: 1 / -1;
   }
   .page-footer {
     flex-direction: row;
