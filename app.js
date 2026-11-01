@@ -868,6 +868,7 @@
     renderSplit();
   });
   $('open-reader').addEventListener('click', () => { active = 'read'; render(); $('tab-read').focus(); });
+  $('open-guide').addEventListener('click', () => { $('tab-guide').click(); $('tab-guide').focus(); });
   for (const id of ['check-all-sheets', 'check-ruler', 'check-disposal']) $(id).addEventListener('change', renderSplit);
   $('clear-all').addEventListener('click', () => {
     invalidate(true);

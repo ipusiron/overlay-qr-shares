@@ -20,7 +20,8 @@
     guideTab: '仕組みと限界',
     splitEyebrow: '紙に分ける視覚暗号',
     splitTitle: "シートを重ねて秘密を戻す。",
-    splitIntro: "短い秘密をQRコードに載せ、複数のシートに分けます。1枚だけでは秘密を復元できません。必要な枚数を重ね、このページのカメラで濃淡を読み取ります。方式やセットIDは公開情報です。",
+    splitIntro: "短い秘密をQRコードに載せ、複数のシートに分けます。1枚だけでは秘密を復元できません。必要な枚数を重ね、このページのカメラで濃淡を読み取ります。方式やセットIDは公開情報です。"
+      + "仕組みは「仕組みと限界」で説明しています。",
     stepsLabel: '本番までの4段階',
     stepScheme: '方式を選ぶ',
     stepPrint: 'テストを作る',
@@ -107,6 +108,7 @@
     testReadTitle: '3　印刷したテストを読む',
     testReadIntro: '本番に使う寸法のテストを刷り、印刷面どうしを合わせて読みます。戻った文字列を、カードにあるテスト用の文字列と比べます。',
     openReader: '「重ねて読む」を開く',
+    openGuide: '「仕組みと限界」を開く',
     testReadConfirm: '本番と同じ方式・寸法で、印刷したテストから文字列を戻せました',
     secretTitle: '4　本番のシートを作る',
     secretLabel: '分ける文字列',
@@ -172,7 +174,7 @@
     splitTitle: "Recover a secret by overlaying sheets.",
     splitIntro: "Put a short secret in a QR code and divide it into sheets. One sheet alone is insufficient to recover the "
       + "secret. Overlay enough sheets and read their contrast with the camera on this page. Scheme and set ID remain "
-      + "public.",
+      + "public. See “How it works & limits” for the principle.",
     stepsLabel: 'Four steps before using a secret',
     stepScheme: 'Choose scheme',
     stepPrint: 'Make test',
@@ -282,6 +284,7 @@
     testReadTitle: '3  Read the printed test',
     testReadIntro: 'Print the test at the size you will use. Read with printed faces touching, then compare the recovered text with the text on the cards.',
     openReader: 'Open “Overlay & read”',
+    openGuide: 'Open “How it works & limits”',
     testReadConfirm: 'I recovered the text from a printed test using the same scheme and size as my intended sheets',
     secretTitle: '4  Create your sheets',
     secretLabel: 'Text to split',
