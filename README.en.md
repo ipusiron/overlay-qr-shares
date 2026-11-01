@@ -116,7 +116,7 @@ The initial version 4/M settings allow 62 bytes; this is not the same as a chara
 Input is never silently trimmed, normalized, or shortened.
 URL-like text and surrounding whitespace produce notices, but creation remains available after the user checks them.
 
-After creation, the result says that this is a functional check, not a security audit.
+After creation, the result says that this is a functional check, not a security evaluation.
 Check the symbol and set ID and print each sheet separately using actions such as “Print sheet A.”
 Changes that alter the patterns remove the generated set from the interface and print selection, and discard stale results from work already in progress.
 Changing the language or theme does not regenerate the set.

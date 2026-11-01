@@ -30,7 +30,6 @@
     prepareBody: 'A4の紙、プリンター、トレース台などの背面光源、カメラ付きの端末。このページで、印刷面どうしを重ねたシートを読みます。',
     trialTitle: 'まず、テスト印刷から',
     trialBody: '限られた条件で、2つの寸法の実物復元を確認しました。ほかの設定は未試験です。秘密を刷る前に、お使いの環境で戻せることを確かめます。',
-    stageNotice: '現在は画面と基礎処理の確認用です。シートの作成・印刷はまだ利用できません。',
     readEyebrow: '光を通して読む',
     readTitle: '重ねたシートを読み取る。',
     readIntro: '重ねたシートに後ろから光を当て、このページのカメラで読み取ります。',
@@ -183,7 +182,6 @@
     trialTitle: 'Start with a test print',
     trialBody: 'Physical recovery has been confirmed at two module sizes under limited conditions. '
       + 'Other settings remain untested. Test recovery in your setup before printing a secret.',
-    stageNotice: 'This build is for checking the interface and core operations. Sheet creation and printing are not available yet.',
     readEyebrow: 'Read with transmitted light',
     readTitle: 'Read your overlaid sheets.',
     readIntro: 'Light the overlaid sheets from behind, then read them using the camera on this page.',
@@ -343,8 +341,8 @@
     manualStart: '止めて四隅を指定', manualTitle: '上の見本の四隅を指定する',
     manualHelp: '止めた映像で、QRの周囲の小さい四角の中心を左上・右上・右下・左下の順に押します。大きな四角3つではありません。'
       + '近くのマークへ吸着します。この映像も秘密として扱ってください。',
-    manualKeys: '拡大鏡で位置を確かめます。キーボードでは矢印キーで移動し、Enterで指定します。Shift＋矢印キーで細かく移動できます。',
-    manualCanvas: '止めた映像。矢印キーで移動、Enterで基準マークを指定', manualZoom: '指定位置の拡大鏡',
+    manualKeys: '拡大鏡で位置を確かめます。キーボードでは矢印キーで移動し、EnterまたはSpaceで指定します。Shift＋矢印キーで細かく移動できます。',
+    manualCanvas: '止めた映像。矢印キーで移動、EnterまたはSpaceで基準マークを指定', manualZoom: '指定位置の拡大鏡',
     manualRetry: '四隅を選び直す', manualCancel: '中止して映像を消す',
     manualPoint: name => `${name}の基準マークを指定してください。`,
     cornerTL: '左上', cornerTR: '右上', cornerBR: '右下', cornerBL: '左下',
@@ -431,8 +429,8 @@
     manualStart: 'Freeze and select corners', manualTitle: 'Select the upper sample’s four corners',
     manualHelp: 'Select the centers of the small squares around the QR: top left, top right, bottom right, bottom left. '
       + 'Do not select the three large squares. Selections snap to nearby marks. Treat this frozen image as a secret too.',
-    manualKeys: 'Use the magnifier to check your selection. Arrow keys move the cursor; Enter selects. Shift plus an arrow moves one pixel.',
-    manualCanvas: 'Frozen image. Arrow keys move, Enter selects a mark', manualZoom: 'Selection magnifier',
+    manualKeys: 'Use the magnifier to check your selection. Arrow keys move the cursor; Enter or Space selects. Shift plus an arrow moves one pixel.',
+    manualCanvas: 'Frozen image. Arrow keys move, Enter or Space selects a mark', manualZoom: 'Selection magnifier',
     manualRetry: 'Select corners again', manualCancel: 'Cancel and erase image',
     manualPoint: name => `Select the ${name} registration mark.`,
     cornerTL: 'top left', cornerTR: 'top right', cornerBR: 'bottom right', cornerBL: 'bottom left',
