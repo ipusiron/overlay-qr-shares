@@ -164,6 +164,11 @@
       $('progress-bar').max = progress.total;
       $('progress-text').textContent = t(progress.image ? 'checkImage' : 'checkProgressText', progress.done, progress.total);
     }
+    const step = OQS.flow.currentStep(flowState());
+    document.querySelectorAll('.steps a[data-step]').forEach(link => {
+      if (Number(link.dataset.step) === step) link.setAttribute('aria-current', 'step');
+      else link.removeAttribute('aria-current');
+    });
     $('print-checks').hidden = !outputs.length;
     const checked = ['check-all-sheets', 'check-ruler', 'check-disposal'].every(id => $(id).checked);
     $('clear-reminder').textContent = t(checked ? 'clearReady' : 'clearPending');
@@ -779,6 +784,16 @@
       nextTab.focus();
     });
   });
+  // In-page links scroll and move focus without writing a fragment to the URL or history.
+  document.querySelectorAll('a[data-jump]').forEach(link => link.addEventListener('click', event => {
+    const target = $(link.getAttribute('href').slice(1));
+    if (!target) return;
+    event.preventDefault();
+    if (target.tagName === 'DETAILS') target.open = true;
+    const focusTarget = target.tagName === 'DETAILS' ? target.querySelector(':scope > summary') : target;
+    target.scrollIntoView({ block: 'start' });
+    focusTarget.focus({ preventScroll: true });
+  }));
   $('theme').addEventListener('click', () => {
     theme = theme === 'dark' ? 'light' : 'dark';
     save('theme', theme);

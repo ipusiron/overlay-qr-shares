@@ -54,13 +54,17 @@
         <p class="lead" data-i18n="splitIntro"></p>
       </div>
       <ol class="steps" data-label="stepsLabel">
-        <li><span class="step-number" aria-hidden="true">1</span><span data-i18n="stepScheme"></span></li>
-        <li><span class="step-number" aria-hidden="true">2</span><span data-i18n="stepPrint"></span></li>
-        <li><span class="step-number" aria-hidden="true">3</span><span data-i18n="stepRead"></span></li>
-        <li><span class="step-number" aria-hidden="true">4</span><span data-i18n="stepSecret"></span></li>
+        <li><a href="#scheme-title" data-jump data-step="1"><span class="step-number" aria-hidden="true">1</span>
+          <span class="step-label" data-i18n="stepScheme"></span></a></li>
+        <li><a href="#test-title" data-jump data-step="2"><span class="step-number" aria-hidden="true">2</span>
+          <span class="step-label" data-i18n="stepPrint"></span></a></li>
+        <li><a href="#test-read-title" data-jump data-step="3"><span class="step-number" aria-hidden="true">3</span>
+          <span class="step-label" data-i18n="stepRead"></span></a></li>
+        <li><a href="#secret-title" data-jump data-step="4"><span class="step-number" aria-hidden="true">4</span>
+          <span class="step-label" data-i18n="stepSecret"></span></a></li>
       </ol>
       <section class="work-section" aria-labelledby="scheme-title">
-        <h3 id="scheme-title" data-i18n="schemeTitle"></h3>
+        <h3 id="scheme-title" tabindex="-1" data-i18n="schemeTitle"></h3>
         <div class="form-grid">
           <label for="sheet-count"><span data-i18n="countLabel"></span>
             <select id="sheet-count"><option value="2">2</option><option value="3">3</option>
@@ -90,7 +94,7 @@
         <p id="size-hint" class="note"></p>
       </section>
       <section class="work-section" aria-labelledby="test-title">
-        <h3 id="test-title" data-i18n="testTitle"></h3>
+        <h3 id="test-title" tabindex="-1" data-i18n="testTitle"></h3>
         <p data-i18n="testIntro"></p>
         <p class="note" data-i18n="testSeparatePages"></p>
         <button id="test-button" type="button" class="button-secondary" data-i18n="makeTest"></button>
@@ -98,14 +102,14 @@
         <div id="test-cards" class="sheet-cards"></div>
       </section>
       <section class="work-section" aria-labelledby="test-read-title">
-        <h3 id="test-read-title" data-i18n="testReadTitle"></h3>
+        <h3 id="test-read-title" tabindex="-1" data-i18n="testReadTitle"></h3>
         <p data-i18n="testReadIntro"></p>
         <button id="open-reader" class="button-secondary" type="button" data-i18n="openReader"></button>
         <label class="choice test-confirm"><input id="test-read-confirm" type="checkbox" disabled>
           <span data-i18n="testReadConfirm"></span></label>
       </section>
       <section class="work-section" aria-labelledby="secret-title">
-        <h3 id="secret-title" data-i18n="secretTitle"></h3>
+        <h3 id="secret-title" tabindex="-1" data-i18n="secretTitle"></h3>
         <label class="stack" for="secret-input"><span data-i18n="secretLabel"></span>
           <textarea id="secret-input" rows="3" autocomplete="off" spellcheck="false" autocapitalize="off"
             aria-describedby="byte-status input-warnings" aria-invalid="false"></textarea></label>
