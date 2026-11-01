@@ -671,7 +671,7 @@
     }, text));
     const finder = (svg, x, y) => { rect(svg, x, y, 30, 30, '#111'); rect(svg, x + 6, y + 6, 18, 18, '#fff');
       rect(svg, x + 11, y + 11, 8, 8, '#111'); };
-    $('setup-diagrams').replaceChildren();
+    for (const id of ['figure-flip', 'figure-light', 'figure-align', 'setup-mistakes']) $(id).replaceChildren();
     figure('diagramFlip', svg => {
       label(svg, 63, 23, t('diagramFaceUp')); label(svg, 200, 23, t('diagramFaceDown'));
       rect(svg, 32, 42, 64, 102); rect(svg, 169, 42, 64, 102);
@@ -684,7 +684,7 @@
       letter(back, 201, 105, 'B'); svg.append(back);
       line(svg, 108, 92, 133, 92);
       svg.append(svgElement('polygon', { points: '133,86 133,98 145,92', fill: '#111' }));
-    }, 'setup-diagrams');
+    }, 'figure-flip');
     figure('diagramLight', svg => {
       rect(svg, 102, 12, 52, 30, '#111'); rect(svg, 122, 19, 14, 14, '#fff');
       letter(svg, 24, 80, 'B'); letter(svg, 24, 104, 'A');
@@ -695,7 +695,7 @@
         line(svg, x, 136, x, 122);
         svg.append(svgElement('polygon', { points: `${x - 6},122 ${x + 6},122 ${x},110`, fill: '#111' }));
       }
-    }, 'setup-diagrams');
+    }, 'figure-light');
     figure('diagramAlign', svg => {
       rect(svg, 61, 30, 115, 115);
       finder(svg, 66, 35); finder(svg, 141, 35); finder(svg, 66, 110);
@@ -710,16 +710,16 @@
       label(svg, 122, 94, '1'); line(svg, 133, 81, 145, 69);
       label(svg, 238, 156, '2'); line(svg, 228, 153, 223, 153);
       label(svg, 16, 91, '3'); line(svg, 25, 85, 31, 85);
-    }, 'setup-diagrams', ['diagramAlignFinder', 'diagramAlignCorner', 'diagramAlignRectangle']);
+    }, 'figure-align', ['diagramAlignFinder', 'diagramAlignCorner', 'diagramAlignRectangle']);
     figure('diagramWrongFour', svg => {
       for (const [x, y] of [[43, 25], [183, 25], [43, 115], [183, 115]]) finder(svg, x, y);
       line(svg, 111, 72, 145, 106); line(svg, 145, 72, 111, 106);
-    }, 'setup-diagrams');
+    }, 'setup-mistakes');
     figure('diagramWrongFace', svg => {
       rect(svg, 32, 26, 192, 118);
       letter(svg, 88, 101, 'A'); letter(svg, 167, 101, 'B', '#aaa');
       line(svg, 35, 127, 221, 127); line(svg, 35, 135, 221, 135);
-    }, 'setup-diagrams');
+    }, 'setup-mistakes');
     const pattern = (svg, bits, x, y, size) => {
       rect(svg, x, y, size, size);
       bits.forEach((bit, index) => {
