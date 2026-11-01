@@ -404,6 +404,18 @@ button:disabled {
   gap: 1rem;
   margin-top: 1rem;
 }
+.test-group {
+  margin-top: 1.25rem;
+}
+.test-group-title {
+  margin: 0;
+  padding-bottom: .4rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 1rem;
+}
+.test-group .sheet-cards {
+  margin-top: .75rem;
+}
 .sheet-card {
   min-width: 0;
   padding: 1rem;
@@ -600,7 +612,7 @@ progress {
   width: 100%;
   accent-color: var(--accent);
 }
-[role="status"]:empty, .sheet-cards:empty {
+[role="status"]:empty, .sheet-cards:empty, .test-groups:empty {
   display: none;
 }
 #print-root {

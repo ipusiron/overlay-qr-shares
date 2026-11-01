@@ -327,15 +327,26 @@
     $('test-cards').replaceChildren();
     $('share-cards').replaceChildren();
     $('print-root').replaceChildren();
-    for (const record of [...trials, ...outputs]) {
+    // Group test sheets by module size, with the selected size first, so TA and TB of one size stay together.
+    const size = parameters().m;
+    const ordered = [...trials].sort((a, b) => Number(b.set.m === size) - Number(a.set.m === size));
+    for (const record of [...ordered, ...outputs]) {
       const set = record.set, basis = OQS.vc.basis(set.id);
+      let target = $('share-cards');
+      if (record.type === 'test') {
+        const group = element('section', 'test-group');
+        group.append(element('h4', 'test-group-title', t('testGroup', set.m, set.setId)));
+        target = element('div', 'sheet-cards');
+        group.append(target);
+        $('test-cards').append(group);
+      }
       for (let index = 0; index < set.n; index++) {
         const symbol = (record.type === 'test' ? 'T' : '') + String.fromCharCode(65 + index);
         const key = record.token + '-' + symbol;
         const card = element('article', 'sheet-card');
         card.dataset.sheet = symbol;
         card.dataset.moduleSize = String(set.m);
-        card.append(element('h4', 'sheet-symbol', symbol));
+        card.append(element(record.type === 'test' ? 'h5' : 'h4', 'sheet-symbol', symbol));
         card.append(element('p', 'sheet-title', t('sheetTitle', symbol)));
         card.append(element('p', 'note', t('sheetInfo', set.id, set.setId, set.m)));
         card.append(element('p', 'note', t('sheetMeasure', set.m / basis.c, set.m / basis.r)));
@@ -346,7 +357,7 @@
         button.addEventListener('click', () => printOne(record, index, symbol, key));
         card.append(button);
         if (record.printed.has(index)) card.append(element('p', 'note print-attempted', t('printAttempted')));
-        $(record.type === 'test' ? 'test-cards' : 'share-cards').append(card);
+        target.append(card);
         $('print-root').append(makePrintSheet(record, index, symbol, key));
       }
     }
