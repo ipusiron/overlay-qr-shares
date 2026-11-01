@@ -55,3 +55,12 @@ test('navigation labels repeat the destination names exactly and show an arrow',
   }
   assert.match(html, /<a class="nav-link" href="#reader-camera" data-jump>[\s\S]*?aria-hidden="true">↓<\/span><\/a>/);
 });
+
+test('the split requirement points to the step 3 heading as it appears on screen', () => {
+  const compose = dictionary => dictionary.requirementStart + dictionary.testReadTitle.replace(/\s+/g, ' ') + dictionary.requirementEnd;
+  assert.equal(compose(messages.ja), '先に「3 印刷したテストを読む」の確認欄にチェックしてください。');
+  assert.equal(compose(messages.en), 'First check the confirmation box under “3 Read the printed test.”');
+  assert.match(html, /<p id="split-requirement" class="requirement" hidden><span class="requirement-icon" aria-hidden="true">/);
+  assert.match(html, /<a id="requirement-link" href="#test-read-confirm" data-jump><\/a>/);
+  assert.match(app, /setAttribute\('aria-describedby', 'split-requirement'\)/);
+});

@@ -116,6 +116,7 @@ This is not a procedure for stacking 3–5 sheets of ordinary paper.
 Return to the “Split” tab on the PC where you created the test sheets, and check the confirmation that you recovered a printed test using the same scheme and module size.
 The confirmation applies to one module size. Switching the size keeps the test sets but clears the checkbox.
 Until the box is checked, “Split and check” is disabled and the reason appears below the button.
+Select “3 Read the printed test” in that notice to go to the checkbox.
 Enter the secret and select “Split and check.”
 The initial version 4/M settings allow 62 bytes; this is not the same as a character count for non-ASCII text.
 Input is never silently trimmed, normalized, or shortened.

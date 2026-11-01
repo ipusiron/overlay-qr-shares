@@ -389,6 +389,36 @@ button:disabled {
   border-style: dashed;
   cursor: not-allowed;
 }
+/* A notice about what to do next: accent color and a frame, not the gray of supplementary notes, and never red. */
+.requirement {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  margin: .75rem 0 0;
+  padding: .7rem .85rem;
+  border: 1px solid var(--accent);
+  border-left-width: 4px;
+  border-radius: .25rem;
+  background: var(--wash);
+  color: var(--ink);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.requirement-icon {
+  display: grid;
+  flex: 0 0 1.4rem;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  margin-top: .1rem;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  color: var(--accent);
+  font: 700 .85rem/1 Georgia, "Times New Roman", serif;
+}
+.requirement a {
+  color: var(--accent);
+}
 .button-primary:disabled {
   border-color: var(--line);
   background: var(--card);

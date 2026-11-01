@@ -45,3 +45,13 @@ for (const selector of [':root', ':root[data-theme="dark"]']) {
     }
   });
 }
+
+for (const selector of [':root', ':root[data-theme="dark"]']) {
+  test(`${selector}: the requirement notice text and link meet 4.5:1 on its background`, () => {
+    const colors = variables(selector);
+    for (const [foreground, background] of [['--ink', '--wash'], ['--accent', '--wash']]) {
+      const measured = ratio(colors[foreground], colors[background]);
+      assert.ok(measured >= 4.5, `${foreground}/${background}: ${measured.toFixed(2)}`);
+    }
+  });
+}

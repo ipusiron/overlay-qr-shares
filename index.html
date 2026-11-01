@@ -133,7 +133,9 @@
           <button id="split-button" class="button-primary" type="button" disabled data-i18n="splitAction"></button>
           <button id="clear-all" type="button" data-i18n="clearAll"></button>
         </div>
-        <p id="split-requirement" class="note" hidden></p>
+        <p id="split-requirement" class="requirement" hidden><span class="requirement-icon" aria-hidden="true">i</span>
+          <span><span data-i18n="requirementStart"></span><a id="requirement-link" href="#test-read-confirm" data-jump></a><span
+            data-i18n="requirementEnd"></span></span></p>
         <p id="split-status" role="status" aria-live="polite"></p>
         <div id="split-progress" hidden>
           <progress id="progress-bar" value="0" max="1" data-label="checkProgress"></progress>

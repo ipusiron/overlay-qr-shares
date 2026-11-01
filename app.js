@@ -152,7 +152,6 @@
     // A disabled button cannot be pressed, so show why it is disabled next to it.
     const blocked = !busy && !OQS.flow.canCreate(flow);
     $('split-requirement').hidden = !blocked;
-    $('split-requirement').textContent = blocked ? t('trialRequired') : '';
     if (blocked) $('split-button').setAttribute('aria-describedby', 'split-requirement');
     else $('split-button').removeAttribute('aria-describedby');
   }
@@ -796,6 +795,8 @@
       if (element.classList.contains('icon-button')) element.title = t(element.dataset.label);
     });
     $('language').textContent = language === 'ja' ? 'EN' : 'JA';
+    // The requirement names the heading of step 3 exactly as shown on screen.
+    $('requirement-link').textContent = t('testReadTitle').replace(/\s+/g, ' ');
     $('theme').setAttribute('aria-pressed', String(theme === 'dark'));
     tabs.forEach(name => {
       const selected = name === active;
@@ -833,8 +834,10 @@
     if (!target) return;
     event.preventDefault();
     if (target.tagName === 'DETAILS') target.open = true;
-    const focusTarget = target.tagName === 'DETAILS' ? target.querySelector(':scope > summary') : target;
-    target.scrollIntoView({ block: 'start' });
+    let focusTarget = target.tagName === 'DETAILS' ? target.querySelector(':scope > summary') : target;
+    // A disabled checkbox cannot take focus; use the heading of its section instead.
+    if (focusTarget.disabled) focusTarget = target.closest('section').querySelector('h3');
+    target.scrollIntoView({ block: target.tagName === 'INPUT' ? 'center' : 'start' });
     focusTarget.focus({ preventScroll: true });
   }));
   $('theme').addEventListener('click', () => {
