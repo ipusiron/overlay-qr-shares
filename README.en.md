@@ -111,6 +111,7 @@ This is not a procedure for stacking 3–5 sheets of ordinary paper.
 ### 2. Create production sheets
 
 Return to the “Split” tab on the PC where you created the test sheets, and check the confirmation that you recovered a printed test using the same scheme and module size.
+The confirmation applies to one module size. Switching the size keeps the test sets but clears the checkbox.
 Enter the secret and select “Split and check.”
 The initial version 4/M settings allow 62 bytes; this is not the same as a character count for non-ASCII text.
 Input is never silently trimmed, normalized, or shortened.
@@ -523,6 +524,7 @@ The Python recovery test reads the PBM generated from synthetic PNGs with a QR d
 | `read-photo.test.js` | Python PNG input, PBM output, and malformed inputs |
 | `static.test.js`, `i18n.test.js` | CSP, storage, vendor files, translations, and forbidden wording |
 | `theme-init.test.js` | Initial theme choice and its load position in `<head>` |
+| `flow.test.js` | A confirmation at one module size cannot create sheets at another size; current step |
 | `contrast.test.js`, `format.test.js` | Colors, line lengths, and file formatting |
 | `readme.test.js` | Documentation numbers, languages, images, YAML, and distribution files |
 | `robustness.js`, `robustness.json` | Explicit measurement and saved results |
@@ -579,6 +581,7 @@ overlay-qr-shares/                     # Complete tool distribution
 ├── layout-core.js                     # OQS v1 layout and metadata band
 ├── render-core.js                     # SVG paths and synthetic images
 ├── reader-core.js                     # Mark detection and image reading
+├── flow-core.js                       # Split-tab steps and test confirmation
 ├── read_photo.py                      # Standard-library PNG-to-PBM recovery
 ├── package.json                       # Node test commands
 ├── README.md                          # Japanese documentation
@@ -625,6 +628,7 @@ overlay-qr-shares/                     # Complete tool distribution
     ├── contrast.test.js               # Text contrast in both themes
     ├── format.test.js                 # Line lengths and formatting
     ├── readme.test.js                 # Bilingual docs, numbers, and distribution
+    ├── flow.test.js                   # Size-specific test confirmation and steps
     ├── helpers.js                     # Deterministic test randomness
     ├── vectors.json                   # Fixed known answers
     ├── robustness.js                  # Explicit synthetic measurement

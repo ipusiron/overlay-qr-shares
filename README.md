@@ -139,6 +139,7 @@ Overlay QR Sharesは、秘密の文字列を載せたQRコードを視覚暗号�
 ### 2. 本番のシートを作る
 
 テスト用シートを作成したPCの「分ける」タブへ戻り、同じ方式と寸法で印刷したテストを読めたことにチェックを入れます。
+確認欄のチェックは寸法ごとです。寸法を切り替えるとテストの組は残りますが、チェックは外れます。
 秘密を入力し、「分けて確かめる」を押します。
 初期設定の版4とMでは62バイトまでで、日本語の文字数とは一致しません。
 入力を勝手に削除、正規化、短縮することはありません。
@@ -546,6 +547,7 @@ Python復元の試験は合成PNGから出力したPBMをQRリーダーで検査
 | `read-photo.test.js` | PythonのPNG入力、PBM出力、異常入力 |
 | `static.test.js`、`i18n.test.js` | CSP、保存、vendor、辞書、禁止語 |
 | `theme-init.test.js` | 明暗の初期判定と`<head>`での読み込み位置 |
+| `flow.test.js` | テストの確認を付けた寸法以外で本番を作れないこと、段階の表示 |
 | `contrast.test.js`、`format.test.js` | 配色、行長、ファイルの整形 |
 | `readme.test.js` | 本文の数値、日英、画像、YAML、配布一覧 |
 | `robustness.js`、`robustness.json` | 明示的に実行する測定と保存した結果 |
@@ -602,6 +604,7 @@ overlay-qr-shares/                     # 配布するツール一式
 ├── layout-core.js                     # OQS v1の配置と帯
 ├── render-core.js                     # SVGのパスと合成画像
 ├── reader-core.js                     # マーク検出と画像の読み取り
+├── flow-core.js                       # 分ける手順の段階と確認の判定
 ├── read_photo.py                      # 標準ライブラリーでPNGをPBMへ変換
 ├── package.json                       # Nodeテストの実行設定
 ├── README.md                          # 日本語の説明
@@ -648,6 +651,7 @@ overlay-qr-shares/                     # 配布するツール一式
     ├── contrast.test.js               # 明暗の文字コントラスト
     ├── format.test.js                 # 行長とファイルの整形
     ├── readme.test.js                 # 日英説明と数値と配布一覧
+    ├── flow.test.js                   # 寸法ごとのテスト確認と段階
     ├── helpers.js                     # 決定的な試験用乱数
     ├── vectors.json                   # 固定した既知の値
     ├── robustness.js                  # 明示的な合成画像の測定

@@ -23,6 +23,7 @@
   let generation = 0;
   let busy = false;
   let trials = [];
+  let confirmedSize = null;
   let outputs = [];
   let message = null;
   let testMessage = null;
@@ -66,6 +67,13 @@
     return { id: k + '-' + n, version: Number($('qr-version').value), ecl: $('error-correction').value,
       m: Number($('module-size').value), n, k };
   }
+  // Test sets count only for the selected scheme, version and error correction; the confirmation is per size.
+  function flowState() {
+    const p = parameters();
+    const trialSizes = trials.filter(record => record.set.id === p.id && record.set.version === p.version
+      && record.set.ecl === p.ecl).map(record => record.set.m);
+    return { trialSizes, confirmedSize, size: p.m };
+  }
   function zeroSet(set) {
     for (const array of [...set.data, ...set.calib, set.modules, set.plain, set.band]) array.fill(0);
   }
@@ -86,6 +94,7 @@
     discard(outputs);
     if (all) {
       discard(trials);
+      confirmedSize = null;
       $('test-read-confirm').checked = false;
       testMessage = null;
     }
@@ -129,9 +138,11 @@
     if (value && value !== value.trim()) warnings.push(t('spaceWarning'));
     $('input-warnings').textContent = warnings.join(' ');
     $('input-warnings').hidden = warnings.length === 0;
-    $('split-button').disabled = busy || !!state.error || !$('test-read-confirm').checked;
+    const flow = flowState();
+    $('split-button').disabled = busy || !!state.error || !OQS.flow.canCreate(flow);
     $('test-button').disabled = busy;
-    $('test-read-confirm').disabled = busy || !trials.some(record => record.set.m === parameters().m);
+    $('test-read-confirm').checked = flow.confirmedSize === flow.size;
+    $('test-read-confirm').disabled = busy || !OQS.flow.canConfirm(flow);
   }
   function renderSplit() {
     const p = parameters(), basis = OQS.vc.basis(p.id);
@@ -211,7 +222,7 @@
   }
   async function generate(isTest) {
     if (busy) return;
-    if (!isTest && (!$('test-read-confirm').checked || !trials.some(record => record.set.m === parameters().m))) {
+    if (!isTest && !OQS.flow.canCreate(flowState())) {
       status('trialRequired', [], false);
       return;
     }
@@ -800,20 +811,30 @@
       first.focus();
     }
   });
-  for (const id of ['sheet-count', 'recover-any', 'recover-all', 'module-size', 'qr-version', 'error-correction']) {
+  for (const id of ['sheet-count', 'recover-any', 'recover-all', 'qr-version', 'error-correction']) {
     $(id).addEventListener('change', () => {
       invalidate(true);
       fitVersions();
       render();
     });
   }
+  // Test sets cover every fitting size, so a size change keeps them; the confirmation was for the old size.
+  $('module-size').addEventListener('change', () => {
+    confirmedSize = null;
+    invalidate(false);
+    fitVersions();
+    render();
+  });
   $('secret-input').addEventListener('input', () => {
     invalidate(false);
     render();
   });
   $('test-button').addEventListener('click', () => { generate(true); });
   $('split-button').addEventListener('click', () => { generate(false); });
-  $('test-read-confirm').addEventListener('change', renderSplit);
+  $('test-read-confirm').addEventListener('change', () => {
+    confirmedSize = $('test-read-confirm').checked ? parameters().m : null;
+    renderSplit();
+  });
   $('open-reader').addEventListener('click', () => { active = 'read'; render(); $('tab-read').focus(); });
   for (const id of ['check-all-sheets', 'check-ruler', 'check-disposal']) $(id).addEventListener('change', renderSplit);
   $('clear-all').addEventListener('click', () => {
