@@ -42,7 +42,7 @@ The five screenshots below use light mode and the test-vector string `TEST-OQS-1
 The round buttons at the top right control the theme, language, and help.
 
 ![Split tab](assets/en/screenshot.png)
-> *Choose the number of shares and recovery condition, starting with a test print.*
+> *What you need, a start-with-a-test-print note, and four steps that show the current one.*
 
 ![Sheet cards](assets/en/sheets.png)
 > *Select sheets by symbol and set ID without displaying their patterns on screen.*
@@ -51,7 +51,7 @@ The round buttons at the top right control the theme, language, and help.
 > *A demo A4 sheet with a normal sample above and its vertical reflection below.*
 
 ![Overlay reading instructions](assets/en/overlay-read.png)
-> *① Put printed faces together; ② Read with camera. Both sections start open and can be collapsed independently.*
+> *① Put printed faces together; ② Read with camera. Section ① places a diagram in each step, and a link at the top goes to ②.*
 
 ![Principles and limits](assets/en/limits.png)
 > *Overlaying black and white patterns, compared with numerical secret sharing.*
@@ -71,11 +71,14 @@ The round buttons at the top right control the theme, language, and help.
 
 ### 1. Print and read a test
 
+“Split” begins with what you need and a note to start with a test print.
+The four steps at the top show the current step; select one to go to its heading.
 In “Split,” choose the sheet count and recovery condition.
 Start with (2,2), QR version 4, error correction M, and 2.54mm modules, then select “Create test sheets.”
 The test string is generated randomly and does not use the secret input.
 Versions 3 and 4 produce separate test sets for 2.032mm and 2.54mm; each sheet is printed on its own A4 page.
 Versions 5–7 fit only at 2.032mm.
+Test sheets are grouped by module size, with the selected size first.
 For the first trial, choose the 2.54mm cards with the same set ID, then select “Print sheet TA” and “Print sheet TB” to print one of each.
 Do not mix sheets with different sizes or set IDs, even if both carry the symbol TA.
 
@@ -112,6 +115,7 @@ This is not a procedure for stacking 3–5 sheets of ordinary paper.
 
 Return to the “Split” tab on the PC where you created the test sheets, and check the confirmation that you recovered a printed test using the same scheme and module size.
 The confirmation applies to one module size. Switching the size keeps the test sets but clears the checkbox.
+Until the box is checked, “Split and check” is disabled and the reason appears below the button.
 Enter the secret and select “Split and check.”
 The initial version 4/M settings allow 62 bytes; this is not the same as a character count for non-ASCII text.
 Input is never silently trimmed, normalized, or shortened.
@@ -133,6 +137,8 @@ It outputs PBM and does not decode the text.
 
 The tab has two sections: “① Put printed faces together” and “② Read with camera.”
 Both start open; select either heading to collapse or expand that section.
+In section ①, the flip, side-view, and alignment diagrams sit inside the steps they illustrate.
+The link at the top of the tab goes directly to section ②, so you can skip section ①.
 Once the sheets are ready, you can collapse section ① and use section ② to read them.
 Closing section ② stops the camera. Reopening it does not restart the camera automatically.
 
@@ -140,6 +146,8 @@ Closing section ② stops the camera. Reopening it does not restart the camera a
 Processing proceeds through registration-mark candidates, finder patterns, the metadata band, illumination, and module contrast.
 The “Adequate,” “Borderline,” and “Insufficient” diagnostics describe image conditions; they do not prove that a secret or sheet is authentic.
 Messages about alignment or illumination also describe possible causes.
+The diagnosis appears only after white and black darkness have been measured.
+While scanning, the status updates every few seconds and adds a reason if reading keeps failing.
 
 If automatic reading fails, select “Freeze and select corners” and choose the centers of the four small registration marks around the QR in image order: top left, top right, bottom right, bottom left.
 Do not select the three large finder patterns.
@@ -148,6 +156,7 @@ Use arrow keys to move, hold Shift for finer movement, and press Enter or Space 
 Before all four points are selected, “Select corners again” resets your selections.
 “Cancel and erase image” clears the frozen image.
 The frozen image is erased after the four-point read, whether or not it succeeds; if it fails, start again with “Read with camera.”
+After a failed read, the reason is shown together with that instruction.
 
 When a value is read, the camera stops and the value remains masked.
 Use “Reveal” to inspect it, and “Copy text” only when needed.
@@ -158,6 +167,7 @@ The camera also stops on a stop action, a tab change, page hiding, or leaving th
 
 After collecting the required sheets and checking the rulers and test recovery, follow the post-print checklist and store the shares separately.
 Collect and shred failed prints, then use “Clear everything” to remove input, sheets, and recovered values.
+The same action in “Overlay & read” also clears the Split input and sheets, so it is labeled “Clear everything (including “Split”).”
 Arrays are overwritten with zeros and frozen images are cleared, but JavaScript strings and internal browser or operating-system copies cannot be guaranteed to be erased.
 
 ### Print settings
