@@ -143,6 +143,12 @@
     $('test-button').disabled = busy;
     $('test-read-confirm').checked = flow.confirmedSize === flow.size;
     $('test-read-confirm').disabled = busy || !OQS.flow.canConfirm(flow);
+    // A disabled button cannot be pressed, so show why it is disabled next to it.
+    const blocked = !busy && !OQS.flow.canCreate(flow);
+    $('split-requirement').hidden = !blocked;
+    $('split-requirement').textContent = blocked ? t('trialRequired') : '';
+    if (blocked) $('split-button').setAttribute('aria-describedby', 'split-requirement');
+    else $('split-button').removeAttribute('aria-describedby');
   }
   function renderSplit() {
     const p = parameters(), basis = OQS.vc.basis(p.id);

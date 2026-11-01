@@ -363,6 +363,11 @@ button:disabled {
   border-style: dashed;
   cursor: not-allowed;
 }
+.button-primary:disabled {
+  border-color: var(--line);
+  background: var(--card);
+  color: var(--muted);
+}
 .actions {
   display: flex;
   flex-wrap: wrap;
