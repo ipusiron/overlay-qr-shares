@@ -669,7 +669,7 @@ Node 22以降は開発用テストに使います。
 ## 📄 ライセンス
 
 本ツールは[MIT License](LICENSE)で公開しています。
-同梱のqrcode-generator 1.4.4とjsQRには、それぞれの[ライセンス](vendor/LICENSE-qrcode-generator.txt)と[ライセンス](vendor/LICENSE-jsQR.txt)が適用されます。
+同梱のqrcode-generator 1.4.4とjsQRには、それぞれ[qrcode-generatorのライセンス](vendor/LICENSE-qrcode-generator.txt)と[jsQRのライセンス](vendor/LICENSE-jsQR.txt)が適用されます。
 Day102から取得した4ファイルのSHA-256をテストで検査しています。
 
 ## 🛠️ このツールについて
