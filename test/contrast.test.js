@@ -65,4 +65,11 @@ for (const selector of [':root', ':root[data-theme="dark"]']) {
     assert.ok(ratio(colors['--diagram-frame'], colors['--card']) >= 3, 'mat frame on card');
     assert.notEqual(colors['--diagram-paper'].toLowerCase(), '#ffffff', 'mat is not pure white');
   });
+  test(`${selector}: white inside diagram samples is distinguishable from the mat and stays near white`, () => {
+    const colors = { ...variables(selector), '--toner': '#111111' };
+    assert.ok(luminance(colors['--diagram-white']) > luminance(colors['--diagram-paper']), 'sample white is lighter than the mat');
+    assert.ok(ratio(colors['--diagram-white'], colors['--diagram-paper']) >= 1.2, 'sample white differs from the mat');
+    assert.ok(ratio(colors['--toner'], colors['--diagram-white']) >= 12, 'black and white samples keep full contrast');
+    assert.ok(ratio(colors['--diagram-faint'], colors['--diagram-white']) >= 2, 'faint letter remains visible on sample white');
+  });
 }

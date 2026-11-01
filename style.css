@@ -13,6 +13,7 @@
   --diagram-paper: #ece6d6;
   --diagram-frame: #8f8a7c;
   --diagram-faint: #948e80;
+  --diagram-white: #ffffff;
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
@@ -29,6 +30,7 @@
   --diagram-paper: #b9b2a2;
   --diagram-frame: #6b7a8f;
   --diagram-faint: #706b5e;
+  --diagram-white: #e4e1d9;
 }
 *, *::before, *::after {
   box-sizing: border-box;
@@ -635,7 +637,8 @@ pre {
   margin: 0;
   border: 1px solid var(--line);
 }
-/* Diagrams sit on a slightly muted paper-colored mat with a thin frame in both themes. */
+/* Diagrams sit on a slightly muted paper-colored mat with a thin frame in both themes.
+   Only the mat uses that color; white inside the drawn samples is white (slightly dimmed in the dark theme). */
 .instruction-figure svg {
   display: block;
   width: calc(100% - 1.5rem);
@@ -650,8 +653,11 @@ pre {
 .paper {
   fill: var(--diagram-paper);
 }
-.paper-stroke {
-  stroke: var(--diagram-paper);
+.sample-white {
+  fill: var(--diagram-white);
+}
+.sample-white-stroke {
+  stroke: var(--diagram-white);
 }
 .faint {
   fill: var(--diagram-faint);

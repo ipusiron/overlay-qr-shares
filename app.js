@@ -670,10 +670,10 @@
       $('diagnostic-detail').append(element('p', 'note', t('diagTemporary')));
     }
   }
-  // Diagram white stands for paper: draw it in the theme's paper color instead of pure white. Black stays black.
+  // The mat behind a diagram uses the muted paper color; white inside the drawn samples stays white and black stays black.
   function paperize(svg) {
-    svg.querySelectorAll('[fill="#fff"]').forEach(node => node.classList.add('paper'));
-    svg.querySelectorAll('[stroke="#fff"]').forEach(node => node.classList.add('paper-stroke'));
+    svg.querySelectorAll('[fill="#fff"]').forEach(node => node.classList.add(node.classList.contains('mat') ? 'paper' : 'sample-white'));
+    svg.querySelectorAll('[stroke="#fff"]').forEach(node => node.classList.add('sample-white-stroke'));
     svg.querySelectorAll('[fill="#aaa"]').forEach(node => node.classList.add('faint'));
   }
   function renderEducation() {
@@ -681,7 +681,7 @@
       const container = element('figure', 'instruction-figure');
       const svg = svgElement('svg', { viewBox: '0 0 256 170', width: 256, height: 170, role: 'img',
         'aria-label': t(name), 'font-family': "Meiryo, 'Yu Gothic', sans-serif" });
-      svg.append(svgElement('rect', { x: 0, y: 0, width: 256, height: 170, fill: '#fff' }));
+      svg.append(svgElement('rect', { x: 0, y: 0, width: 256, height: 170, fill: '#fff', class: 'mat' }));
       draw(svg);
       paperize(svg);
       const caption = element('figcaption');
