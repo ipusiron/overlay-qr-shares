@@ -10,6 +10,9 @@
   --button-ink: #ffffff;
   --wash: #e7edf1;
   --shade: #101820;
+  --diagram-paper: #ece6d6;
+  --diagram-frame: #8f8a7c;
+  --diagram-faint: #948e80;
 }
 :root[data-theme="dark"] {
   color-scheme: dark;
@@ -23,6 +26,9 @@
   --button-ink: #172633;
   --wash: #2b394c;
   --shade: #101820;
+  --diagram-paper: #b9b2a2;
+  --diagram-frame: #6b7a8f;
+  --diagram-faint: #706b5e;
 }
 *, *::before, *::after {
   box-sizing: border-box;
@@ -629,12 +635,30 @@ pre {
   margin: 0;
   border: 1px solid var(--line);
 }
+/* Diagrams sit on a slightly muted paper-colored mat with a thin frame in both themes. */
 .instruction-figure svg {
   display: block;
-  width: 100%;
+  width: calc(100% - 1.5rem);
   max-width: 24rem;
   height: auto;
-  margin: 0 auto;
+  margin: .75rem auto 0;
+  padding: .5rem;
+  border: 1px solid var(--diagram-frame);
+  border-radius: .25rem;
+  background: var(--diagram-paper);
+}
+.paper {
+  fill: var(--diagram-paper);
+}
+.paper-stroke {
+  stroke: var(--diagram-paper);
+}
+.faint {
+  fill: var(--diagram-faint);
+}
+/* Adjacent black cells must not show a hairline seam of paper between them. */
+.instruction-figure rect, .six-patterns rect {
+  shape-rendering: crispEdges;
 }
 figcaption {
   padding: 1rem;
@@ -651,6 +675,10 @@ figcaption p {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: .75rem;
   max-width: 24rem;
+  padding: .75rem;
+  border: 1px solid var(--diagram-frame);
+  border-radius: .25rem;
+  background: var(--diagram-paper);
 }
 .six-patterns svg {
   max-width: 100%;

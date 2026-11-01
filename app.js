@@ -670,6 +670,12 @@
       $('diagnostic-detail').append(element('p', 'note', t('diagTemporary')));
     }
   }
+  // Diagram white stands for paper: draw it in the theme's paper color instead of pure white. Black stays black.
+  function paperize(svg) {
+    svg.querySelectorAll('[fill="#fff"]').forEach(node => node.classList.add('paper'));
+    svg.querySelectorAll('[stroke="#fff"]').forEach(node => node.classList.add('paper-stroke'));
+    svg.querySelectorAll('[fill="#aaa"]').forEach(node => node.classList.add('faint'));
+  }
   function renderEducation() {
     const figure = (name, draw, target, legends = []) => {
       const container = element('figure', 'instruction-figure');
@@ -677,6 +683,7 @@
         'aria-label': t(name), 'font-family': "Meiryo, 'Yu Gothic', sans-serif" });
       svg.append(svgElement('rect', { x: 0, y: 0, width: 256, height: 170, fill: '#fff' }));
       draw(svg);
+      paperize(svg);
       const caption = element('figcaption');
       caption.append(element('strong', '', t(name)), element('p', '', t(name + 'Body')));
       if (legends.length) {
@@ -767,6 +774,7 @@
     for (const pair of OQS.vc.PAIRS) {
       const svg = svgElement('svg', { viewBox: '0 0 60 60', width: 60, height: 60, 'aria-hidden': 'true' });
       pattern(svg, [0, 1, 2, 3].map(index => Number(pair.includes(index))), 2, 2, 56);
+      paperize(svg);
       $('six-patterns').append(svg);
     }
     $('comparison-rows').replaceChildren();

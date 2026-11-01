@@ -55,3 +55,14 @@ for (const selector of [':root', ':root[data-theme="dark"]']) {
     }
   });
 }
+
+for (const selector of [':root', ':root[data-theme="dark"]']) {
+  test(`${selector}: diagram toner stays black on a paper-colored mat with a visible frame`, () => {
+    const colors = { ...variables(selector), '--toner': '#111111' };
+    assert.ok(ratio(colors['--toner'], colors['--diagram-paper']) >= 7, 'toner on paper');
+    assert.ok(ratio(colors['--diagram-faint'], colors['--diagram-paper']) >= 2, 'faint letter remains visible');
+    assert.ok(ratio(colors['--toner'], colors['--diagram-faint']) >= 3, 'faint letter stays lighter than toner');
+    assert.ok(ratio(colors['--diagram-frame'], colors['--card']) >= 3, 'mat frame on card');
+    assert.notEqual(colors['--diagram-paper'].toLowerCase(), '#ffffff', 'mat is not pure white');
+  });
+}
