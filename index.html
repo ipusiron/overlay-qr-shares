@@ -50,9 +50,10 @@
     <section id="panel-split" class="panel" role="tabpanel" aria-labelledby="tab-split" tabindex="0">
       <div class="panel-heading">
         <p class="eyebrow" data-i18n="splitEyebrow"></p>
-        <h2 data-i18n="splitTitle"></h2>
+        <h2 tabindex="-1" data-i18n="splitTitle"></h2>
         <p class="lead" data-i18n="splitIntro"></p>
-        <button id="open-guide" class="button-secondary" type="button" data-i18n="openGuide"></button>
+        <button id="open-guide" class="nav-link" type="button" data-tab-target="guide"><span data-i18n="openGuide"></span>
+          <span class="nav-arrow" aria-hidden="true">→</span></button>
       </div>
       <div class="preparation-grid start-grid">
         <article class="preparation">
@@ -116,7 +117,8 @@
       <section class="work-section" aria-labelledby="test-read-title">
         <h3 id="test-read-title" tabindex="-1" data-i18n="testReadTitle"></h3>
         <p data-i18n="testReadIntro"></p>
-        <button id="open-reader" class="button-secondary" type="button" data-i18n="openReader"></button>
+        <button id="open-reader" class="nav-link" type="button" data-tab-target="read"><span data-i18n="openReader"></span>
+          <span class="nav-arrow" aria-hidden="true">→</span></button>
         <label class="choice test-confirm"><input id="test-read-confirm" type="checkbox" disabled>
           <span data-i18n="testReadConfirm"></span></label>
       </section>
@@ -159,9 +161,10 @@
     <section id="panel-read" class="panel" role="tabpanel" aria-labelledby="tab-read" tabindex="0" hidden>
       <div class="panel-heading">
         <p class="eyebrow" data-i18n="readEyebrow"></p>
-        <h2 data-i18n="readTitle"></h2>
+        <h2 tabindex="-1" data-i18n="readTitle"></h2>
         <p class="lead" data-i18n="readIntro"></p>
-        <a class="jump-link" href="#reader-camera" data-jump data-i18n="readerCameraJump"></a>
+        <a class="nav-link" href="#reader-camera" data-jump><span data-i18n="readerCameraJump"></span>
+          <span class="nav-arrow" aria-hidden="true">↓</span></a>
       </div>
       <details id="overlay-setup" class="reader-section" open>
         <summary data-i18n="overlaySetupTitle"></summary>
@@ -231,7 +234,7 @@
     <section id="panel-guide" class="panel" role="tabpanel" aria-labelledby="tab-guide" tabindex="0" hidden>
       <div class="panel-heading">
         <p class="eyebrow" data-i18n="guideEyebrow"></p>
-        <h2 data-i18n="guideTitle"></h2>
+        <h2 tabindex="-1" data-i18n="guideTitle"></h2>
         <p class="lead" data-i18n="guideIntro"></p>
       </div>
       <div id="principle-diagrams" class="diagram-grid"></div>

@@ -502,11 +502,27 @@ button:disabled {
 .step-figure figcaption p {
   margin: 0;
 }
-.jump-link {
+/* Navigation (another tab or another place on the page) looks like a link with an arrow, not like an action button. */
+.nav-link {
   display: inline-flex;
   align-items: center;
+  gap: .35rem;
   min-height: 44px;
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--accent);
   font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+.nav-link > span:first-child {
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+.nav-link:hover > span:first-child {
+  text-decoration-thickness: 2px;
 }
 .diagram-legend {
   margin: .8rem 0 0;

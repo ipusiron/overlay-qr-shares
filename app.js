@@ -899,8 +899,13 @@
     confirmedSize = $('test-read-confirm').checked ? parameters().m : null;
     renderSplit();
   });
-  $('open-reader').addEventListener('click', () => { active = 'read'; render(); $('tab-read').focus(); });
-  $('open-guide').addEventListener('click', () => { $('tab-guide').click(); $('tab-guide').focus(); });
+  // Buttons that switch tabs: show the top of the destination tab and focus its heading.
+  document.querySelectorAll('button[data-tab-target]').forEach(button => button.addEventListener('click', () => {
+    const name = button.dataset.tabTarget;
+    $('tab-' + name).click();
+    $('tab-' + name).scrollIntoView({ block: 'start' });
+    $('panel-' + name).querySelector('h2').focus({ preventScroll: true });
+  }));
   for (const id of ['check-all-sheets', 'check-ruler', 'check-disposal']) $(id).addEventListener('change', renderSplit);
   $('clear-all').addEventListener('click', () => {
     invalidate(true);
