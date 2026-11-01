@@ -34,6 +34,12 @@
   let frameHandle = null;
   let frameCount = 0;
   let cameraMessage = { key: 'cameraIdle', args: [] };
+  // Live scanning: the status changes at most every STATUS_INTERVAL ms, and a failure reason appears only
+  // after REASON_DELAY ms without success. This keeps the polite live region readable.
+  const STATUS_INTERVAL = 1500;
+  const REASON_DELAY = 6000;
+  let scanStarted = 0;
+  let statusShown = { text: '', at: 0, language: '' };
   let recovered = '';
   let revealed = false;
   let diagnosis = null;
@@ -435,8 +441,11 @@
     if (!video.videoWidth || !video.videoHeight || video.readyState < 2) return null;
     return frameImage(fullCanvas, video, video.videoWidth, video.videoHeight);
   }
-  function applyReading(result) {
-    diagnosis = result.diag || null;
+  function applyReading(result, live) {
+    const diag = result.diag || null;
+    // Show a diagnosis only when white and black were measured; while scanning, keep the last measured one.
+    if (diag && Number.isFinite(diag.margin)) diagnosis = diag;
+    else if (!live) diagnosis = null;
     if (result.ok) {
       recovered = result.text;
       result.text = '';
@@ -448,7 +457,14 @@
       const reasons = { marks: 'reasonMarks', band: 'reasonBand', metadata: 'reasonBand', geometry: 'reasonGeometry',
         finder: 'reasonGeometry', manual: 'reasonGeometry', image: 'reasonGeometry', illumination: 'reasonIllumination',
         calibration: 'reasonCalibration', decode: 'reasonDecode' };
-      cameraMessage = { key: reasons[result.reason] || 'reasonDecode', args: [] };
+      const reason = reasons[result.reason] || 'reasonDecode';
+      if (live) {
+        const count = Array.isArray(result.marks) ? result.marks.length : Number(diag && diag.marks) || 0;
+        const late = performance.now() - scanStarted >= REASON_DELAY;
+        cameraMessage = { key: 'cameraScanning', args: [count], reason: late ? reason : null };
+      } else {
+        cameraMessage = { key: reason, args: [], retry: true };
+      }
     }
     renderReader();
   }
@@ -465,7 +481,7 @@
             const scale = Math.min(1, 640 / Math.max(image.w, image.h));
             small = frameImage(detectCanvas, fullCanvas, Math.round(image.w * scale), Math.round(image.h * scale));
             const result = OQS.reader.readFrame(image, { detectImage: small });
-            if (ticket === cameraGeneration) applyReading(result);
+            if (ticket === cameraGeneration) applyReading(result, true);
           }
         } catch (_) {
           if (ticket === cameraGeneration) { stopCamera(false); setCameraMessage('reasonGeometry'); }
@@ -507,6 +523,7 @@
       await $('camera-video').play();
       if (ticket !== cameraGeneration) return;
       frameCount = 0;
+      scanStarted = performance.now();
       setCameraMessage('cameraScanning', [0]);
       nextFrame(ticket);
     } catch (_) {
@@ -590,15 +607,23 @@
     drawManual();
     if (corners.length === 4) {
       const result = OQS.reader.readFrame(frozen, { manualCorners: corners });
-      applyReading(result);
+      applyReading(result, false);
       // The frozen frame is no longer needed once all four points have been processed.
       clearFrozen();
     }
     renderReader();
   }
   function renderReader() {
-    $('camera-status').textContent = t(cameraMessage.key, ...cameraMessage.args);
-    if (cameraStream && diagnosis) $('camera-status').textContent += ' ' + t('cameraScanning', Number(diagnosis.marks) || 0);
+    let status = t(cameraMessage.key, ...cameraMessage.args);
+    if (cameraMessage.reason) status += ' ' + t(cameraMessage.reason);
+    if (cameraMessage.retry) status += ' ' + t('readAgain');
+    const now = performance.now();
+    const throttled = !!cameraStream && cameraMessage.key === 'cameraScanning' && statusShown.language === language
+      && now - statusShown.at < STATUS_INTERVAL;
+    if (status !== statusShown.text && !throttled) {
+      $('camera-status').textContent = status;
+      statusShown = { text: status, at: now, language };
+    }
     const cameraBusy = cameraPending || !!cameraStream;
     const start = $('camera-button'), stop = $('stop-camera');
     // Move focus before disabling/hiding its current control, without moving the viewport.
@@ -613,6 +638,11 @@
     }
     $('camera-view').hidden = !cameraStream;
     $('manual-button').disabled = !cameraStream || $('camera-video').readyState < 2;
+    const manualBlocked = $('manual-button').disabled && !frozen;
+    $('manual-requirement').hidden = !manualBlocked;
+    $('manual-requirement').textContent = manualBlocked ? t('manualEmpty') : '';
+    if (manualBlocked) $('manual-button').setAttribute('aria-describedby', 'manual-requirement');
+    else $('manual-button').removeAttribute('aria-describedby');
     $('manual-view').hidden = !frozen;
     if (frozen) {
       const names = ['cornerTL', 'cornerTR', 'cornerBR', 'cornerBL'];
