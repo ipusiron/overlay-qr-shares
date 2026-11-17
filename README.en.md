@@ -570,6 +570,7 @@ It does not claim a new cryptographic scheme or a world-first mechanism.
 
 - [Day124 Scatter Seeds](https://ipusiron.github.io/scatter-seeds/): a practical tool for splitting secrets into paper shares with Shamir sharing and reconstructing them numerically
 - [Day127 Account Domino Mapper](https://ipusiron.github.io/account-domino-mapper/): a teaching aid that compares the attack and the lockout before and after moving a recovery line to paper recovery codes
+- [Day128 Vision Trap Atlas](https://ipusiron.github.io/vision-trap-atlas/#illusion-lightness-contrast): an atlas of visual traps where you move a control to see the same gray look different on different surrounds (lightness contrast), which explains from the eye's side how stacked sheets look when you read them
 - [Day070 VisualCryptography CipherLab](https://ipusiron.github.io/visual-cryptography-cipherlab/): a tool for learning visual cryptography patterns and overlays
 - [Day102 QRCrashTest](https://ipusiron.github.io/qrcrashtest/): a tool for experimenting with QR reading and damage, and the source of the bundled QR libraries and licenses
 
