@@ -593,6 +593,7 @@ Liuらは色の共有画像と標準のQRデコーダーを使う別の構成で
 
 - [Day124 Scatter Seeds](https://ipusiron.github.io/scatter-seeds/)：シャミア方式で秘密を紙の共有に分け、数値計算で戻す実用ツール
 - [Day127 Account Domino Mapper](https://ipusiron.github.io/account-domino-mapper/)：どの復旧の線を紙の回復コードへ付け替えるかを、攻撃と閉め出しの前後で比べる教材
+- [Day128 Vision Trap Atlas](https://ipusiron.github.io/vision-trap-atlas/#illusion-lightness-contrast)：同じ灰色でも周りの明るさで違って見えること（明るさの対比）を、つまみで確かめる図鑑。重ねたシートを目で読むときの見え方を、目の側から補う
 - [Day070 VisualCryptography CipherLab](https://ipusiron.github.io/visual-cryptography-cipherlab/)：視覚暗号の柄と重ね合わせを学ぶツール
 - [Day102 QRCrashTest](https://ipusiron.github.io/qrcrashtest/)：QRの読み取りと破損を試すツール。同梱のQRライブラリーとライセンスの取得元
 
